@@ -1,27 +1,32 @@
 import React from "react";
 import { View } from "react-native";
-import { Button, Text, useTheme } from "react-native-paper";
-import { useThemeToggle } from "../../../contexts/themeContext";
+import { Text, Button, useTheme } from "react-native-paper";
+import { useDesign } from "../../../contexts/designContext";
 
 export default function Home() {
   const { colors } = useTheme();
-  const { isDark, toggle } = useThemeToggle();
+  const { tokens, density, setDensity } = useDesign();
 
   return (
     <View
       style={{
         flex: 1,
-        padding: 24,
-        justifyContent: "center",
-        gap: 16,
         backgroundColor: colors.background,
+        padding: tokens.spacing.lg,
+        gap: tokens.spacing.md,
+        borderRadius: tokens.radii.lg,
       }}
     >
-      <Text variant="titleLarge" style={{ color: colors.primary }}>
-        Theme: {isDark ? "Dark" : "Light"}
-      </Text>
-      <Button mode="contained" onPress={toggle}>
-        Toggle Theme
+      <Text variant="titleLarge">Density: {density}</Text>
+
+      <Button mode="outlined" onPress={() => setDensity("compact")}>
+        Compact
+      </Button>
+      <Button mode="outlined" onPress={() => setDensity("comfortable")}>
+        Comfortable
+      </Button>
+      <Button mode="outlined" onPress={() => setDensity("spacious")}>
+        Spacious
       </Button>
     </View>
   );

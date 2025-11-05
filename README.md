@@ -83,3 +83,33 @@ native/
 
 
 
+native/
+├─ app/
+│  ├─ (tabs)/
+│  │  ├─ a/
+│  │  │  ├─ _layout.tsx
+│  │  │  └─ index.tsx
+│  │  ├─ b/
+│  │  │  ├─ _layout.tsx
+│  │  │  └─ index.tsx
+│  │  └─ _layout.tsx
+│  ├─ _layout.tsx
+│  └─ index.tsx
+├─ assets/
+├─ components/
+│  ├─ atom/
+│  ├─ molecule/
+│  └─ shared/
+├─ constants/
+│  ├─ design.ts
+│  └─ theme.ts
+├─ contexts/
+│  ├─ designContext.tsx
+│  └─ themeContext.tsx
+├─ .gitignore
+├─ app.json
+├─ expo-env.d.ts
+├─ package-lock.json
+├─ package.json
+├─ README.md
+└─ tsconfig.json

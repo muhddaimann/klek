@@ -7,12 +7,18 @@ const ThemeCtx = createContext<Ctx>({ isDark: false, toggle: () => {} });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [isDark, setIsDark] = useState(false);
-  const value = useMemo<Ctx>(() => ({ isDark, toggle: () => setIsDark(v => !v) }), [isDark]);
+  const value = useMemo<Ctx>(
+    () => ({ isDark, toggle: () => setIsDark((v) => !v) }),
+    [isDark]
+  );
 
   return (
     <ThemeCtx.Provider value={value}>
-      <PaperProvider theme={isDark ? darkTheme : lightTheme}>{children}</PaperProvider>
+      <PaperProvider theme={isDark ? darkTheme : lightTheme}>
+        {children}
+      </PaperProvider>
     </ThemeCtx.Provider>
   );
 }
+
 export const useThemeToggle = () => useContext(ThemeCtx);
