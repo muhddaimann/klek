@@ -10,9 +10,11 @@ Learning template for **Expo + React Native Paper** with **personalized design t
 npm install
 npm run dev - ios
 
-
 paperNative/
 ├─ app/
+│  ├─ (modals)/
+│  │  ├─ _layout.tsx
+│  │  └─ signIn.tsx
 │  ├─ (tabs)/
 │  │  ├─ a/
 │  │  │  ├─ _layout.tsx
@@ -26,6 +28,7 @@ paperNative/
 ├─ assets/
 ├─ components/
 │  ├─ atom/
+│  │  ├─ button.tsx
 │  │  └─ text.tsx
 │  ├─ molecule/
 │  │  ├─ alert.tsx
@@ -38,6 +41,7 @@ paperNative/
 │  ├─ design.ts
 │  └─ theme.ts
 ├─ contexts/
+│  ├─ authContext.tsx
 │  ├─ designContext.tsx
 │  ├─ overlayContext.tsx
 │  └─ themeContext.tsx
@@ -52,3 +56,5 @@ paperNative/
 ├─ package.json
 ├─ README.md
 └─ tsconfig.json
+
+

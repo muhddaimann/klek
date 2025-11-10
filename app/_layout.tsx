@@ -12,6 +12,7 @@ import { AlertDialog } from "../components/molecule/alert";
 import { ConfirmDialog } from "../components/molecule/confirm";
 import { ToastBar } from "../components/molecule/toast";
 import { ModalSheet } from "../components/molecule/modal";
+import { AuthProvider } from "../contexts/authContext";
 import {
   useFonts,
   Inter_400Regular,
@@ -24,6 +25,7 @@ SplashScreen.preventAutoHideAsync();
 
 function AppShell() {
   const { dark, colors } = useTheme();
+
   return (
     <>
       <StatusBar style={dark ? "light" : "dark"} />
@@ -32,7 +34,21 @@ function AppShell() {
         style={{ backgroundColor: colors.background }}
       />
       <View style={{ flex: 1, backgroundColor: colors.background }}>
-        <Stack screenOptions={{ headerShown: false }} />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: colors.background },
+          }}
+        >
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="(modals)"
+            options={{
+              presentation: "modal",
+            }}
+          />
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+        </Stack>
       </View>
     </>
   );
@@ -57,14 +73,16 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <ThemeProvider>
           <DesignProvider>
-            <OverlayProvider
-              AlertUI={AlertDialog}
-              ConfirmUI={ConfirmDialog}
-              ToastUI={ToastBar}
-              ModalUI={ModalSheet}
-            >
-              <AppShell />
-            </OverlayProvider>
+            <AuthProvider>
+              <OverlayProvider
+                AlertUI={AlertDialog}
+                ConfirmUI={ConfirmDialog}
+                ToastUI={ToastBar}
+                ModalUI={ModalSheet}
+              >
+                <AppShell />
+              </OverlayProvider>
+            </AuthProvider>
           </DesignProvider>
         </ThemeProvider>
       </SafeAreaProvider>

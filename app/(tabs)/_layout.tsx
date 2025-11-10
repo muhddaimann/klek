@@ -1,42 +1,46 @@
-import * as React from "react";
-import { View } from "react-native";
-import { Tabs } from "expo-router";
+import React, { useEffect } from "react";
+import { Tabs, useRouter } from "expo-router";
 import { useTheme } from "react-native-paper";
+import { useAuth } from "../../contexts/authContext";
 import { Atom, Dna } from "lucide-react-native";
 
 export default function TabsLayout() {
   const { colors } = useTheme();
+  const { isAuthenticated, bootstrapped } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (bootstrapped && !isAuthenticated) router.replace("/(modals)/signIn");
+  }, [bootstrapped, isAuthenticated]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <Tabs
-        screenOptions={{
-          headerShown: false,
-          tabBarActiveTintColor: colors.primary,
-          tabBarInactiveTintColor: colors.onSurfaceVariant,
-          tabBarStyle: {
-            backgroundColor: colors.surface,
-            borderTopColor: colors.outlineVariant,
-            borderTopWidth: 0.5,
-          },
-          tabBarLabelStyle: { fontWeight: "600" },
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.onSurfaceVariant,
+        tabBarStyle: {
+          backgroundColor: colors.surface,
+          borderTopColor: colors.outlineVariant,
+          borderTopWidth: 0.5,
+        },
+        tabBarLabelStyle: { fontWeight: "600" },
+      }}
+    >
+      <Tabs.Screen
+        name="a"
+        options={{
+          title: "Atom",
+          tabBarIcon: ({ color, size }) => <Atom color={color} size={size} />,
         }}
-      >
-        <Tabs.Screen
-          name="a"
-          options={{
-            title: "Atom",
-            tabBarIcon: ({ color, size }) => <Atom color={color} size={size} />,
-          }}
-        />
-        <Tabs.Screen
-          name="b"
-          options={{
-            title: "Molecule",
-            tabBarIcon: ({ color, size }) => <Dna color={color} size={size} />,
-          }}
-        />
-      </Tabs>
-    </View>
+      />
+      <Tabs.Screen
+        name="b"
+        options={{
+          title: "Molecule",
+          tabBarIcon: ({ color, size }) => <Dna color={color} size={size} />,
+        }}
+      />
+    </Tabs>
   );
 }
