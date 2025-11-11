@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { useTheme, Text } from "react-native-paper";
 import { useDesign } from "../contexts/designContext";
 import { Button } from "../components/atom/button";
+import Logo from "../components/shared/logo";
 
 export default function Index() {
   const { colors } = useTheme();
@@ -20,7 +21,8 @@ export default function Index() {
         gap: tokens.spacing.xl,
       }}
     >
-      <View style={{ alignItems: "center", gap: tokens.spacing.xs }}>
+      <View style={{ alignItems: "center", gap: tokens.spacing.sm }}>
+        <Logo size={tokens.typography.sizes["3xl"] * 2} />
         <Text
           style={{
             color: colors.onBackground,

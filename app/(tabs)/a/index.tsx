@@ -13,13 +13,30 @@ import {
   Overline,
 } from "../../../components/atom/text";
 import { Button } from "../../../components/atom/button";
+import HomeHeader from "../../../components/shared/homeHeader";
+import { router } from "expo-router";
 
 export default function Atom() {
   const { colors } = useTheme();
   const { tokens } = useDesign();
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
+    <ScrollView
+      style={{ flex: 1, backgroundColor: colors.background }}
+      contentContainerStyle={{ flexGrow: 1 }}
+      bounces={false}
+      alwaysBounceVertical={false}
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
+      overScrollMode="never"
+    >
+      <HomeHeader
+        name="Aiman"
+        owedToday={128.5}
+        onAdd={() => router.push("/add")}
+        onScan={() => router.push("/scan")}
+        onProfile={() => router.push("/profile")}
+      />
       <View style={{ padding: tokens.spacing.md, gap: tokens.spacing.xs }}>
         <H1 color={colors.primary}>Heading 1</H1>
         <H2 color={colors.secondary}>Heading 2</H2>

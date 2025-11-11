@@ -2,7 +2,7 @@
   "expo": {
     "name": "klek",
     "slug": "klek",
-    "scheme": "native",
+    "scheme": "klek",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

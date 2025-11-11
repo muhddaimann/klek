@@ -1,28 +1,73 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View } from "react-native";
-import { useTheme, ActivityIndicator, ProgressBar, Text } from "react-native-paper";
+import { View, Animated, Easing } from "react-native";
+import { useTheme, Text } from "react-native-paper";
 import { router } from "expo-router";
 import { useDesign } from "../contexts/designContext";
 import { H1 } from "../components/atom/text";
+import Logo from "../components/shared/logo";
+import { IconCoin } from "tabler-icons-react-native";
 
 export default function Welcome() {
   const { colors } = useTheme();
   const { tokens } = useDesign();
-  const [count, setCount] = useState(3);
-  const [progress, setProgress] = useState(0);
-  const iRef = useRef<NodeJS.Timeout | null>(null);
-  const pRef = useRef<NodeJS.Timeout | null>(null);
+
+  const [rm, setRm] = useState(0);
+  const fade = useRef(new Animated.Value(0)).current;
+  const coin = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    iRef.current = setInterval(() => setCount((n) => (n > 1 ? n - 1 : n)), 1000);
-    pRef.current = setInterval(() => setProgress((p) => Math.min(1, p + 0.08)), 200);
-    const to = setTimeout(() => router.replace("/(tabs)/a"), 3000);
+    const stepMs = 60;
+    const duration = 2400;
+    const steps = Math.ceil(duration / stepMs);
+    const inc = 128 / steps;
+
+    const incTimer = setInterval(() => {
+      setRm((n) => {
+        const v = n + inc;
+        return v >= 128 ? 128 : v;
+      });
+    }, stepMs);
+
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(coin, {
+          toValue: 1.06,
+          duration: 500,
+          easing: Easing.inOut(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(coin, {
+          toValue: 1.0,
+          duration: 500,
+          easing: Easing.inOut(Easing.cubic),
+          useNativeDriver: true,
+        }),
+      ])
+    );
+
+    Animated.timing(fade, {
+      toValue: 1,
+      duration: 300,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+    loop.start();
+
+    const to = setTimeout(() => {
+      Animated.timing(fade, {
+        toValue: 0,
+        duration: 240,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }).start(() => router.replace("/(tabs)/a"));
+    }, duration);
+
     return () => {
-      if (iRef.current) clearInterval(iRef.current);
-      if (pRef.current) clearInterval(pRef.current);
+      clearInterval(incTimer);
       clearTimeout(to);
+      loop.stop();
     };
-  }, []);
+  }, [coin, fade]);
 
   return (
     <View
@@ -30,15 +75,22 @@ export default function Welcome() {
         flex: 1,
         backgroundColor: colors.surface,
         alignItems: "center",
-        justifyContent: "center",
-        padding: tokens.spacing.lg,
         gap: tokens.spacing.lg,
+        paddingVertical: tokens.spacing["3xl"] * 3,
       }}
     >
-      <H1 style={{ color: colors.onSurface }}>Welcome, User</H1>
-      <ActivityIndicator animating />
-      <ProgressBar progress={progress} style={{ width: 280 }} />
-      <Text style={{ color: colors.onSurfaceVariant }}>Opening workspace in {count}s</Text>
+      <Animated.View style={{ transform: [{ scale: coin }], opacity: fade }}>
+        <IconCoin size={56} color={colors.primary} />
+      </Animated.View>
+
+      <Animated.View style={{ opacity: fade, alignItems: "center" }}>
+        <H1 style={{ color: colors.onSurface }}>RM {rm.toFixed(2)}</H1>
+        <Text style={{ color: colors.onSurfaceVariant }}>collecting back…</Text>
+      </Animated.View>
+
+      <Animated.View style={{ opacity: fade }}>
+        <Logo size={tokens.typography.sizes["3xl"]} />
+      </Animated.View>
     </View>
   );
 }

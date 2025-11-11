@@ -1,16 +1,116 @@
-# paperNative
+# Klek
 
-Learning template for **Expo + React Native Paper** with **personalized design tokens** and a simple overlay system (Alert / Confirm / Modal / Toast).
+Turn fronts into fast reimbursements.
 
-## Authors
+## Author
+
 - [@muhddaimann](https://www.github.com/muhddaimann)
 
-## Quick Start
-```bash
-npm install
-npm run dev - ios
+## Tech
 
-paperNative/
+- Expo React Native (TypeScript)
+- React Navigation / Expo Router
+- React Native Paper (MD3)
+- SQLite (local-first)
+- Tabler Icons RN
+
+## Quick Start
+
+```bash
+
+Klek – collect/claim/back finance app
+├─ About
+│  ├─ Mission — Turn fronts into fast reimbursements.
+│  ├─ Problem — You pay first; collecting is slow.
+│  ├─ Outcome — Cashflow kept intrack.
+├─ User Persona
+│  ├─ Primary — Young pro, fronts meals/rides.
+│  ├─ Secondary — Small teams, housemates.
+│  ├─ Pain — Forget who owes; awkward chasing.
+├─ Core Flows
+│ ├─ Quick Add — Amount, title, default split.
+│ ├─ Template Add — Save common splits.
+│ ├─ Repeat Last — Clone previous expense.
+│ ├─ Itemized Split — Assign by line items.
+│ ├─ Weighted Split — Percent or ratio.
+│ ├─ Round Shares — Up/nearest rules.
+│ ├─ Fees & Tips — Auto allocate SST/service/tip.
+│ ├─ Due Date — Soft or firm.
+│ ├─ Partial Payment — Track remaining.
+│ ├─ Overpayment — Auto adjust next claim.
+│ ├─ Attach Proof — Photo/PDF/note.
+│ ├─ Receipt Scan — OCR → totals/items.
+│ ├─ Location Tag — Place of spend.
+│ ├─ Category Tag — Meal/ride/misc.
+│ ├─ Multi-Currency — FX note on date.
+│ ├─ Reassign Payer — Change who owes.
+│ ├─ Merge Duplicates — Combine entries.
+│ ├─ Group Mode — House/team/trip tabs.
+│ ├─ Invite via Link — Join claim group.
+│ ├─ Deep Link — Open exact claim/expense.
+│ ├─ QR Share — Show scan-to-claim.
+│ ├─ Payment Handoff — eWallet/bank deeplinks.
+│ ├─ Payment Note — Ref no. and channel.
+│ ├─ Self-Confirm — Trusted contacts bypass.
+│ ├─ Counter-Confirm — Payer marks paid.
+│ ├─ Nudge Ladder — Gentle → firm → final.
+│ ├─ Smart Timing — After payday/9am windows.
+│ ├─ Quiet Hours — No pings at night.
+│ ├─ Per-Contact Caps — Limit reminders/day.
+│ ├─ Bulk Settle — Clear many at once.
+│ ├─ Archive Old — Hide stale debts.
+│ ├─ Owed Today — Action list first.
+│ ├─ Aging Buckets — 0–7 / 8–30 / 31+ days.
+│ ├─ People Ledger — Who owes / I owe.
+│ ├─ Netting — Offset mutual debts.
+│ ├─ Statements — Monthly per-person PDF.
+│ ├─ CSV Export — Raw ledger out.
+│ ├─ Claim Summary — Trip/event PDF.
+│ ├─ Cashflow View — Out vs back-in chart.
+│ ├─ Uncollected Trend — Week/month line.
+│ ├─ Alerts — Due soon, overdue, paid.
+│ ├─ Inbox — New confirmations & proofs.
+│ ├─ Tags & Search — Fast filter.
+│ ├─ Saved Views — One-tap filters.
+│ ├─ Shortcuts — OS quick actions.
+│ ├─ Widgets — Owed today, quick add.
+├─ Onboarding & Setup
+│ ├─ Sample Data — Demo claims preloaded.
+│ ├─ Import Contacts — Optional mapping.
+│ ├─ Default Split — Equal/weights preset.
+│ ├─ Reminder Style — Soft/neutral/firm tone.
+│ ├─ Currency & Locale — MYR first.
+├─ Reliability & Privacy
+│ ├─ Offline-First — Queue ops, sync later.
+│ ├─ Conflict Resolve — Last write + timeline.
+│ ├─ Backup — JSON to Drive/iCloud.
+│ ├─ Restore — Import backup.
+│ ├─ Biometric Lock — Face/Touch.
+│ ├─ Blur Amounts — Hide in public.
+│ ├─ Redact Screens — Share safe view.
+│ ├─ Audit Trail — Who/what/when.
+├─ Integrations
+│ ├─ Contacts Picker — Names/photos.
+│ ├─ Calendar Drop — Due date events.
+│ ├─ Email/SMS Share — Multi-channel.
+│ ├─ Web Claim Page — Payer breakdown.
+│ ├─ Mileage Hook — Add km→claim flow.
+│ ├─ Parking Ticket — Timer + attach proof.
+├─ Smart Assist
+│ ├─ Suggested Payers — Based on history.
+│ ├─ Smart Titles — From receipt/location.
+│ ├─ Smart Splits — Learn typical ratios.
+│ ├─ Anomaly Flag — Weird totals/FX dates.
+├─ Settings & Support
+│ ├─ Profile — Name, handle, avatar.
+│ ├─ Themes — Light/dark/system.
+│ ├─ Data Reset — Nuke local data.
+│ ├─ Send Logs — Opt-in diagnostics.
+│ ├─ Changelog — What’s new.
+│ ├─ Rate Prompt — After first paid claim.
+
+
+klek/
 ├─ app/
 │  ├─ (modals)/
 │  │  ├─ _layout.tsx
@@ -41,7 +141,8 @@ paperNative/
 │  │  ├─ modal.tsx
 │  │  └─ toast.tsx
 │  └─ shared/
-│     └─ header.tsx
+│     ├─ header.tsx
+│     └─ logo.tsx
 ├─ constants/
 │  ├─ design.ts
 │  └─ theme.ts
@@ -62,24 +163,4 @@ paperNative/
 └─ tsconfig.json
 
 
-
-
-Klek – collect/claim/back finance app
-├─ About
-│ ├─ Mission — Turn fronts into fast reimbursements.
-│ ├─ Problem — You pay first; collecting is slow.
-│ ├─ Outcome — Cashflow kept intrack.
-├─ User Persona
-│ ├─ Primary — Young pro, fronts meals/rides.
-│ ├─ Secondary — Small teams, housemates.
-│ ├─ Pain — Forget who owes; awkward chasing.
-├─ Value Props
-│ ├─ 1-tap log; auto split.
-│ ├─ Smart reminders; nice tone.
-│ ├─ Clear “owed today” number.
-├─ Core Flows
-│ ├─ Create Expense — Add, split, assign payers.
-│ ├─ Send Link — Share claim via deep link/QR.
-│ ├─ Track Status — Unpaid/partial/paid.
-│ ├─ Settle — Mark paid; record method.
-│ ├─ Nudge — Gentle reminder with context.
+```

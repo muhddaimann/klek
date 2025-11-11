@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDesign } from "../../contexts/designContext";
 import { Button } from "../../components/atom/button";
 import { useRouter } from "expo-router";
+import Logo from "../../components/shared/logo";
 
 const isValidEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 
@@ -37,19 +38,28 @@ export default function ForgotPasswordModal() {
           justifyContent: "center",
         }}
       >
-        <View style={{ gap: tokens.spacing.xs, alignItems: "center" }}>
-          <Text
-            style={{
-              color: colors.onBackground,
-              fontSize: tokens.typography.sizes["2xl"],
-              fontWeight: "700",
-            }}
-          >
-            Reset password
-          </Text>
-          <Text style={{ color: colors.onSurfaceVariant }}>
-            Enter your email to receive reset instructions
-          </Text>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: tokens.spacing.md,
+          }}
+        >
+          <Logo size={tokens.typography.sizes["3xl"] * 2} />
+          <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                color: colors.onBackground,
+                fontSize: tokens.typography.sizes["2xl"],
+                fontWeight: "700",
+              }}
+            >
+              Reset password
+            </Text>
+            <Text style={{ color: colors.onSurfaceVariant }}>
+              Enter your email to receive reset instructions
+            </Text>
+          </View>
         </View>
 
         <View style={{ gap: tokens.spacing.xs }}>

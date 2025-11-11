@@ -15,11 +15,11 @@ import { ModalSheet } from "../components/molecule/modal";
 import { AuthProvider } from "../contexts/authContext";
 import {
   useFonts,
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_700Bold,
-} from "@expo-google-fonts/inter";
+  Poppins_400Regular,
+  Poppins_500Medium,
+  Poppins_600SemiBold,
+  Poppins_700Bold,
+} from "@expo-google-fonts/poppins";
 
 void (async () => {
   try {
@@ -54,10 +54,10 @@ function AppShell() {
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter_700Bold,
+    Poppins_400Regular,
+    Poppins_500Medium,
+    Poppins_600SemiBold,
+    Poppins_700Bold,
   });
 
   const onLayoutRootView = useCallback(async () => {

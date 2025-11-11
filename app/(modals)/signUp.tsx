@@ -12,6 +12,7 @@ import { useDesign } from "../../contexts/designContext";
 import { Button } from "../../components/atom/button";
 import { useAuth } from "../../contexts/authContext";
 import { useFocusEffect } from "expo-router";
+import Logo from "../../components/shared/logo";
 
 export default function SignUpModal() {
   const { colors } = useTheme();
@@ -136,7 +137,7 @@ export default function SignUpModal() {
           flexGrow: 1,
           paddingHorizontal: tokens.spacing.lg,
           paddingTop: tokens.spacing.lg,
-          paddingBottom: insets.bottom + tokens.spacing.xl * 4,
+          paddingBottom: insets.bottom + tokens.spacing.xl * 9,
           justifyContent: "center",
           gap: tokens.spacing.lg,
         }}
@@ -144,16 +145,27 @@ export default function SignUpModal() {
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
       >
-        <View style={{ gap: tokens.spacing.xxs, alignItems: "center" }}>
-          <Text
-            style={{
-              color: colors.onBackground,
-              fontSize: tokens.typography.sizes["2xl"],
-              fontWeight: "700",
-            }}
-          >
-            Create account
-          </Text>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: tokens.spacing.md,
+            paddingHorizontal: 0,
+          }}
+        >
+          <Logo size={tokens.typography.sizes["3xl"] * 2} />
+          <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                color: colors.onBackground,
+                fontSize: tokens.typography.sizes["2xl"],
+                fontWeight: "700",
+              }}
+            >
+              Sign Up
+            </Text>
+            <Text style={{ color: colors.onSurfaceVariant }}>Create New Account</Text>
+          </View>
         </View>
 
         {!!error && (

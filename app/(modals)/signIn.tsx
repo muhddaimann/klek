@@ -12,6 +12,7 @@ import { useDesign } from "../../contexts/designContext";
 import { Button } from "../../components/atom/button";
 import { useAuth } from "../../contexts/authContext";
 import { useFocusEffect } from "expo-router";
+import Logo from "../../components/shared/logo";
 
 export default function SignInModal() {
   const { colors } = useTheme();
@@ -110,7 +111,7 @@ export default function SignInModal() {
           flexGrow: 1,
           paddingHorizontal: tokens.spacing.lg,
           paddingTop: tokens.spacing.lg,
-          paddingBottom: insets.bottom + tokens.spacing.xl * 4,
+          paddingBottom: insets.bottom + tokens.spacing.xl * 7,
           justifyContent: "center",
           gap: tokens.spacing.lg,
         }}
@@ -118,17 +119,27 @@ export default function SignInModal() {
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
       >
-        <View style={{ gap: tokens.spacing.xxs, alignItems: "center" }}>
-          <Text
-            style={{
-              color: colors.onBackground,
-              fontSize: tokens.typography.sizes["2xl"],
-              fontWeight: "700",
-            }}
-          >
-            Sign in
-          </Text>
-          <Text style={{ color: colors.onSurfaceVariant }}>Welcome back</Text>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: tokens.spacing.md,
+            paddingHorizontal: 0,
+          }}
+        >
+          <Logo size={tokens.typography.sizes["3xl"] * 2} />
+          <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                color: colors.onBackground,
+                fontSize: tokens.typography.sizes["2xl"],
+                fontWeight: "700",
+              }}
+            >
+              Sign in
+            </Text>
+            <Text style={{ color: colors.onSurfaceVariant }}>Welcome back</Text>
+          </View>
         </View>
 
         {!!error && (
