@@ -85,6 +85,8 @@ export function ToastBar({
         bottom: 0,
         paddingHorizontal: tokens.spacing.lg,
         paddingBottom: tokens.spacing["2xl"],
+        zIndex: 10000, // ↑ ensure above navigators
+        elevation: 10000, // ↑ Android
       }}
     >
       <Animated.View style={{ transform: [{ translateY }], opacity }}>

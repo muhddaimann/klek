@@ -1,17 +1,10 @@
-import React, { useEffect } from "react";
-import { Tabs, useRouter } from "expo-router";
+import React from "react";
+import { Tabs } from "expo-router";
 import { useTheme } from "react-native-paper";
-import { useAuth } from "../../contexts/authContext";
 import { Atom, Dna } from "lucide-react-native";
 
 export default function TabsLayout() {
   const { colors } = useTheme();
-  const { isAuthenticated, bootstrapped } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (bootstrapped && !isAuthenticated) router.replace("/(modals)/signIn");
-  }, [bootstrapped, isAuthenticated]);
 
   return (
     <Tabs

@@ -14,7 +14,9 @@ paperNative/
 ├─ app/
 │  ├─ (modals)/
 │  │  ├─ _layout.tsx
-│  │  └─ signIn.tsx
+│  │  ├─ forgot.tsx
+│  │  ├─ signIn.tsx
+│  │  └─ signUp.tsx
 │  ├─ (tabs)/
 │  │  ├─ a/
 │  │  │  ├─ _layout.tsx
@@ -24,8 +26,15 @@ paperNative/
 │  │  │  └─ index.tsx
 │  │  └─ _layout.tsx
 │  ├─ _layout.tsx
-│  └─ index.tsx
+│  ├─ goodbye.tsx
+│  ├─ index.tsx
+│  └─ welcome.tsx
 ├─ assets/
+│  ├─ images/
+│  ├─ adaptive-icon.png
+│  ├─ favicon.png
+│  ├─ icon.png
+│  └─ splash-icon.png
 ├─ components/
 │  ├─ atom/
 │  │  ├─ button.tsx
@@ -47,14 +56,16 @@ paperNative/
 │  └─ themeContext.tsx
 ├─ hooks/
 │  ├─ useBlog.tsx
+│  ├─ useKeyboard.tsx
 │  ├─ useOverlay.tsx
 │  └─ useText.tsx
 ├─ .gitignore
 ├─ app.json
-├─ expo-env.d.ts
 ├─ package-lock.json
 ├─ package.json
 ├─ README.md
 └─ tsconfig.json
+
+
 
 

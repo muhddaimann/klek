@@ -73,16 +73,16 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <ThemeProvider>
           <DesignProvider>
-            <AuthProvider>
-              <OverlayProvider
-                AlertUI={AlertDialog}
-                ConfirmUI={ConfirmDialog}
-                ToastUI={ToastBar}
-                ModalUI={ModalSheet}
-              >
+            <OverlayProvider
+              AlertUI={AlertDialog}
+              ConfirmUI={ConfirmDialog}
+              ToastUI={ToastBar}
+              ModalUI={ModalSheet}
+            >
+              <AuthProvider>
                 <AppShell />
-              </OverlayProvider>
-            </AuthProvider>
+              </AuthProvider>
+            </OverlayProvider>
           </DesignProvider>
         </ThemeProvider>
       </SafeAreaProvider>

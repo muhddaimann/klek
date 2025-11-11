@@ -1,32 +1,38 @@
-// app/(modals)/forgotPassword.tsx
-import React, { useState } from "react";
-import { KeyboardAvoidingView, Platform, View } from "react-native";
+import React, { useMemo, useState } from "react";
+import { View } from "react-native";
 import { useTheme, Text, TextInput, Divider } from "react-native-paper";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDesign } from "../../contexts/designContext";
 import { Button } from "../../components/atom/button";
 import { useRouter } from "expo-router";
 
+const isValidEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+
 export default function ForgotPasswordModal() {
   const { colors } = useTheme();
   const { tokens } = useDesign();
+  const insets = useSafeAreaInsets();
   const router = useRouter();
-  const [email, setEmail] = useState("");
 
-  const onClose = () => router.back();
+  const [email, setEmail] = useState("");
+  const [touched, setTouched] = useState(false);
+
+  const valid = useMemo(() => isValidEmail(email), [email]);
+  const showErr = touched && email.length > 0 && !valid;
+
   const onSubmit = () => {
-    if (!email.trim()) return;
+    setTouched(true);
+    if (!valid) return;
     router.back();
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.select({ ios: "padding" })}
-      style={{ flex: 1, backgroundColor: colors.background }}
-    >
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <View
         style={{
           flex: 1,
-          padding: tokens.spacing.lg,
+          paddingHorizontal: tokens.spacing.lg,
+          paddingBottom: insets.bottom + tokens.spacing.xl * 7,
           gap: tokens.spacing.lg,
           justifyContent: "center",
         }}
@@ -46,38 +52,76 @@ export default function ForgotPasswordModal() {
           </Text>
         </View>
 
-        <View style={{ gap: tokens.spacing.md }}>
+        <View style={{ gap: tokens.spacing.xs }}>
           <TextInput
             mode="outlined"
             label="Email"
             value={email}
-            onChangeText={setEmail}
+            onChangeText={(t) => {
+              if (!touched) setTouched(true);
+              setEmail(t);
+            }}
             autoCapitalize="none"
             keyboardType="email-address"
+            textContentType="emailAddress"
+            autoComplete="email"
+            autoFocus
+            error={showErr}
+            onBlur={() => setTouched(true)}
+            returnKeyType="send"
+            onSubmitEditing={onSubmit}
           />
-        </View>
-
-        <View style={{ gap: tokens.spacing.sm }}>
-          <Button onPress={onSubmit} mode="contained">
-            Send reset link
-          </Button>
-          <Button onPress={onClose} mode="text">
-            Cancel
-          </Button>
+          {showErr ? (
+            <Text style={{ color: colors.error, marginTop: -6 }}>
+              Please enter a valid email address
+            </Text>
+          ) : null}
         </View>
 
         <Divider style={{ marginTop: tokens.spacing.xs }} />
-        <View style={{ alignItems: "center" }}>
+
+        <View style={{ gap: tokens.spacing.xs, alignItems: "center" }}>
           <Text
             style={{
               color: colors.onSurfaceVariant,
               fontSize: tokens.typography.sizes.sm,
+              textAlign: "center",
             }}
           >
-            You’ll get an email if the account exists
+            Double-check your email spelling. If the account exists, we’ll send
+            a reset link shortly.
+          </Text>
+          <Text
+            style={{
+              color: colors.onSurfaceVariant,
+              fontSize: tokens.typography.sizes.xs,
+              textAlign: "center",
+            }}
+          >
+            Didn’t receive it? Check spam/junk or try again in a few minutes.
           </Text>
         </View>
       </View>
-    </KeyboardAvoidingView>
+
+      <View
+        pointerEvents="box-none"
+        style={{ position: "absolute", left: 0, right: 0, bottom: 0 }}
+      >
+        <View
+          style={{
+            paddingHorizontal: tokens.spacing.lg,
+            paddingTop: tokens.spacing.sm,
+            paddingBottom: insets.bottom + tokens.spacing.lg,
+            backgroundColor: colors.background,
+            borderTopWidth: 0.5,
+            borderTopColor: colors.outlineVariant,
+          }}
+        >
+          <Button onPress={onSubmit} mode="contained" disabled={!valid}>
+            Send reset link
+          </Button>
+        </View>
+      </View>
+    </View>
   );
 }
