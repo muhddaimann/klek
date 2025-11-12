@@ -6,33 +6,33 @@ import Logo from "./logo";
 
 type Props = {
   name?: string;
-  owedToday?: number;
-  totalBack?: number;
-  onAdd?: () => void;
-  onScan?: () => void;
+  remainingSec?: number;
   onProfile?: () => void;
-  onFilterChange?: (f: "all" | "owedToMe" | "iOwe") => void;
 };
 
 export default function HomeHeader({
   name = "User",
-  owedToday = 0,
-  totalBack = 0,
-  onAdd,
-  onScan,
+  remainingSec = 0,
   onProfile,
-  onFilterChange,
 }: Props) {
   const { colors } = useTheme();
   const { tokens } = useDesign();
+
+  const total = 5 * 60;
+  const left = Math.max(0, remainingSec);
+  const mm = String(Math.floor(left / 60)).padStart(2, "0");
+  const ss = String(left % 60).padStart(2, "0");
+  const pct = Math.min(1, left / total);
 
   return (
     <View
       style={{
         backgroundColor: colors.primaryContainer,
-        paddingTop: tokens.spacing["sm"],
+        paddingTop: tokens.spacing["xs"],
         paddingBottom: tokens.spacing.lg,
         paddingHorizontal: tokens.spacing.lg,
+        borderBottomLeftRadius: tokens.radii["2xl"],
+        borderBottomRightRadius: tokens.radii["2xl"],
       }}
     >
       <View
@@ -47,8 +47,8 @@ export default function HomeHeader({
           <Text
             style={{
               color: colors.onPrimaryContainer,
-              fontSize: tokens.typography.sizes.md,
-              opacity: 0.9,
+              fontSize: tokens.typography.sizes.lg,
+              fontWeight: "700",
             }}
           >
             Hi, {name}
@@ -56,13 +56,14 @@ export default function HomeHeader({
           <Text
             style={{
               color: colors.onPrimaryContainer,
-              fontSize: tokens.typography.sizes.lg,
-              fontWeight: "700",
+              opacity: 0.85,
+              marginTop: 2,
             }}
           >
-            RM {owedToday.toFixed(2)} owed today
+            Session ends in {mm}:{ss}
           </Text>
         </View>
+
         <Pressable
           onPress={onProfile}
           style={{
@@ -82,119 +83,20 @@ export default function HomeHeader({
 
       <View
         style={{
-          marginTop: tokens.spacing.lg,
-          backgroundColor: colors.surface,
-          borderRadius: tokens.radii.lg,
-          padding: tokens.spacing.md,
+          marginTop: tokens.spacing.md,
+          height: 8,
+          borderRadius: 8,
+          backgroundColor: colors.outlineVariant,
+          overflow: "hidden",
         }}
       >
-        <Text
-          style={{
-            color: colors.onSurfaceVariant,
-            fontSize: tokens.typography.sizes.sm,
-          }}
-        >
-          Total to collect
-        </Text>
-        <Text
-          style={{
-            color: colors.onSurface,
-            fontSize: tokens.typography.sizes["2xl"],
-            fontWeight: "700",
-            marginTop: tokens.spacing.xs,
-          }}
-        >
-          RM {totalBack.toFixed(2)}
-        </Text>
-
         <View
           style={{
-            flexDirection: "row",
-            gap: tokens.spacing.sm,
-            marginTop: tokens.spacing.md,
+            width: `${pct * 100}%`,
+            height: "100%",
+            backgroundColor: colors.primary,
           }}
-        >
-          <Pressable
-            onPress={onAdd}
-            style={{
-              flex: 1,
-              height: 44,
-              borderRadius: tokens.radii.sm,
-              backgroundColor: colors.primary,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Text style={{ color: colors.onPrimary, fontWeight: "700" }}>
-              Quick Add
-            </Text>
-          </Pressable>
-
-          <Pressable
-            onPress={onScan}
-            style={{
-              height: 44,
-              paddingHorizontal: tokens.spacing.lg,
-              borderRadius: tokens.radii.sm,
-              borderWidth: 1,
-              borderColor: colors.outlineVariant,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Text style={{ color: colors.onSurface, fontWeight: "600" }}>
-              Scan
-            </Text>
-          </Pressable>
-        </View>
-      </View>
-
-      <View
-        style={{
-          flexDirection: "row",
-          gap: tokens.spacing.sm,
-          marginTop: tokens.spacing.md,
-        }}
-      >
-        <Pressable
-          onPress={() => onFilterChange?.("all")}
-          style={{
-            paddingHorizontal: tokens.spacing.md,
-            height: 36,
-            borderRadius: 18,
-            backgroundColor: colors.surface,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text style={{ color: colors.onSurface }}>All</Text>
-        </Pressable>
-        <Pressable
-          onPress={() => onFilterChange?.("owedToMe")}
-          style={{
-            paddingHorizontal: tokens.spacing.md,
-            height: 36,
-            borderRadius: 18,
-            backgroundColor: colors.surface,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text style={{ color: colors.onSurface }}>Owed to Me</Text>
-        </Pressable>
-        <Pressable
-          onPress={() => onFilterChange?.("iOwe")}
-          style={{
-            paddingHorizontal: tokens.spacing.md,
-            height: 36,
-            borderRadius: 18,
-            backgroundColor: colors.surface,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text style={{ color: colors.onSurface }}>I Owe</Text>
-        </Pressable>
+        />
       </View>
     </View>
   );
