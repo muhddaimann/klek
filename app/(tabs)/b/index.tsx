@@ -25,20 +25,10 @@ export default function Molecule() {
         overScrollMode="never"
       />
       <Fab
-        icon={dark ? Sun : Moon}
-        label={dark ? "Light" : "Dark"}
-        variant="secondary"
-        size="lg"
-        corner="center-bottom"
-        offset={tokens.spacing.xl}
-        onPress={toggle}
-        accessibilityLabel="Toggle theme"
-      />
-      <Fab
         icon={LogOut}
         label="Sign out"
-        variant="primary"
-        corner="br"
+        variant="destructive"
+        dock="bottom"
         onPress={signOut}
         accessibilityLabel="Sign out"
       />

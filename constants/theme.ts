@@ -59,31 +59,27 @@ export const lightTheme: MD3Theme = {
   fonts,
   colors: {
     ...MD3LightTheme.colors,
-    // Primary: Cobalt Blue
     primary: "#345995",
     onPrimary: "#F2F6FF",
     primaryContainer: "#C7D6F5",
     onPrimaryContainer: "#13294B",
 
-    // Secondary: Tangerine
     secondary: "#FFA24C",
     onSecondary: "#2A1400",
     secondaryContainer: "#FFE0BF",
     onSecondaryContainer: "#3A1E00",
 
-    // Tertiary: Cool Cyan
-    tertiary: "#58B7D1",
-    onTertiary: "#082C34",
-    tertiaryContainer: "#C7ECF6",
-    onTertiaryContainer: "#07313A",
+    tertiary: "#2F9E62",
+    onTertiary: "#FFFFFF",
+    tertiaryContainer: "#CDEFD9",
+    onTertiaryContainer: "#0F3D24",
 
-    // System
     error: "#BA1A1A",
     onError: "#FFFFFF",
     errorContainer: "#FFDAD6",
     onErrorContainer: "#410002",
 
-    background: "#FFFFFF",
+    background: "#F7F8FB",
     onBackground: "#1A1B1E",
     surface: "#FFFFFF",
     onSurface: "#1A1B1E",
@@ -109,33 +105,29 @@ export const darkTheme: MD3Theme = {
   fonts,
   colors: {
     ...MD3DarkTheme.colors,
-    // Primary: Cobalt Blue (dark ramp)
     primary: "#AFC4FF",
     onPrimary: "#0A1C3A",
     primaryContainer: "#1F3B78",
     onPrimaryContainer: "#D9E3FF",
 
-    // Secondary: Tangerine (dark ramp)
     secondary: "#FFC38A",
     onSecondary: "#3A1E00",
     secondaryContainer: "#663A00",
     onSecondaryContainer: "#FFD7A8",
 
-    // Tertiary: Cool Cyan (dark ramp)
-    tertiary: "#8ED9EA",
-    onTertiary: "#072D35",
-    tertiaryContainer: "#1E4B56",
-    onTertiaryContainer: "#BFEAF3",
+    tertiary: "#79D39B",
+    onTertiary: "#0B2A18",
+    tertiaryContainer: "#1A5A37",
+    onTertiaryContainer: "#BDECCF",
 
-    // System
     error: "#FFB4AB",
     onError: "#690005",
     errorContainer: "#93000A",
     onErrorContainer: "#FFDAD6",
 
-    background: "#0B0B0F",
+    background: "#0A0B10",
     onBackground: "#E3E3E8",
-    surface: "#111115",
+    surface: "#111318",
     onSurface: "#E3E3E8",
     surfaceVariant: "#444654",
     onSurfaceVariant: "#C9CAD7",

@@ -17,7 +17,6 @@ export default function HomeHeader({
 }: Props) {
   const { colors } = useTheme();
   const { tokens } = useDesign();
-
   const total = 5 * 60;
   const left = Math.max(0, remainingSec);
   const mm = String(Math.floor(left / 60)).padStart(2, "0");
@@ -27,7 +26,6 @@ export default function HomeHeader({
   return (
     <View
       style={{
-        backgroundColor: colors.primaryContainer,
         paddingTop: tokens.spacing["xs"],
         paddingBottom: tokens.spacing.lg,
         paddingHorizontal: tokens.spacing.lg,
@@ -46,7 +44,7 @@ export default function HomeHeader({
         <View style={{ flex: 1 }}>
           <Text
             style={{
-              color: colors.onPrimaryContainer,
+              color: colors.onPrimary,
               fontSize: tokens.typography.sizes.lg,
               fontWeight: "700",
             }}
@@ -55,7 +53,7 @@ export default function HomeHeader({
           </Text>
           <Text
             style={{
-              color: colors.onPrimaryContainer,
+              color: colors.onPrimary,
               opacity: 0.85,
               marginTop: 2,
             }}
@@ -70,12 +68,12 @@ export default function HomeHeader({
             width: 40,
             height: 40,
             borderRadius: 20,
-            backgroundColor: colors.primary,
+            backgroundColor: colors.onPrimary,
             alignItems: "center",
             justifyContent: "center",
           }}
         >
-          <Text style={{ color: colors.onPrimary, fontWeight: "700" }}>
+          <Text style={{ color: colors.primary, fontWeight: "700" }}>
             {name.charAt(0).toUpperCase()}
           </Text>
         </Pressable>
@@ -94,7 +92,7 @@ export default function HomeHeader({
           style={{
             width: `${pct * 100}%`,
             height: "100%",
-            backgroundColor: colors.primary,
+            backgroundColor: colors.secondary,
           }}
         />
       </View>

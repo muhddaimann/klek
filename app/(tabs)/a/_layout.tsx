@@ -6,14 +6,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "react-native-paper";
 
 export default function ALayout() {
-  const { colors } = useTheme();
+  const { colors,dark } = useTheme();
 
   return (
     <>
-      <StatusBar style="light" backgroundColor={colors.primary} />
+      <StatusBar
+        style={dark ? "light" : "dark"}
+        backgroundColor={colors.background}
+      />
       <SafeAreaView
         edges={["top"]}
-        style={{ backgroundColor: colors.primary }}
+        style={{ backgroundColor: colors.primaryContainer }}
       />
       <View style={{ flex: 1, backgroundColor: colors.background }}>
         <Stack

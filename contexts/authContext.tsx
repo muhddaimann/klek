@@ -57,11 +57,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
   const [remainingSec, setRemainingSec] = useState(0);
-
   const { toast, confirm, alert } = useOverlay();
-
   const tickRef = useRef<NodeJS.Timeout | null>(null);
   const autoRef = useRef<NodeJS.Timeout | null>(null);
+  const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
   const scheduleTimers = useCallback(
     (exp: number) => {
@@ -132,7 +131,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const ok = username === "user" && password === "123";
       if (ok) {
-        const exp = Date.now() + 5 * 60 * 1000;
+        const exp = Date.now() + WEEK_MS;
         await Promise.all([
           saveToken("demo-token"),
           saveUser({ username }),

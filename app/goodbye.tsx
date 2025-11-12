@@ -65,7 +65,7 @@ export default function Goodbye() {
         backgroundColor: colors.surface,
         alignItems: "center",
         gap: tokens.spacing.lg,
-        paddingVertical: tokens.spacing["3xl"] * 3,
+        justifyContent: "center",
       }}
     >
       <Animated.View

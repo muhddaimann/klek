@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View } from "react-native";
 import { useRouter } from "expo-router";
 import { useTheme, Text } from "react-native-paper";
 import { useDesign } from "../contexts/designContext";
+import { useAuth } from "../contexts/authContext";
 import { Button } from "../components/atom/button";
 import Logo from "../components/shared/logo";
 
@@ -10,6 +11,11 @@ export default function Index() {
   const { colors } = useTheme();
   const { tokens } = useDesign();
   const router = useRouter();
+  const { isAuthenticated, bootstrapped } = useAuth();
+
+  useEffect(() => {
+    if (bootstrapped && isAuthenticated) router.replace("/welcome");
+  }, [bootstrapped, isAuthenticated, router]);
 
   return (
     <View

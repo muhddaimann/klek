@@ -14,7 +14,7 @@ import { useDesign } from "../../contexts/designContext";
 type IconComp = React.ComponentType<{ color?: string; size?: number }>;
 type Variant = "primary" | "secondary" | "destructive" | "surface";
 type Size = "md" | "lg";
-type Corner = "br" | "bl" | "tr" | "tl" | "center-bottom";
+type Dock = "bottom" | "above" | "top";
 
 type Props = {
   icon: IconComp;
@@ -24,8 +24,12 @@ type Props = {
   loading?: boolean;
   variant?: Variant;
   size?: Size;
-  corner?: Corner;
+  dock?: Dock;
   offset?: number;
+  tabBarHeight?: number;
+  liftAboveNav?: number;
+  stack?: number;
+  gap?: number;
   style?: any;
   accessibilityLabel?: string;
 };
@@ -38,8 +42,12 @@ export function Fab({
   loading,
   variant = "primary",
   size = "md",
-  corner = "br",
+  dock = "bottom",
   offset,
+  tabBarHeight = 64,
+  liftAboveNav = 32,
+  stack = 0,
+  gap,
   style,
   accessibilityLabel,
 }: Props) {
@@ -47,10 +55,12 @@ export function Fab({
   const insets = useSafeAreaInsets();
   const { tokens } = useDesign();
 
-  const pressedScale = React.useRef(false);
   const [pressed, setPressed] = React.useState(false);
 
-  const dims = size === "lg" ? Math.max(60, tokens.sizes.touch.minHeight + 8) : Math.max(56, tokens.sizes.touch.minHeight);
+  const dims =
+    size === "lg"
+      ? Math.max(60, tokens.sizes.touch.minHeight + 8)
+      : Math.max(56, tokens.sizes.touch.minHeight);
   const radius = dims / 2;
 
   const palette =
@@ -81,28 +91,20 @@ export function Fab({
     default: { elevation: 6 },
   });
 
-  const pos = (() => {
-    const g = offset ?? tokens.spacing.lg;
-    const b = Math.max(insets.bottom, g);
-    const t = Math.max(insets.top, g);
-    switch (corner) {
-      case "br":
-        return { right: g, bottom: b };
-      case "bl":
-        return { left: g, bottom: b };
-      case "tr":
-        return { right: g, top: t };
-      case "tl":
-        return { left: g, top: t };
-      case "center-bottom":
-        return { alignSelf: "center", bottom: b };
-      default:
-        return { right: g, bottom: b };
-    }
-  })();
-
+  const g = offset ?? tokens.spacing.lg;
+  const stackGap = gap ?? tokens.spacing.md;
+  const bottomBase =
+    Math.max(insets.bottom, g) +
+    tabBarHeight +
+    liftAboveNav +
+    stack * (dims + stackGap);
+  const pos =
+    dock === "bottom"
+      ? { right: g, bottom: bottomBase }
+      : dock === "above"
+      ? { right: g, bottom: bottomBase + dims + stackGap }
+      : { right: g, top: Math.max(insets.top, g) };
   const iconSize = size === "lg" ? tokens.sizes.icon.lg : tokens.sizes.icon.md;
-
   const bg = disabled ? disabledPalette.bg : palette.bg;
   const fg = disabled ? disabledPalette.fg : palette.fg;
   const border = disabled ? disabledPalette.border : palette.border;
@@ -122,17 +124,14 @@ export function Fab({
     >
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={accessibilityLabel ?? (label ? String(label) : "Floating Action Button")}
+        accessibilityLabel={
+          accessibilityLabel ??
+          (label ? String(label) : "Floating Action Button")
+        }
         disabled={disabled || loading}
         onPress={onPress}
-        onPressIn={() => {
-          pressedScale.current = true;
-          setPressed(true);
-        }}
-        onPressOut={() => {
-          pressedScale.current = false;
-          setPressed(false);
-        }}
+        onPressIn={() => setPressed(true)}
+        onPressOut={() => setPressed(false)}
         android_ripple={
           disabled || loading
             ? undefined
@@ -145,7 +144,8 @@ export function Fab({
                 minHeight: dims,
                 borderRadius: tokens.radii.pill,
                 backgroundColor: bg,
-                borderWidth: variant === "surface" ? StyleSheet.hairlineWidth : 0,
+                borderWidth:
+                  variant === "surface" ? StyleSheet.hairlineWidth : 0,
                 borderColor: border as string,
                 flexDirection: "row",
                 alignItems: "center",
@@ -158,7 +158,8 @@ export function Fab({
                 height: dims,
                 borderRadius: radius,
                 backgroundColor: bg,
-                borderWidth: variant === "surface" ? StyleSheet.hairlineWidth : 0,
+                borderWidth:
+                  variant === "surface" ? StyleSheet.hairlineWidth : 0,
                 borderColor: border as string,
                 alignItems: "center",
                 justifyContent: "center",

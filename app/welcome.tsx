@@ -75,8 +75,8 @@ export default function Welcome() {
         flex: 1,
         backgroundColor: colors.surface,
         alignItems: "center",
+        justifyContent: "center",
         gap: tokens.spacing.lg,
-        paddingVertical: tokens.spacing["3xl"] * 3,
       }}
     >
       <Animated.View style={{ transform: [{ scale: coin }], opacity: fade }}>
