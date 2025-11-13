@@ -193,8 +193,14 @@ Klek – personal finance & fronts tracker
 │  ├─ Bill Splitting — Group meals, rides, etc.
 │  ├─ Wishlist — Planned trips / eats / events to track later spends
 │  ├─ Settlements — Mark as paid, partial, overpaid
+|
+├─ Home
+│  ├─ Informal Debt — To claim from friends list
+│  ├─ Bill Splitting — Group meals, rides, etc.
+│  ├─ Wishlist — Planned trips / eats / events to track later spends
+│  ├─ Settlements — Mark as paid, partial, overpaid
+
 ├─ App Layout
-Home
 ├─ HeaderBar
 │  ├─ App name ("Klek") / greeting
 │  ├─ Current month selector (◀ Oct 2025 ▶)

@@ -5,6 +5,7 @@ import { useDesign } from "../../../contexts/designContext";
 import { useTab } from "../../../hooks/useTab";
 import { Sparkles, HandCoins, Wallet, UserRound } from "lucide-react-native";
 import { EmptyState } from "../../../components/molecule/emptyState";
+import { useRouter } from "expo-router";
 
 const INITIAL_SUMMARY = {
   month: "November",
@@ -25,6 +26,7 @@ export default function Home() {
   const { colors } = useTheme();
   const { tokens } = useDesign();
   const { onScroll } = useTab();
+    const router = useRouter();
 
   const card = { borderRadius: tokens.radii.lg } as const;
 
@@ -133,7 +135,7 @@ export default function Home() {
               gap: tokens.spacing.sm,
             }}
           >
-            <View
+            <Pressable
               style={{
                 flex: 1,
                 backgroundColor: colors.inverseOnSurface,
@@ -141,11 +143,13 @@ export default function Home() {
                 ...card,
                 borderWidth: 1,
                 borderColor: colors.outlineVariant,
+                justifyContent: "center",
               }}
+              onPress={() => router.push("/(tabs)/a/claim")}
             >
               <Text
                 style={{
-                  fontSize: tokens.typography.sizes["xs"],
+                  fontSize: tokens.typography.sizes.xs,
                   color: colors.inverseSurface,
                 }}
               >
@@ -153,17 +157,17 @@ export default function Home() {
               </Text>
               <Text
                 style={{
-                  marginTop: tokens.spacing["xs"],
-                  fontSize: tokens.typography.sizes["lg"],
+                  marginTop: tokens.spacing.xs,
+                  fontSize: tokens.typography.sizes.lg,
                   fontWeight: tokens.typography.weights.semibold,
                   color: colors.onSurface,
                 }}
               >
                 {INITIAL_SUMMARY.toClaim}
               </Text>
-            </View>
+            </Pressable>
 
-            <View
+            <Pressable
               style={{
                 flex: 1,
                 backgroundColor: colors.surfaceVariant,
@@ -171,11 +175,13 @@ export default function Home() {
                 ...card,
                 borderWidth: 1,
                 borderColor: colors.outlineVariant,
+                justifyContent: "center",
               }}
+              onPress={() => router.push("/(tabs)/a/settlement")}
             >
               <Text
                 style={{
-                  fontSize: tokens.typography.sizes["xs"],
+                  fontSize: tokens.typography.sizes.xs,
                   color: colors.onSurfaceVariant,
                 }}
               >
@@ -183,15 +189,15 @@ export default function Home() {
               </Text>
               <Text
                 style={{
-                  marginTop: tokens.spacing["xs"],
-                  fontSize: tokens.typography.sizes["lg"],
+                  marginTop: tokens.spacing.xs,
+                  fontSize: tokens.typography.sizes.lg,
                   fontWeight: tokens.typography.weights.semibold,
                   color: colors.onSurface,
                 }}
               >
                 {INITIAL_SUMMARY.toPay}
               </Text>
-            </View>
+            </Pressable>
           </View>
         </View>
 

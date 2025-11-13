@@ -18,6 +18,8 @@ type TabCtx = {
   reveal: (v?: number) => void;
   dim: () => void;
   hide: () => void;
+  lockHidden: () => void;
+  unlockHidden: () => void;
   updateByOffset: (y: number) => void;
   setActiveRoute: (route: string) => void;
   saveOffset: (route: string, y: number) => void;
@@ -30,6 +32,8 @@ const Ctx = createContext<TabCtx>({
   reveal: () => {},
   dim: () => {},
   hide: () => {},
+  lockHidden: () => {},
+  unlockHidden: () => {},
   updateByOffset: () => {},
   setActiveRoute: () => {},
   saveOffset: () => {},
@@ -40,6 +44,7 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
   const [opacity, setOpacity] = useState(1);
   const [scale, setScale] = useState(1);
 
+  const isLockedRef = useRef(false);
   const lastY = useRef(0);
   const ignoreNext = useRef(false);
   const kbd = useRef(false);
@@ -47,7 +52,7 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
   const routeY = useRef<Record<string, number>>({});
 
   const applyFromY = useCallback((y: number) => {
-    if (kbd.current) return;
+    if (kbd.current || isLockedRef.current) return;
 
     const minOpacity = 0.6;
     const dimOpacity = 0.78;
@@ -75,24 +80,46 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const reveal = useCallback((v?: number) => {
-    if (kbd.current) return;
+    if (kbd.current || isLockedRef.current) return;
     setMode("shown");
     setOpacity(v ?? 1);
     setScale(1);
   }, []);
 
   const dim = useCallback(() => {
-    if (kbd.current) return;
+    if (kbd.current || isLockedRef.current) return;
     setMode("dim");
     setOpacity(0.78);
     setScale(0.98);
   }, []);
 
   const hide = useCallback(() => {
+    if (isLockedRef.current) {
+      // "Refresh" hidden state
+      setMode("hidden");
+      setOpacity(0);
+      setScale(0.92);
+      return;
+    }
+
+    if (kbd.current) {
+      setMode("hidden");
+      setOpacity(0);
+      setScale(0.92);
+    }
+  }, []);
+
+  const lockHidden = useCallback(() => {
+    isLockedRef.current = true;
     setMode("hidden");
     setOpacity(0);
     setScale(0.92);
   }, []);
+
+  const unlockHidden = useCallback(() => {
+    isLockedRef.current = false;
+    reveal();
+  }, [reveal]);
 
   const updateByOffset = useCallback(
     (y: number) => {
@@ -159,6 +186,8 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
       reveal,
       dim,
       hide,
+      lockHidden,
+      unlockHidden,
       updateByOffset,
       setActiveRoute,
       saveOffset,
@@ -170,6 +199,8 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
       reveal,
       dim,
       hide,
+      lockHidden,
+      unlockHidden,
       updateByOffset,
       setActiveRoute,
       saveOffset,
@@ -178,5 +209,6 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
+
 
 export const useTabsUi = () => useContext(Ctx);

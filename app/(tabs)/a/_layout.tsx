@@ -5,8 +5,8 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "react-native-paper";
 
-export default function ALayout() {
-  const { colors,dark } = useTheme();
+export default function HomeLayout() {
+  const { colors, dark } = useTheme();
 
   return (
     <>
@@ -24,7 +24,21 @@ export default function ALayout() {
             headerShown: false,
             contentStyle: { backgroundColor: colors.background },
           }}
-        />
+        >
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="claim"
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="settlement"
+            options={{
+              headerShown: false,
+            }}
+          />
+        </Stack>
       </View>
     </>
   );

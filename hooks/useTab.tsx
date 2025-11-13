@@ -43,6 +43,8 @@ export function useTab() {
       reveal: ctx.reveal,
       dim: ctx.dim,
       hide: ctx.hide,
+      lockHidden: ctx.lockHidden,
+      unlockHidden: ctx.unlockHidden,
       updateByOffset: ctx.updateByOffset,
       onScroll,
       onScrollY,
