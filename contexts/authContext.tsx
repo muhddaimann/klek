@@ -160,7 +160,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       message: "You’ll be logged out from this device.",
       okText: "Sign out",
       cancelText: "Cancel",
-      variant: "warning",
+      variant: "error",
     });
     if (!ok) return;
 

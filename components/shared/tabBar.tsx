@@ -5,12 +5,64 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme, Text } from "react-native-paper";
 import { useDesign } from "../../contexts/designContext";
 import { useTabsUi } from "../../contexts/tabContext";
+import { useAuth } from "../../contexts/authContext";
+import { Plus, LogOut } from "lucide-react-native";
 
 function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
   const { bottom } = useSafeAreaInsets();
   const { colors } = useTheme();
   const { tokens } = useDesign();
   const { opacity, scale } = useTabsUi();
+  const { signOut } = useAuth();
+
+  const shadow = Platform.select({
+    ios: {
+      shadowColor: "#000",
+      shadowOpacity: 0.12,
+      shadowRadius: tokens.elevation.level5 * 2,
+      shadowOffset: { width: 0, height: tokens.elevation.level5 },
+    },
+    android: { elevation: tokens.elevation.level5 },
+    default: { elevation: tokens.elevation.level5 },
+  }) as any;
+
+  const activeRoute = state.routes[state.index];
+  const activeDescriptor = descriptors[activeRoute.key];
+  const activeOptions = activeDescriptor.options;
+  const CIRCLE_SIZE = tokens.sizes.icon.lg + tokens.spacing.lg * 2;
+
+  const activeLabel =
+    typeof activeOptions.tabBarLabel === "string"
+      ? activeOptions.tabBarLabel
+      : (activeOptions.title as string) ?? activeRoute.name;
+
+  const isHome = activeLabel.toLowerCase() === "home";
+  const isSettings = activeLabel.toLowerCase() === "settings";
+  const showRight = isHome || isSettings;
+
+  const variant: "default" | "destructive" = isSettings
+    ? "destructive"
+    : "default";
+
+  const rightBg =
+    variant === "destructive"
+      ? (colors.errorContainer as string) ?? "#FEE2E2"
+      : colors.surface;
+
+  const rightBorder =
+    variant === "destructive" ? colors.error : colors.outlineVariant;
+
+  const rightIconColor =
+    variant === "destructive" ? colors.error : colors.onSurfaceVariant;
+
+  const RightIcon = isHome ? Plus : isSettings ? LogOut : null;
+
+  const handleRightPress = React.useCallback(() => {
+    if (isHome) {
+    } else if (isSettings) {
+      signOut();
+    }
+  }, [isHome, isSettings, signOut]);
 
   return (
     <View
@@ -21,89 +73,86 @@ function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
         right: 0,
         bottom: 0,
         paddingBottom: Math.max(bottom, tokens.spacing.md),
-        alignItems: "center",
+        paddingHorizontal: tokens.spacing.lg,
       }}
     >
       <View
-        style={[
-          {
-            flexDirection: "row",
-            gap: tokens.spacing.md,
-            paddingHorizontal: tokens.spacing.md,
-            paddingVertical: tokens.spacing.sm,
-            borderRadius: tokens.radii.pill,
-            backgroundColor: colors.surface,
-            borderWidth: 1,
-            borderColor: colors.outlineVariant,
-            opacity,
-            transform: [{ scale }],
-            maxWidth: 560,
-            alignSelf: "center",
-          },
-          Platform.select({
-            ios: {
-              shadowColor: "#000",
-              shadowOpacity: 0.12,
-              shadowRadius: tokens.elevation.level5 * 2,
-              shadowOffset: { width: 0, height: tokens.elevation.level5 },
-            },
-            android: { elevation: tokens.elevation.level5 },
-            default: { elevation: tokens.elevation.level5 },
-          }) as any,
-        ]}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
       >
-        {state.routes.map((route, index) => {
-          const focused = state.index === index;
-          const { options } = descriptors[route.key];
+        <View
+          style={[
+            {
+              flexDirection: "row",
+              gap: tokens.spacing.md,
+              paddingHorizontal: tokens.spacing.md,
+              paddingVertical: tokens.spacing.sm,
+              borderRadius: tokens.radii.pill,
+              backgroundColor: colors.surface,
+              borderWidth: 1,
+              borderColor: colors.outlineVariant,
+              opacity,
+              transform: [{ scale }],
+              alignSelf: "flex-start",
+            },
+            shadow,
+          ]}
+        >
+          {state.routes.map((route, index) => {
+            const focused = state.index === index;
+            const { options } = descriptors[route.key];
 
-          const onPress = React.useCallback(() => {
-            const event = navigation.emit({
-              type: "tabPress",
-              target: route.key,
-              canPreventDefault: true,
-            });
-            if (!focused && !event.defaultPrevented)
-              navigation.navigate(route.name);
-          }, [focused, navigation, route]);
+            const onPress = React.useCallback(() => {
+              const event = navigation.emit({
+                type: "tabPress",
+                target: route.key,
+                canPreventDefault: true,
+              });
+              if (!focused && !event.defaultPrevented)
+                navigation.navigate(route.name);
+            }, [focused, navigation, route]);
 
-          const Icon = options.tabBarIcon as any;
+            const Icon = options.tabBarIcon as any;
 
-          return (
-            <Pressable
-              key={route.key}
-              onPress={onPress}
-              hitSlop={tokens.spacing.xs}
-              accessibilityRole="tab"
-              accessibilityState={{ selected: focused }}
-              accessibilityLabel={
-                typeof options.tabBarLabel === "string"
-                  ? options.tabBarLabel
-                  : options.title ?? route.name
-              }
-              android_ripple={
-                Platform.OS === "android"
-                  ? { color: "#00000010", borderless: true }
-                  : undefined
-              }
-              style={{
-                minWidth: 72,
-                paddingHorizontal: tokens.spacing.md,
-                paddingVertical: tokens.spacing.xs,
-                borderRadius: tokens.radii.pill,
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: focused
-                  ? colors.primaryContainer
-                  : "transparent",
-              }}
-            >
-              {Icon ? (
-                <Icon
-                  color={focused ? colors.primary : colors.onSurfaceVariant}
-                  size={tokens.sizes.icon.md}
-                />
-              ) : null}
-              {options.tabBarLabel !== undefined ? (
+            const label =
+              typeof options.tabBarLabel === "string"
+                ? options.tabBarLabel
+                : (options.title as string) ?? route.name;
+
+            return (
+              <Pressable
+                key={route.key}
+                onPress={onPress}
+                hitSlop={tokens.spacing.xs}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: focused }}
+                accessibilityLabel={label}
+                android_ripple={
+                  Platform.OS === "android"
+                    ? { color: "#00000010", borderless: true }
+                    : undefined
+                }
+                style={{
+                  minWidth: 72,
+                  paddingHorizontal: tokens.spacing.md,
+                  paddingVertical: tokens.spacing.xs,
+                  borderRadius: tokens.radii.pill,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: focused
+                    ? colors.primaryContainer
+                    : "transparent",
+                }}
+              >
+                {Icon ? (
+                  <Icon
+                    color={focused ? colors.primary : colors.onSurfaceVariant}
+                    size={tokens.sizes.icon.md}
+                  />
+                ) : null}
                 <Text
                   style={{
                     marginTop: tokens.spacing["xxs"],
@@ -113,14 +162,36 @@ function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
                   }}
                   numberOfLines={1}
                 >
-                  {typeof options.tabBarLabel === "string"
-                    ? options.tabBarLabel
-                    : options.title ?? route.name}
+                  {label}
                 </Text>
-              ) : null}
-            </Pressable>
-          );
-        })}
+              </Pressable>
+            );
+          })}
+        </View>
+
+        {showRight && RightIcon && (
+          <Pressable
+            hitSlop={tokens.spacing.xs}
+            style={[
+              {
+                width: CIRCLE_SIZE,
+                height: CIRCLE_SIZE,
+                borderRadius: CIRCLE_SIZE / 2,
+                backgroundColor: rightBg,
+                borderWidth: 1,
+                borderColor: rightBorder,
+                opacity,
+                transform: [{ scale }],
+                alignItems: "center",
+                justifyContent: "center",
+              },
+              shadow,
+            ]}
+            onPress={handleRightPress}
+          >
+            <RightIcon size={tokens.sizes.icon.lg} color={rightIconColor} />
+          </Pressable>
+        )}
       </View>
     </View>
   );
