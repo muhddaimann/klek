@@ -47,23 +47,31 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
   const routeY = useRef<Record<string, number>>({});
 
   const applyFromY = useCallback((y: number) => {
-    const min = 0.6;
-    const t = Math.max(0, Math.min(1, y / 96));
-    const o = 1 - (1 - min) * t;
-    if (y < 8) {
+    if (kbd.current) return;
+
+    const minOpacity = 0.6;
+    const dimOpacity = 0.78;
+    const shownY = 16;
+    const dimY = 96;
+
+    if (y <= shownY) {
       setMode("shown");
       setOpacity(1);
       setScale(1);
-    } else {
-      setOpacity(o);
-      if (o >= 0.95) {
-        setMode("shown");
-        setScale(1);
-      } else {
-        setMode("dim");
-        setScale(0.98);
-      }
+      return;
     }
+
+    if (y >= dimY) {
+      setMode("dim");
+      setOpacity(dimOpacity);
+      setScale(0.98);
+      return;
+    }
+
+    const t = (y - shownY) / (dimY - shownY);
+    const o = 1 - (1 - dimOpacity) * t;
+
+    setOpacity(o);
   }, []);
 
   const reveal = useCallback((v?: number) => {
@@ -93,27 +101,11 @@ export function TabProvider({ children }: { children: React.ReactNode }) {
         lastY.current = y;
         return;
       }
-      const dy = y - lastY.current;
+
       lastY.current = y;
-      const min = 0.6;
-      const t = Math.max(0, Math.min(1, y / 96));
-      const o = 1 - (1 - min) * t;
-      if (y < 8) return reveal();
-      if (Math.abs(dy) < 1.2) {
-        setOpacity(o);
-        if (o >= 0.95) {
-          setMode("shown");
-          setScale(1);
-        } else {
-          setMode("dim");
-          setScale(0.98);
-        }
-        return;
-      }
-      if (dy > 0) return dim();
-      return reveal();
+      applyFromY(y);
     },
-    [reveal, dim]
+    [applyFromY]
   );
 
   const setActiveRoute = useCallback(

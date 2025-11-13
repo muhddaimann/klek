@@ -55,35 +55,7 @@ export default function Home() {
 
           <View
             style={{
-              minHeight: 180,
-              backgroundColor: colors.surface,
-              ...card,
-            }}
-          />
-          <View
-            style={{
-              minHeight: 180,
-              backgroundColor: colors.surface,
-              ...card,
-            }}
-          />
-          <View
-            style={{
-              minHeight: 180,
-              backgroundColor: colors.surface,
-              ...card,
-            }}
-          />
-          <View
-            style={{
-              minHeight: 180,
-              backgroundColor: colors.surface,
-              ...card,
-            }}
-          />
-          <View
-            style={{
-              minHeight: 180,
+              minHeight: 800,
               backgroundColor: colors.surface,
               ...card,
             }}
