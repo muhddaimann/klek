@@ -1,16 +1,17 @@
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, { createContext, useContext, useMemo } from "react";
+import { useColorScheme } from "react-native";
 import { PaperProvider } from "react-native-paper";
 import { lightTheme, darkTheme } from "../constants/theme";
 
-type Ctx = { isDark: boolean; toggle: () => void };
-const ThemeCtx = createContext<Ctx>({ isDark: false, toggle: () => {} });
+type Ctx = { isDark: boolean };
+
+const ThemeCtx = createContext<Ctx>({ isDark: false });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [isDark, setIsDark] = useState(false);
-  const value = useMemo<Ctx>(
-    () => ({ isDark, toggle: () => setIsDark((v) => !v) }),
-    [isDark]
-  );
+  const scheme = useColorScheme();
+  const isDark = scheme === "dark";
+
+  const value = useMemo<Ctx>(() => ({ isDark }), [isDark]);
 
   return (
     <ThemeCtx.Provider value={value}>

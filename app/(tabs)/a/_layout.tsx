@@ -16,7 +16,7 @@ export default function ALayout() {
       />
       <SafeAreaView
         edges={["top"]}
-        style={{ backgroundColor: colors.primaryContainer }}
+        style={{ backgroundColor: colors.background }}
       />
       <View style={{ flex: 1, backgroundColor: colors.background }}>
         <Stack

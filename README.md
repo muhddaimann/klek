@@ -27,6 +27,10 @@ Klek – collect/claim/back finance app
 │  ├─ Primary — Young pro, fronts meals/rides.
 │  ├─ Secondary — Small teams, housemates.
 │  ├─ Pain — Forget who owes; awkward chasing.
+├─ User Persona
+│  ├─ Primary — Young pro, fronts meals/rides.
+│  ├─ Secondary — Small teams, housemates.
+│  ├─ Pain — Forget who owes; awkward chasing.
 ├─ Core Flows
 │ ├─ Quick Add — Amount, title, default split.
 │ ├─ Template Add — Save common splits.
@@ -176,6 +180,55 @@ Monitor system performance and security alerts
 Support application deployment and cloud configurations
 Contribute to automation and continuous improvement
 
-📩 If interested, email your resume to: hr@forestone.com.my
+Klek – personal finance & fronts tracker
+├─ Core
+│  ├─ Timeline — All money moves (spend, income, lent, received)
+│  ├─ Categories — Food, Transport, Bills, etc.
+│  ├─ Insights — This month spend, by category, basic charts
+│  ├─ To Claim — Friends owe you (focus on this month)
+│  ├─ To Pay   — You owe others (focus on this month)
+│
+├─ Front / Claim Extras (Klek’s special sauce)
+│  ├─ Informal Debt — “Lend / Borrow” with friends
+│  ├─ Bill Splitting — Group meals, rides, etc.
+│  ├─ Wishlist — Planned trips / eats / events to track later spends
+│  ├─ Settlements — Mark as paid, partial, overpaid
+├─ App Layout
+Home
+├─ HeaderBar
+│  ├─ App name ("Klek") / greeting
+│  ├─ Current month selector (◀ Oct 2025 ▶)
+│  ├─ Small avatar / entry to Settings
+│
+├─ SummaryStrip
+│  ├─ "This month spent"
+│  ├─ "To claim" (friends owe you)
+│  ├─ "To pay" (you owe others)
+│
+├─ QuickActionsRow
+│  ├─ [+ Expense]
+│  ├─ [+ Lent to friend]
+│  ├─ [+ Split bill]
+│
+├─ ToClaimSection
+│  ├─ Title: "To claim"
+│  ├─ Small list (top 3) – friend name, amount, due tag
+│  ├─ "View all" link
+│
+├─ ToPaySection
+│  ├─ Title: "To pay"
+│  ├─ Small list – who you owe, amount, due tag
+│  ├─ "View all" link
+│
+├─ WishlistStrip (optional v1.1)
+│  ├─ Horizontal chips/cards for trips / eats
+│
+├─ TimelineSection
+│  ├─ Title: "Recent activity"
+│  ├─ List of last 5–10 transactions:
+│      • icon (expense / lent / split)
+│      • label, friend (if any), amount, date
+│  ├─ Settings —
+│  ├─ Auth — Sign in, up, forgot, onboarding
 
 ```
