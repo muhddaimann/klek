@@ -6,6 +6,7 @@ import { useTheme, Text } from "react-native-paper";
 import { useDesign } from "../../contexts/designContext";
 import { useTabsUi } from "../../contexts/tabContext";
 import { useAuth } from "../../contexts/authContext";
+import { useOverlay } from "../../hooks/useOverlay";
 import { Plus, LogOut } from "lucide-react-native";
 
 function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
@@ -14,6 +15,7 @@ function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
   const { tokens } = useDesign();
   const { opacity, scale } = useTabsUi();
   const { signOut } = useAuth();
+  const { options: showOptions } = useOverlay();
 
   const shadow = Platform.select({
     ios: {
@@ -59,10 +61,18 @@ function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
 
   const handleRightPress = React.useCallback(() => {
     if (isHome) {
+      showOptions({
+        title: "Select currency",
+        options: [
+          { id: "myr", label: "MYR – Malaysian Ringgit" },
+          { id: "usd", label: "USD – US Dollar" },
+          { id: "sgd", label: "SGD – Singapore Dollar" },
+        ],
+      });
     } else if (isSettings) {
       signOut();
     }
-  }, [isHome, isSettings, signOut]);
+  }, [isHome, isSettings, showOptions, signOut]);
 
   return (
     <View

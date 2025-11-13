@@ -19,6 +19,7 @@ import {
   Poppins_600SemiBold,
   Poppins_700Bold,
 } from "@expo-google-fonts/poppins";
+import { OptionsCenter } from "../components/molecule/options";
 
 void (async () => {
   try {
@@ -84,6 +85,7 @@ export default function RootLayout() {
               ConfirmUI={ConfirmDialog}
               ToastUI={ToastBar}
               ModalUI={ModalSheet}
+              OptionsUI={OptionsCenter}
             >
               <AuthProvider>
                 <AppShell />
