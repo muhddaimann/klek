@@ -63,22 +63,18 @@ export const lightTheme: MD3Theme = {
     onPrimary: "#F2F6FF",
     primaryContainer: "#C7D6F5",
     onPrimaryContainer: "#13294B",
-
     secondary: "#FFA24C",
     onSecondary: "#2A1400",
     secondaryContainer: "#FFE0BF",
     onSecondaryContainer: "#3A1E00",
-
     tertiary: "#2F9E62",
     onTertiary: "#FFFFFF",
     tertiaryContainer: "#CDEFD9",
     onTertiaryContainer: "#0F3D24",
-
     error: "#BA1A1A",
     onError: "#FFFFFF",
     errorContainer: "#FFDAD6",
     onErrorContainer: "#410002",
-
     background: "#F7F8FB",
     onBackground: "#1A1B1E",
     surface: "#FFFFFF",

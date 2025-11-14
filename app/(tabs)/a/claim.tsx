@@ -1,41 +1,23 @@
 import React, { useState, useCallback } from "react";
 import { View, ScrollView, Pressable } from "react-native";
 import { useTheme, Text, Avatar } from "react-native-paper";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDesign } from "../../../contexts/designContext";
 import { HandCoins, AlertCircle, Clock3 } from "lucide-react-native";
 import { EmptyState } from "../../../components/molecule/emptyState";
 import { Header } from "../../../components/shared/header";
 import { useTab } from "../../../hooks/useTab";
 import { useFocusEffect } from "expo-router";
-
-const MOCK_SUMMARY = {
-  monthLabel: "November fronts",
-  totalToClaim: "RM 0",
-  activeFriends: 0,
-};
-
-const MOCK_LENDERS: {
-  id: string;
-  name: string;
-  note: string;
-  amount: string;
-  status: "pending" | "overdue" | "partial";
-  lastActivity: string;
-}[] = [];
-
-const FILTERS = [
-  { key: "all", label: "All" },
-  { key: "pending", label: "Pending" },
-  { key: "overdue", label: "Overdue" },
-];
+import { useClaim, ClaimFilterKey } from "../../../hooks/useClaim";
+import { useRouter } from "expo-router";
 
 export default function Claim() {
   const { colors } = useTheme();
   const { tokens } = useDesign();
-  const [activeFilter, setActiveFilter] = useState<
-    "all" | "pending" | "overdue"
-  >("all");
-
+  const insets = useSafeAreaInsets();
+  const { summary, lenders, filters, useMock, toggleMock } = useClaim();
+  const [activeFilter, setActiveFilter] = useState<ClaimFilterKey>("all");
+  const router = useRouter();
   const { lockHidden, unlockHidden } = useTab();
 
   useFocusEffect(
@@ -47,7 +29,7 @@ export default function Claim() {
 
   const card = { borderRadius: tokens.radii.lg } as const;
 
-  const filtered = MOCK_LENDERS.filter((item) =>
+  const filtered = lenders.filter((item) =>
     activeFilter === "all" ? true : item.status === activeFilter
   );
 
@@ -58,14 +40,43 @@ export default function Claim() {
         contentContainerStyle={{
           paddingHorizontal: tokens.spacing.lg,
           paddingTop: tokens.spacing.lg,
-          paddingBottom: tokens.spacing["3xl"] * 2,
+          paddingBottom: tokens.spacing["3xl"] * 4,
           gap: tokens.spacing.lg,
         }}
         showsVerticalScrollIndicator={false}
         overScrollMode="never"
         bounces={false}
       >
-        <Header title="Claim dashboard" subtitle="Subs" />
+        <Header
+          title="Claim dashboard"
+          subtitle={useMock ? "Showing sample claims" : "No sample data"}
+          rightSlot={
+            <Pressable
+              onPress={toggleMock}
+              style={{
+                paddingHorizontal: tokens.spacing.sm,
+                paddingVertical: tokens.spacing.xs,
+                borderRadius: tokens.radii.pill,
+                backgroundColor: useMock
+                  ? colors.primaryContainer
+                  : colors.surface,
+                borderWidth: 1,
+                borderColor: useMock ? colors.primary : colors.outlineVariant,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: tokens.typography.sizes.xs,
+                  fontWeight: tokens.typography.weights.semibold,
+                  color: useMock ? colors.primary : colors.onSurfaceVariant,
+                }}
+              >
+                {useMock ? "Mock on" : "Mock off"}
+              </Text>
+            </Pressable>
+          }
+          style={{ paddingHorizontal: 0, paddingBottom: tokens.spacing.sm }}
+        />
 
         <View
           style={{
@@ -109,7 +120,7 @@ export default function Claim() {
                 color: colors.onPrimaryContainer,
               }}
             >
-              {MOCK_SUMMARY.totalToClaim}
+              {summary.totalToClaim}
             </Text>
             <Text
               style={{
@@ -120,7 +131,7 @@ export default function Claim() {
               }}
               numberOfLines={1}
             >
-              From {MOCK_SUMMARY.activeFriends} friends this month.
+              From {summary.activeFriends} friends this month.
             </Text>
           </View>
 
@@ -184,12 +195,12 @@ export default function Claim() {
               Friends who owe you
             </Text>
             <View style={{ flexDirection: "row", gap: tokens.spacing.xs }}>
-              {FILTERS.map((f) => {
+              {filters.map((f) => {
                 const active = activeFilter === f.key;
                 return (
                   <Pressable
                     key={f.key}
-                    onPress={() => setActiveFilter(f.key as any)}
+                    onPress={() => setActiveFilter(f.key)}
                     style={{
                       paddingHorizontal: tokens.spacing.sm,
                       paddingVertical: tokens.spacing["xs"],
@@ -230,8 +241,12 @@ export default function Claim() {
             {filtered.length === 0 ? (
               <EmptyState
                 Icon={AlertCircle}
-                title="No claims yet"
-                subtitle="When you pay first for friends, log it here to keep track."
+                title={useMock ? "No results" : "No claims yet"}
+                subtitle={
+                  useMock
+                    ? "Try changing the filter to see other statuses."
+                    : "When you pay first for friends, log it here to keep track."
+                }
               />
             ) : (
               filtered.map((item, idx) => (
@@ -264,6 +279,15 @@ export default function Claim() {
                       numberOfLines={1}
                     >
                       {item.name}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: tokens.typography.sizes.xs,
+                        color: colors.onSurfaceVariant,
+                      }}
+                      numberOfLines={1}
+                    >
+                      {item.note}
                     </Text>
                     <View
                       style={{
@@ -324,6 +348,72 @@ export default function Claim() {
           </View>
         </View>
       </ScrollView>
+
+      <View
+        pointerEvents="box-none"
+        style={{ position: "absolute", left: 0, right: 0, bottom: 0 }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            gap: tokens.spacing.sm,
+            paddingHorizontal: tokens.spacing.lg,
+            paddingTop: tokens.spacing.sm,
+            paddingBottom: insets.bottom + tokens.spacing.sm,
+            backgroundColor: colors.background,
+            borderTopWidth: 0.5,
+            borderTopColor: colors.outlineVariant,
+          }}
+        >
+          <Pressable
+            style={{
+              flex: 1,
+              paddingVertical: tokens.spacing.sm,
+              borderRadius: tokens.radii.lg,
+              backgroundColor: colors.surface,
+              borderWidth: 1,
+              borderColor: colors.outlineVariant,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onPress={() => router.push("/(modals)/manualClaim")}
+          >
+            <Text
+              style={{
+                fontSize: tokens.typography.sizes.sm,
+                fontWeight: tokens.typography.weights.semibold,
+                color: colors.onSurface,
+              }}
+            >
+              Manual claim
+            </Text>
+          </Pressable>
+
+          <Pressable
+            style={{
+              flex: 1,
+              paddingVertical: tokens.spacing.sm,
+              borderRadius: tokens.radii.lg,
+              backgroundColor: colors.surface,
+              borderWidth: 1,
+              borderColor: colors.outlineVariant,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onPress={() => router.push("/(modals)/billSplit")}
+          >
+            <Text
+              style={{
+                fontSize: tokens.typography.sizes.sm,
+                fontWeight: tokens.typography.weights.semibold,
+                color: colors.onSurface,
+              }}
+            >
+              Bill split
+            </Text>
+          </Pressable>
+        </View>
+      </View>
     </View>
   );
 }

@@ -8,9 +8,11 @@ import { useTabsUi } from "../../contexts/tabContext";
 import { useAuth } from "../../contexts/authContext";
 import { useOverlay } from "../../hooks/useOverlay";
 import { Plus, LogOut } from "lucide-react-native";
+import { useRouter } from "expo-router";
 
 function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
   const { bottom } = useSafeAreaInsets();
+  const router = useRouter();
   const { colors } = useTheme();
   const { tokens } = useDesign();
   const { opacity, scale } = useTabsUi();
@@ -47,12 +49,10 @@ function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
     : "default";
 
   const rightBg =
-    variant === "destructive"
-      ? (colors.errorContainer as string) ?? "#FEE2E2"
-      : colors.surface;
+    variant === "destructive" ? colors.surface : colors.surface;
 
   const rightBorder =
-    variant === "destructive" ? colors.error : colors.outlineVariant;
+    variant === "destructive" ? colors.error : colors.onSurface;
 
   const rightIconColor =
     variant === "destructive" ? colors.error : colors.onSurfaceVariant;
@@ -62,17 +62,24 @@ function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
   const handleRightPress = React.useCallback(() => {
     if (isHome) {
       showOptions({
-        title: "Select currency",
+        title: "New claim",
         options: [
-          { id: "myr", label: "MYR – Malaysian Ringgit" },
-          { id: "usd", label: "USD – US Dollar" },
-          { id: "sgd", label: "SGD – Singapore Dollar" },
+          {
+            id: "manual",
+            label: "Manual claim",
+            onPress: () => router.push("/manualClaim"),
+          },
+          {
+            id: "bill-split",
+            label: "Bill split",
+            onPress: () => router.push("/billSplit"),
+          },
         ],
       });
     } else if (isSettings) {
       signOut();
     }
-  }, [isHome, isSettings, showOptions, signOut]);
+  }, [isHome, isSettings, showOptions, signOut, router]);
 
   return (
     <View
@@ -89,8 +96,9 @@ function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
       <View
         style={{
           flexDirection: "row",
+          justifyContent: "center",
           alignItems: "center",
-          justifyContent: "space-between",
+          gap: tokens.spacing.lg,
         }}
       >
         <View
@@ -106,7 +114,7 @@ function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
               borderColor: colors.outlineVariant,
               opacity,
               transform: [{ scale }],
-              alignSelf: "flex-start",
+              alignSelf: "center",
             },
             shadow,
           ]}
@@ -153,21 +161,21 @@ function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
                   alignItems: "center",
                   justifyContent: "center",
                   backgroundColor: focused
-                    ? colors.primaryContainer
+                    ? colors.surfaceVariant
                     : "transparent",
                 }}
               >
                 {Icon ? (
                   <Icon
-                    color={focused ? colors.primary : colors.onSurfaceVariant}
-                    size={tokens.sizes.icon.md}
+                    color={focused ? colors.onSurface : colors.onSurfaceVariant}
+                    size={tokens.sizes.icon.lg}
                   />
                 ) : null}
                 <Text
                   style={{
                     marginTop: tokens.spacing["xxs"],
                     fontSize: tokens.typography.sizes.sm,
-                    color: focused ? colors.primary : colors.onSurfaceVariant,
+                    color: focused ? colors.onSurface : colors.onSurfaceVariant,
                     fontWeight: tokens.typography.weights.semibold,
                   }}
                   numberOfLines={1}

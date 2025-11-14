@@ -39,7 +39,14 @@ function AppShell() {
           }}
         >
           <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(modals)" options={{ presentation: "modal" }} />
+          <Stack.Screen
+            name="(modals)"
+            options={{
+              presentation: "modal",
+              headerShown: false,
+              gestureEnabled: false,
+            }}
+          />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         </Stack>
       </View>
