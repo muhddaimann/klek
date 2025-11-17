@@ -1,10 +1,5 @@
-import React, { useState, useRef, useMemo, useEffect } from "react";
-import {
-  View,
-  ScrollView,
-  TextInput as RNInput,
-  StyleSheet,
-} from "react-native";
+import React, { useState, useRef, useMemo } from "react";
+import { View, ScrollView, StyleSheet } from "react-native";
 import { useTheme, Text, TextInput } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDesign } from "../../contexts/designContext";
@@ -73,7 +68,9 @@ function formatDateWithDay(date: Date): string {
 }
 
 function formatCents(value: string): string {
-  const cents = Number(value || "0");
+  if (!value) return "";
+  const cents = Number(value);
+  if (Number.isNaN(cents)) return "";
   return (cents / 100).toFixed(2);
 }
 
@@ -88,52 +85,39 @@ export default function BillSplit() {
   const [step, setStep] = useState<1 | 2>(1);
 
   const [title, setTitle] = useState("");
-  const [totalAmountCents, setTotalAmountCents] = useState("0");
+  const [totalAmountCents, setTotalAmountCents] = useState("");
   const [headCount, setHeadCount] = useState("");
-  const [dueKey, setDueKey] = useState<DueKey | null>(null);
+  const [dueKey, setDueKey] = useState<DueKey>("none");
   const [mode, setMode] = useState<SplitModeKey | null>(null);
 
   const [friends, setFriends] = useState<Friend[]>([]);
   const [youAmount, setYouAmount] = useState<number>(0);
 
-  const titleRef = useRef<RNInput | null>(null);
-
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      titleRef.current?.focus();
-    });
-    return () => cancelAnimationFrame(frame);
-  }, []);
-
-  const numericTotal = Number(totalAmountCents || "0") / 100;
+  const numericTotal = totalAmountCents ? Number(totalAmountCents) / 100 : 0;
   const isTotalValid = numericTotal > 0;
-  const hasTotalInput = totalAmountCents !== "0";
+  const hasTotalInput = totalAmountCents !== "";
 
   const numericHeadCount = Number(headCount.replace(/,/g, ""));
   const isHeadCountValid =
     Number.isInteger(numericHeadCount) && numericHeadCount >= 2;
 
   const dueAt = useMemo(
-    () => (dueKey ? getDueDateFromKey(createdAt, dueKey) : null),
+    () => getDueDateFromKey(createdAt, dueKey),
     [createdAt, dueKey]
   );
 
-  const hasDue = !!dueKey && dueKey !== "none" && !!dueAt;
+  const hasDue = dueKey !== "none" && !!dueAt;
   const dueLabel = hasDue
     ? `Due ${DUE_OPTIONS.find((o) => o.key === dueKey)?.label.toLowerCase()}`
-    : "Created today";
+    : "No due date set";
   const dueDateText = hasDue
     ? formatDateWithDay(new Date(dueAt!))
     : formatDateWithDay(createdAt);
 
   const canGoNextMeta =
-    title.trim().length > 0 &&
-    isTotalValid &&
-    isHeadCountValid &&
-    !!dueKey &&
-    !!mode;
+    title.trim().length > 0 && isTotalValid && isHeadCountValid && !!mode;
 
-  useEffect(() => {
+  useMemo(() => {
     if (!isHeadCountValid || !isTotalValid || !mode) return;
     if (step !== 2) return;
 
@@ -195,14 +179,13 @@ export default function BillSplit() {
     step === 2 &&
     isTotalValid &&
     isHeadCountValid &&
-    !!dueKey &&
     !!mode &&
     allFriendsNamed &&
     amountsValid;
 
   const handleTotalAmountChange = (text: string) => {
     const digits = text.replace(/\D/g, "");
-    setTotalAmountCents(digits || "0");
+    setTotalAmountCents(digits);
   };
 
   const handleNextFromMeta = () => {
@@ -297,7 +280,6 @@ export default function BillSplit() {
                 value={title}
                 onChangeText={setTitle}
                 autoCapitalize="sentences"
-                ref={titleRef}
               />
               <TextInput
                 mode="outlined"

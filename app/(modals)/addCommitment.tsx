@@ -6,14 +6,6 @@ import { useDesign } from "../../contexts/designContext";
 import { Button } from "../../components/atom/button";
 import { Header } from "../../components/shared/header";
 
-const CATEGORY_OPTIONS = [
-  { key: "food", label: "Food" },
-  { key: "sport", label: "Sport" },
-  { key: "entertainment", label: "Entertainment" },
-  { key: "travel", label: "Travel" },
-  { key: "other", label: "Other" },
-] as const;
-
 const DUE_OPTIONS = [
   { key: "none", label: "None" },
   { key: "thisWeek", label: "This week" },
@@ -21,8 +13,26 @@ const DUE_OPTIONS = [
   { key: "thisMonth", label: "This month" },
 ] as const;
 
-type CategoryKey = (typeof CATEGORY_OPTIONS)[number]["key"];
+const CATEGORY_OPTIONS = [
+  { key: "bill", label: "Bill" },
+  { key: "loan", label: "Loan" },
+  { key: "subscription", label: "Subscription" },
+  { key: "friend", label: "Friend" },
+  { key: "other", label: "Other" },
+] as const;
+
+const RECURRENCE_OPTIONS = [
+  { key: "once", label: "One-time" },
+  { key: "monthly", label: "Monthly" },
+  { key: "weekly", label: "Weekly" },
+  { key: "yearly", label: "Yearly" },
+] as const;
+
 type DueKey = (typeof DUE_OPTIONS)[number]["key"];
+type CategoryKey = (typeof CATEGORY_OPTIONS)[number]["key"];
+type RecurrenceKey = (typeof RECURRENCE_OPTIONS)[number]["key"];
+
+const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 function getDueDateFromKey(base: Date, key: DueKey): string | null {
   if (key === "none") return null;
@@ -54,8 +64,6 @@ function getDueDateFromKey(base: Date, key: DueKey): string | null {
   return null;
 }
 
-const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
 function formatDateWithDay(date: Date): string {
   const dayName = DAY_NAMES[date.getDay()];
   const dd = String(date.getDate()).padStart(2, "0");
@@ -64,7 +72,14 @@ function formatDateWithDay(date: Date): string {
   return `${dayName}, ${dd}/${mm}/${yy}`;
 }
 
-export default function ManualClaim() {
+function formatCents(value: string): string {
+  if (!value) return "";
+  const cents = Number(value);
+  if (Number.isNaN(cents)) return "";
+  return (cents / 100).toFixed(2);
+}
+
+export default function AddCommitment() {
   const { colors } = useTheme();
   const { tokens } = useDesign();
   const insets = useSafeAreaInsets();
@@ -72,27 +87,15 @@ export default function ManualClaim() {
   const createdAtRef = useRef(new Date());
   const createdAt = createdAtRef.current;
 
-  const [name, setName] = useState("");
-  const [amount, setAmount] = useState("");
+  const [reference, setReference] = useState("");
+  const [amountCents, setAmountCents] = useState("");
   const [category, setCategory] = useState<CategoryKey | null>(null);
   const [dueKey, setDueKey] = useState<DueKey>("none");
+  const [recurrence, setRecurrence] = useState<RecurrenceKey>("once");
 
-  const handleAmountChange = (value: string) => {
-    const digits = value.replace(/[^\d]/g, "");
-    if (!digits) {
-      setAmount("");
-      return;
-    }
-    const num = Number(digits) / 100;
-    const formatted = num.toLocaleString("en-MY", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-    setAmount(formatted);
-  };
-
-  const numericAmount = Number(amount.replace(/,/g, ""));
-  const isAmountValid = !Number.isNaN(numericAmount) && numericAmount > 0;
+  const numericAmount = amountCents ? Number(amountCents) / 100 : 0;
+  const isAmountValid = numericAmount > 0;
+  const hasAmountInput = amountCents !== "";
 
   const dueAt = useMemo(
     () => getDueDateFromKey(createdAt, dueKey),
@@ -107,21 +110,28 @@ export default function ManualClaim() {
     ? formatDateWithDay(new Date(dueAt!))
     : formatDateWithDay(createdAt);
 
-  const isValid = name.trim().length > 0 && isAmountValid && !!category;
+  const isValid = reference.trim().length > 0 && isAmountValid;
+
+  const handleAmountChange = (text: string) => {
+    const digits = text.replace(/\D/g, "");
+    setAmountCents(digits);
+  };
 
   const handleSave = () => {
     if (!isValid) return;
 
     const payload = {
-      name: name.trim(),
-      category,
+      reference: reference.trim(),
       amount: numericAmount,
-      createdAt: createdAt.toISOString(),
+      category,
       dueKey,
       dueAt,
+      recurrence,
+      createdAt: createdAt.toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    console.log("manual-claim", payload);
+
+    console.log("commitment-add", payload);
   };
 
   return (
@@ -139,39 +149,9 @@ export default function ManualClaim() {
         bounces={false}
       >
         <Header
-          title="Add manual claim"
-          subtitle="Track a front you paid for friends"
+          title="Add commitment"
+          subtitle="Keep track of what you need to pay"
         />
-
-        <View style={{ gap: tokens.spacing.md }}>
-          <TextInput
-            mode="outlined"
-            label="Who owes you?"
-            value={name}
-            onChangeText={setName}
-            autoCapitalize="words"
-          />
-          <TextInput
-            mode="outlined"
-            label="Amount"
-            value={amount}
-            onChangeText={handleAmountChange}
-            keyboardType="decimal-pad"
-            error={amount.length > 0 && !isAmountValid}
-          />
-
-          {amount.length > 0 && !isAmountValid && (
-            <Text
-              style={{
-                marginTop: -tokens.spacing["xs"],
-                color: colors.error,
-                fontSize: tokens.typography.sizes.xs,
-              }}
-            >
-              Enter a valid amount above 0
-            </Text>
-          )}
-        </View>
 
         <View style={{ gap: tokens.spacing.sm }}>
           <Text
@@ -232,6 +212,35 @@ export default function ManualClaim() {
               );
             })}
           </View>
+        </View>
+
+        <View style={{ gap: tokens.spacing.md }}>
+          <TextInput
+            mode="outlined"
+            label="Reference (friend, loan, bill, etc.)"
+            value={reference}
+            onChangeText={setReference}
+            autoCapitalize="sentences"
+          />
+          <TextInput
+            mode="outlined"
+            label="Amount"
+            value={formatCents(amountCents)}
+            onChangeText={handleAmountChange}
+            keyboardType="number-pad"
+            error={hasAmountInput && !isAmountValid}
+          />
+          {hasAmountInput && !isAmountValid && (
+            <Text
+              style={{
+                marginTop: -tokens.spacing["xs"],
+                color: colors.error,
+                fontSize: tokens.typography.sizes.xs,
+              }}
+            >
+              Enter a valid amount above 0
+            </Text>
+          )}
         </View>
 
         <View style={{ gap: tokens.spacing.sm }}>
@@ -339,6 +348,67 @@ export default function ManualClaim() {
             </View>
           </View>
         </View>
+
+        <View style={{ gap: tokens.spacing.sm }}>
+          <Text
+            style={{
+              fontSize: tokens.typography.sizes.sm,
+              fontWeight: tokens.typography.weights.semibold,
+              color: colors.onSurface,
+            }}
+          >
+            Recurrence
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              flexWrap: "wrap",
+              gap: tokens.spacing.xs,
+            }}
+          >
+            {RECURRENCE_OPTIONS.map((opt) => {
+              const active = recurrence === opt.key;
+              return (
+                <View
+                  key={opt.key}
+                  style={{
+                    borderRadius: tokens.radii.pill,
+                    borderWidth: 1,
+                    borderColor: active
+                      ? colors.primary
+                      : colors.outlineVariant,
+                    backgroundColor: active
+                      ? colors.primaryContainer
+                      : colors.surface,
+                  }}
+                >
+                  <Button
+                    onPress={() => setRecurrence(opt.key)}
+                    variant="ghost"
+                    size="sm"
+                    rounded="pill"
+                    style={{
+                      paddingHorizontal: tokens.spacing.sm,
+                      paddingVertical: tokens.spacing["xs"],
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: tokens.typography.sizes.xs,
+                        color: active
+                          ? colors.primary
+                          : colors.onSurfaceVariant,
+                        fontWeight: tokens.typography.weights.semibold,
+                      }}
+                    >
+                      {opt.label}
+                    </Text>
+                  </Button>
+                </View>
+              );
+            })}
+          </View>
+        </View>
       </ScrollView>
 
       <View
@@ -359,10 +429,10 @@ export default function ManualClaim() {
             onPress={handleSave}
             variant="default"
             disabled={!isValid}
-            fullWidth
             rounded="sm"
+            fullWidth
           >
-            Save claim
+            Save commitment
           </Button>
         </View>
       </View>
