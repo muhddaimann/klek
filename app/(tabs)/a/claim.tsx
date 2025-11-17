@@ -41,7 +41,7 @@ export default function Claim() {
           paddingHorizontal: tokens.spacing.lg,
           paddingTop: tokens.spacing.lg,
           paddingBottom: tokens.spacing["3xl"] * 4,
-          gap: tokens.spacing.lg,
+          gap: tokens.spacing.md,
         }}
         showsVerticalScrollIndicator={false}
         overScrollMode="never"

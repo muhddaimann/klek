@@ -3,24 +3,21 @@ import { View, ScrollView, Pressable } from "react-native";
 import { useTheme, Text, Avatar } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDesign } from "../../../contexts/designContext";
-import { HandCoins, AlertCircle, Clock3 } from "lucide-react-native";
+import { PieChart, AlertCircle } from "lucide-react-native";
 import { EmptyState } from "../../../components/molecule/emptyState";
 import { Header } from "../../../components/shared/header";
 import { useTab } from "../../../hooks/useTab";
-import { useFocusEffect } from "expo-router";
-import {
-  useSettlement,
-  SettlementFilterKey,
-} from "../../../hooks/useSettlement";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useBudget, BudgetFilterKey } from "../../../hooks/useBudget";
 
-export default function Settlement() {
+export default function Budget() {
   const { colors } = useTheme();
   const { tokens } = useDesign();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { summary, items, filters, useMock, toggleMock } = useSettlement();
-  const [activeFilter, setActiveFilter] = useState<SettlementFilterKey>("all");
+  const { summary, categories, filters, isSetup, useMock, toggleMock } =
+    useBudget();
+  const [activeFilter, setActiveFilter] = useState<BudgetFilterKey>("all");
   const { lockHidden, unlockHidden } = useTab();
 
   useFocusEffect(
@@ -32,21 +29,28 @@ export default function Settlement() {
 
   const card = { borderRadius: tokens.radii.lg } as const;
 
-  const filtered = items.filter((item) =>
+  const filtered = categories.filter((item) =>
     activeFilter === "all" ? true : item.status === activeFilter
   );
 
-  const renderStatusLabel = (status: (typeof items)[number]["status"]) => {
-    if (status === "upcoming") return "Upcoming";
-    if (status === "overdue") return "Overdue";
-    return "Paid";
+  const renderStatusLabel = (status: (typeof categories)[number]["status"]) => {
+    if (status === "over") return "Over budget";
+    if (status === "high") return "Nearly used";
+    return "On track";
   };
 
-  const statusColor = (status: (typeof items)[number]["status"]) => {
-    if (status === "overdue") return colors.error;
-    if (status === "paid") return colors.primary;
+  const statusColor = (status: (typeof categories)[number]["status"]) => {
+    if (status === "over") return colors.error;
+    if (status === "high") return colors.primary;
     return colors.onSurfaceVariant;
   };
+
+  const progressWidth = (percent: number): `${number}%` =>
+    `${Math.min(100, Math.max(0, percent))}%` as `${number}%`;
+
+  const canAddRecord = useMock || isSetup;
+  const isUpdateMode = !useMock;
+  const budgetCtaLabel = isUpdateMode ? "Update budget" : "Create budget";
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -55,7 +59,7 @@ export default function Settlement() {
         contentContainerStyle={{
           paddingHorizontal: tokens.spacing.lg,
           paddingTop: tokens.spacing.lg,
-          paddingBottom: tokens.spacing["3xl"] * 4,
+          paddingBottom: tokens.spacing["3xl"] * 2,
           gap: tokens.spacing.md,
         }}
         showsVerticalScrollIndicator={false}
@@ -63,8 +67,14 @@ export default function Settlement() {
         bounces={false}
       >
         <Header
-          title="Settlement dashboard"
-          subtitle={useMock ? "Showing sample commitments" : "No sample data"}
+          title="Budget"
+          subtitle={
+            useMock
+              ? "Showing sample monthly budget"
+              : isSetup
+              ? "Your monthly budget overview"
+              : "No budget set yet"
+          }
           rightSlot={
             <Pressable
               onPress={toggleMock}
@@ -123,7 +133,7 @@ export default function Settlement() {
               >
                 {summary.monthLabel}
               </Text>
-              <HandCoins
+              <PieChart
                 size={tokens.sizes.icon.sm}
                 color={colors.onPrimaryContainer}
               />
@@ -135,7 +145,7 @@ export default function Settlement() {
                 color: colors.onPrimaryContainer,
               }}
             >
-              {summary.totalToSettle}
+              {summary.totalSpent}
             </Text>
             <Text
               style={{
@@ -146,7 +156,18 @@ export default function Settlement() {
               }}
               numberOfLines={1}
             >
-              {summary.upcomingCount} upcoming • {summary.overdueCount} overdue
+              Spent of {summary.totalBudget} • {summary.percentUsed}% used
+            </Text>
+            <Text
+              style={{
+                marginTop: tokens.spacing["xs"],
+                fontSize: tokens.typography.sizes.xs,
+                color: colors.onPrimaryContainer,
+                opacity: 0.9,
+              }}
+              numberOfLines={1}
+            >
+              Remaining {summary.remaining}
             </Text>
           </View>
 
@@ -177,7 +198,7 @@ export default function Settlement() {
                   fontWeight: tokens.typography.weights.med,
                 }}
               >
-                Group fixed bills
+                Set simple buckets
               </Text>
             </View>
             <Text
@@ -187,7 +208,7 @@ export default function Settlement() {
                 color: colors.onSurfaceVariant,
               }}
             >
-              Track loans, cards, and subs in one view.
+              Start with food, transport, bills, and fun money.
             </Text>
           </View>
         </View>
@@ -207,7 +228,7 @@ export default function Settlement() {
                 color: colors.onSurface,
               }}
             >
-              What you need to pay
+              Categories
             </Text>
             <View style={{ flexDirection: "row", gap: tokens.spacing.xs }}>
               {filters.map((f) => {
@@ -256,11 +277,11 @@ export default function Settlement() {
             {filtered.length === 0 ? (
               <EmptyState
                 Icon={AlertCircle}
-                title={useMock ? "No results" : "No commitments yet"}
+                title={useMock ? "No results" : "No budget yet"}
                 subtitle={
                   useMock
                     ? "Try changing the filter to see other statuses."
-                    : "Add your loans, bills, and subs here to track what you owe."
+                    : "Set up your monthly budget to start tracking."
                 }
               />
             ) : (
@@ -268,57 +289,38 @@ export default function Settlement() {
                 <View
                   key={item.id}
                   style={{
-                    flexDirection: "row",
-                    alignItems: "center",
                     paddingHorizontal: tokens.spacing.md,
                     paddingVertical: tokens.spacing.sm,
                     borderTopWidth: idx === 0 ? 0 : 1,
                     borderTopColor: colors.outlineVariant,
-                    gap: tokens.spacing.md,
+                    gap: tokens.spacing["xs"],
                   }}
                 >
-                  <Avatar.Text
-                    size={32}
-                    label={
-                      item.payTo
-                        ? item.payTo.charAt(0).toUpperCase()
-                        : item.title.charAt(0).toUpperCase()
-                    }
+                  <View
                     style={{
-                      backgroundColor: colors.primaryContainer,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: tokens.spacing.md,
                     }}
-                    color={colors.onPrimaryContainer}
-                  />
-                  <View style={{ flex: 1, gap: tokens.spacing["xs"] }}>
-                    <Text
+                  >
+                    <Avatar.Text
+                      size={32}
+                      label={item.label.charAt(0).toUpperCase()}
                       style={{
-                        fontSize: tokens.typography.sizes.sm,
-                        color: colors.onSurface,
+                        backgroundColor: colors.primaryContainer,
                       }}
-                      numberOfLines={1}
-                    >
-                      {item.title}
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: tokens.typography.sizes.xs,
-                        color: colors.onSurfaceVariant,
-                      }}
-                      numberOfLines={1}
-                    >
-                      {item.payTo} · {item.note}
-                    </Text>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: tokens.spacing["xs"],
-                      }}
-                    >
-                      <Clock3
-                        size={tokens.sizes.icon.md}
-                        color={colors.onSurfaceVariant}
-                      />
+                      color={colors.onPrimaryContainer}
+                    />
+                    <View style={{ flex: 1, gap: tokens.spacing["xs"] }}>
+                      <Text
+                        style={{
+                          fontSize: tokens.typography.sizes.sm,
+                          color: colors.onSurface,
+                        }}
+                        numberOfLines={1}
+                      >
+                        {item.label}
+                      </Text>
                       <Text
                         style={{
                           fontSize: tokens.typography.sizes.xs,
@@ -326,33 +328,41 @@ export default function Settlement() {
                         }}
                         numberOfLines={1}
                       >
-                        {item.dueLabel} • {item.lastActivity}
+                        {item.spent} of {item.budget} • {item.percentUsed}%
                       </Text>
                     </View>
-                  </View>
-                  <View
-                    style={{
-                      alignItems: "flex-end",
-                      gap: tokens.spacing["xs"],
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: tokens.typography.sizes.sm,
-                        fontWeight: tokens.typography.weights.semibold,
-                        color: colors.onSurface,
-                      }}
-                    >
-                      {item.amount}
-                    </Text>
                     <Text
                       style={{
                         fontSize: tokens.typography.sizes.xs,
                         color: statusColor(item.status),
+                        fontWeight: tokens.typography.weights.semibold,
                       }}
                     >
                       {renderStatusLabel(item.status)}
                     </Text>
+                  </View>
+
+                  <View
+                    style={{
+                      marginTop: tokens.spacing["xs"],
+                      height: 4,
+                      borderRadius: 999,
+                      backgroundColor: colors.outlineVariant,
+                      overflow: "hidden",
+                    }}
+                  >
+                    <View
+                      style={{
+                        height: "100%",
+                        width: progressWidth(item.percentUsed),
+                        backgroundColor:
+                          item.status === "over"
+                            ? colors.error
+                            : item.status === "high"
+                            ? colors.primary
+                            : colors.onSurfaceVariant,
+                      }}
+                    />
                   </View>
                 </View>
               ))
@@ -378,6 +388,35 @@ export default function Settlement() {
           }}
         >
           <Pressable
+            disabled={!canAddRecord}
+            style={{
+              flex: 1,
+              paddingVertical: tokens.spacing.sm,
+              borderRadius: tokens.radii.lg,
+              backgroundColor: colors.surface,
+              borderWidth: 1,
+              borderColor: colors.outlineVariant,
+              alignItems: "center",
+              justifyContent: "center",
+              opacity: canAddRecord ? 1 : 0.4,
+            }}
+            onPress={() => {
+              if (!canAddRecord) return;
+              router.push("/(modals)/addRecord");
+            }}
+          >
+            <Text
+              style={{
+                fontSize: tokens.typography.sizes.sm,
+                fontWeight: tokens.typography.weights.semibold,
+                color: colors.onSurface,
+              }}
+            >
+              Add Record
+            </Text>
+          </Pressable>
+
+          <Pressable
             style={{
               flex: 1,
               paddingVertical: tokens.spacing.sm,
@@ -388,7 +427,12 @@ export default function Settlement() {
               alignItems: "center",
               justifyContent: "center",
             }}
-            onPress={() => router.push("/(modals)/addCommitment")}
+            onPress={() =>
+              router.push({
+                pathname: "/(modals)/addBudget",
+                params: { mode: isUpdateMode ? "update" : "create" },
+              })
+            }
           >
             <Text
               style={{
@@ -397,7 +441,7 @@ export default function Settlement() {
                 color: colors.onSurface,
               }}
             >
-              Add new commitment
+              {budgetCtaLabel}
             </Text>
           </Pressable>
         </View>

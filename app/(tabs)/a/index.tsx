@@ -26,7 +26,7 @@ export default function Home() {
   const { colors } = useTheme();
   const { tokens } = useDesign();
   const { onScroll } = useTab();
-    const router = useRouter();
+  const router = useRouter();
 
   const card = { borderRadius: tokens.radii.lg } as const;
 
@@ -101,33 +101,38 @@ export default function Home() {
             gap: tokens.spacing.sm,
           }}
         >
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: colors.surface,
-              padding: tokens.spacing.md,
-              ...card,
-            }}
+          <Pressable
+            style={{ flex: 1 }}
+            onPress={() => router.push("/(tabs)/a/budget")}
           >
-            <Text
+            <View
               style={{
-                fontSize: tokens.typography.sizes["xs"],
-                color: colors.onPrimaryContainer,
+                flex: 1,
+                backgroundColor: colors.surface,
+                padding: tokens.spacing.md,
+                ...card,
               }}
             >
-              This month spent
-            </Text>
-            <Text
-              style={{
-                marginTop: tokens.spacing["xs"],
-                fontSize: tokens.typography.sizes["2xl"],
-                fontWeight: tokens.typography.weights.semibold,
-                color: colors.onPrimaryContainer,
-              }}
-            >
-              {INITIAL_SUMMARY.spent}
-            </Text>
-          </View>
+              <Text
+                style={{
+                  fontSize: tokens.typography.sizes["xs"],
+                  color: colors.onPrimaryContainer,
+                }}
+              >
+                This month spent
+              </Text>
+              <Text
+                style={{
+                  marginTop: tokens.spacing["xs"],
+                  fontSize: tokens.typography.sizes["2xl"],
+                  fontWeight: tokens.typography.weights.semibold,
+                  color: colors.onPrimaryContainer,
+                }}
+              >
+                {INITIAL_SUMMARY.spent}
+              </Text>
+            </View>
+          </Pressable>
 
           <View
             style={{

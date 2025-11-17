@@ -48,8 +48,7 @@ function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
     ? "destructive"
     : "default";
 
-  const rightBg =
-    variant === "destructive" ? colors.surface : colors.surface;
+  const rightBg = variant === "destructive" ? colors.surface : colors.surface;
 
   const rightBorder =
     variant === "destructive" ? colors.error : colors.onSurface;
@@ -62,17 +61,21 @@ function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
   const handleRightPress = React.useCallback(() => {
     if (isHome) {
       showOptions({
-        title: "New claim",
         options: [
           {
             id: "manual",
-            label: "Manual claim",
+            label: "New claim",
             onPress: () => router.push("/manualClaim"),
           },
           {
             id: "bill-split",
-            label: "Bill split",
+            label: "Split bill",
             onPress: () => router.push("/billSplit"),
+          },
+          {
+            id: "commitment",
+            label: "New payment",
+            onPress: () => router.push("/addCommitment"),
           },
         ],
       });
