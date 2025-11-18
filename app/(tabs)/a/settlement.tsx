@@ -1,18 +1,18 @@
 import React, { useState, useCallback } from "react";
 import { View, ScrollView, Pressable } from "react-native";
-import { useTheme, Text, Avatar } from "react-native-paper";
+import { useTheme, Avatar } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDesign } from "../../../contexts/designContext";
 import { HandCoins, AlertCircle, Clock3 } from "lucide-react-native";
 import { EmptyState } from "../../../components/molecule/emptyState";
 import { Header } from "../../../components/shared/header";
 import { useTab } from "../../../hooks/useTab";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import {
   useSettlement,
   SettlementFilterKey,
 } from "../../../hooks/useSettlement";
-import { useRouter } from "expo-router";
+import { Body, BodySmall, Caption } from "../../../components/atom/text";
 
 export default function Settlement() {
   const { colors } = useTheme();
@@ -79,15 +79,12 @@ export default function Settlement() {
                 borderColor: useMock ? colors.primary : colors.outlineVariant,
               }}
             >
-              <Text
-                style={{
-                  fontSize: tokens.typography.sizes.xs,
-                  fontWeight: tokens.typography.weights.semibold,
-                  color: useMock ? colors.primary : colors.onSurfaceVariant,
-                }}
+              <BodySmall
+                weight="semibold"
+                color={useMock ? colors.primary : colors.onSurfaceVariant}
               >
                 {useMock ? "Mock on" : "Mock off"}
-              </Text>
+              </BodySmall>
             </Pressable>
           }
           style={{ paddingHorizontal: 0, paddingBottom: tokens.spacing.sm }}
@@ -115,39 +112,24 @@ export default function Settlement() {
                 marginBottom: tokens.spacing.xs,
               }}
             >
-              <Text
-                style={{
-                  fontSize: tokens.typography.sizes.xs,
-                  color: colors.onPrimaryContainer,
-                }}
-              >
+              <Caption color={colors.onPrimaryContainer}>
                 {summary.monthLabel}
-              </Text>
+              </Caption>
               <HandCoins
                 size={tokens.sizes.icon.sm}
                 color={colors.onPrimaryContainer}
               />
             </View>
-            <Text
-              style={{
-                fontSize: tokens.typography.sizes["2xl"],
-                fontWeight: tokens.typography.weights.semibold,
-                color: colors.onPrimaryContainer,
-              }}
+            <Body
+              weight="semibold"
+              color={colors.onPrimaryContainer}
+              style={{ fontSize: tokens.typography.sizes["2xl"] }}
             >
               {summary.totalToSettle}
-            </Text>
-            <Text
-              style={{
-                marginTop: tokens.spacing.xs,
-                fontSize: tokens.typography.sizes.xs,
-                color: colors.onPrimaryContainer,
-                opacity: 0.85,
-              }}
-              numberOfLines={1}
-            >
+            </Body>
+            <Caption color={colors.onPrimaryContainer}>
               {summary.upcomingCount} upcoming • {summary.overdueCount} overdue
-            </Text>
+            </Caption>
           </View>
 
           <View
@@ -162,33 +144,12 @@ export default function Settlement() {
             }}
           >
             <View style={{ gap: tokens.spacing["xxs"] }}>
-              <Text
-                style={{
-                  fontSize: tokens.typography.sizes.xs,
-                  color: colors.onSurfaceVariant,
-                }}
-              >
-                Tip
-              </Text>
-              <Text
-                style={{
-                  fontSize: tokens.typography.sizes.sm,
-                  color: colors.onSurface,
-                  fontWeight: tokens.typography.weights.med,
-                }}
-              >
+              <Caption muted>Tip</Caption>
+              <BodySmall weight="med" color={colors.onSurface}>
                 Group fixed bills
-              </Text>
+              </BodySmall>
             </View>
-            <Text
-              style={{
-                marginTop: tokens.spacing.xs,
-                fontSize: tokens.typography.sizes.xs,
-                color: colors.onSurfaceVariant,
-              }}
-            >
-              Track loans, cards, and subs in one view.
-            </Text>
+            <Caption muted>Track loans, cards, and subs in one view.</Caption>
           </View>
         </View>
 
@@ -200,15 +161,13 @@ export default function Settlement() {
               alignItems: "center",
             }}
           >
-            <Text
-              style={{
-                fontSize: tokens.typography.sizes.md,
-                fontWeight: tokens.typography.weights.semibold,
-                color: colors.onSurface,
-              }}
+            <Body
+              weight="semibold"
+              color={colors.onSurface}
+              style={{ fontSize: tokens.typography.sizes.md }}
             >
               What you need to pay
-            </Text>
+            </Body>
             <View style={{ flexDirection: "row", gap: tokens.spacing.xs }}>
               {filters.map((f) => {
                 const active = activeFilter === f.key;
@@ -229,17 +188,12 @@ export default function Settlement() {
                         : colors.outlineVariant,
                     }}
                   >
-                    <Text
-                      style={{
-                        fontSize: tokens.typography.sizes.xs,
-                        color: active
-                          ? colors.primary
-                          : colors.onSurfaceVariant,
-                        fontWeight: tokens.typography.weights.semibold,
-                      }}
+                    <BodySmall
+                      weight="semibold"
+                      color={active ? colors.primary : colors.onSurfaceVariant}
                     >
                       {f.label}
-                    </Text>
+                    </BodySmall>
                   </Pressable>
                 );
               })}
@@ -290,24 +244,16 @@ export default function Settlement() {
                     color={colors.onPrimaryContainer}
                   />
                   <View style={{ flex: 1, gap: tokens.spacing["xs"] }}>
-                    <Text
-                      style={{
-                        fontSize: tokens.typography.sizes.sm,
-                        color: colors.onSurface,
-                      }}
+                    <BodySmall
+                      weight="semibold"
+                      color={colors.onSurface}
                       numberOfLines={1}
                     >
                       {item.title}
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: tokens.typography.sizes.xs,
-                        color: colors.onSurfaceVariant,
-                      }}
-                      numberOfLines={1}
-                    >
+                    </BodySmall>
+                    <Caption muted numberOfLines={1}>
                       {item.payTo} · {item.note}
-                    </Text>
+                    </Caption>
                     <View
                       style={{
                         flexDirection: "row",
@@ -319,15 +265,9 @@ export default function Settlement() {
                         size={tokens.sizes.icon.md}
                         color={colors.onSurfaceVariant}
                       />
-                      <Text
-                        style={{
-                          fontSize: tokens.typography.sizes.xs,
-                          color: colors.onSurfaceVariant,
-                        }}
-                        numberOfLines={1}
-                      >
+                      <Caption muted numberOfLines={1}>
                         {item.dueLabel} • {item.lastActivity}
-                      </Text>
+                      </Caption>
                     </View>
                   </View>
                   <View
@@ -336,23 +276,12 @@ export default function Settlement() {
                       gap: tokens.spacing["xs"],
                     }}
                   >
-                    <Text
-                      style={{
-                        fontSize: tokens.typography.sizes.sm,
-                        fontWeight: tokens.typography.weights.semibold,
-                        color: colors.onSurface,
-                      }}
-                    >
+                    <BodySmall weight="semibold" color={colors.onSurface}>
                       {item.amount}
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: tokens.typography.sizes.xs,
-                        color: statusColor(item.status),
-                      }}
-                    >
+                    </BodySmall>
+                    <Caption color={statusColor(item.status)}>
                       {renderStatusLabel(item.status)}
-                    </Text>
+                    </Caption>
                   </View>
                 </View>
               ))
@@ -390,15 +319,9 @@ export default function Settlement() {
             }}
             onPress={() => router.push("/(modals)/addCommitment")}
           >
-            <Text
-              style={{
-                fontSize: tokens.typography.sizes.sm,
-                fontWeight: tokens.typography.weights.semibold,
-                color: colors.onSurface,
-              }}
-            >
+            <BodySmall weight="semibold" color={colors.onSurface}>
               Add new commitment
-            </Text>
+            </BodySmall>
           </Pressable>
         </View>
       </View>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, ScrollView, Pressable } from "react-native";
-import { useTheme, Text } from "react-native-paper";
+import { useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDesign } from "../../../contexts/designContext";
 import { useTab } from "../../../hooks/useTab";
@@ -12,13 +12,13 @@ import {
   Wallet,
   PiggyBank,
   ArrowDownRight,
-  ArrowUpRight,
 } from "lucide-react-native";
 import {
   useActivity,
   type ActivityMonthKey,
   type ActivityItem,
 } from "../../../hooks/useActivity";
+import { Body, BodySmall, Caption } from "../../../components/atom/text";
 
 export default function Activity() {
   const { colors } = useTheme();
@@ -96,14 +96,7 @@ export default function Activity() {
                 gap: tokens.spacing["xs"],
               }}
             >
-              <Text
-                style={{
-                  fontSize: tokens.typography.sizes.xs,
-                  color: colors.onSurfaceVariant,
-                }}
-              >
-                {monthLabel}
-              </Text>
+              <BodySmall muted>{monthLabel}</BodySmall>
             </Pressable>
           }
           style={{ paddingHorizontal: 0 }}
@@ -117,23 +110,8 @@ export default function Activity() {
               alignItems: "center",
             }}
           >
-            <Text
-              style={{
-                fontSize: tokens.typography.sizes.sm,
-                fontWeight: tokens.typography.weights.semibold,
-                color: colors.onSurface,
-              }}
-            >
-              Filters
-            </Text>
-            <Text
-              style={{
-                fontSize: tokens.typography.sizes.xs,
-                color: colors.onSurfaceVariant,
-              }}
-            >
-              Tap to focus on a type
-            </Text>
+            <Body weight="semibold">Filters</Body>
+            <Caption muted>Tap to focus on a type</Caption>
           </View>
 
           <View
@@ -162,15 +140,12 @@ export default function Activity() {
                       : colors.outlineVariant,
                   }}
                 >
-                  <Text
-                    style={{
-                      fontSize: tokens.typography.sizes.xs,
-                      color: active ? colors.primary : colors.onSurfaceVariant,
-                      fontWeight: tokens.typography.weights.semibold,
-                    }}
+                  <BodySmall
+                    weight="semibold"
+                    color={active ? colors.primary : colors.onSurfaceVariant}
                   >
                     {f.label}
-                  </Text>
+                  </BodySmall>
                 </Pressable>
               );
             })}
@@ -185,23 +160,8 @@ export default function Activity() {
               alignItems: "center",
             }}
           >
-            <Text
-              style={{
-                fontSize: tokens.typography.sizes.md,
-                fontWeight: tokens.typography.weights.semibold,
-                color: colors.onSurface,
-              }}
-            >
-              Timeline
-            </Text>
-            <Text
-              style={{
-                fontSize: tokens.typography.sizes.xs,
-                color: colors.primary,
-              }}
-            >
-              Latest first
-            </Text>
+            <Body weight="semibold">Timeline</Body>
+            <BodySmall color={colors.primary}>Latest first</BodySmall>
           </View>
 
           <View
@@ -260,23 +220,8 @@ export default function Activity() {
                           justifyContent: "space-between",
                         }}
                       >
-                        <Text
-                          style={{
-                            fontSize: tokens.typography.sizes.sm,
-                            color: colors.onSurface,
-                          }}
-                          numberOfLines={1}
-                        >
-                          {item.label}
-                        </Text>
-                        <Text
-                          style={{
-                            fontSize: tokens.typography.sizes.xs,
-                            color: colors.onSurfaceVariant,
-                          }}
-                        >
-                          {item.date}
-                        </Text>
+                        <Body numberOfLines={1}>{item.label}</Body>
+                        <Caption>{item.date}</Caption>
                       </View>
                       <View
                         style={{
@@ -285,25 +230,12 @@ export default function Activity() {
                           gap: tokens.spacing["xs"],
                         }}
                       >
-                        <Text
-                          style={{
-                            fontSize: tokens.typography.sizes.xs,
-                            color: colors.onSurfaceVariant,
-                          }}
-                        >
-                          {renderKindLabel(item.kind)}
-                        </Text>
+                        <Caption>{renderKindLabel(item.kind)}</Caption>
                       </View>
                     </View>
-                    <Text
-                      style={{
-                        fontSize: tokens.typography.sizes.sm,
-                        fontWeight: tokens.typography.weights.semibold,
-                        color: amountColor(item.kind),
-                      }}
-                    >
+                    <Body weight="semibold" color={amountColor(item.kind)}>
                       {item.amount}
-                    </Text>
+                    </Body>
                   </View>
                 );
               })

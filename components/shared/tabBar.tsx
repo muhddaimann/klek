@@ -2,13 +2,14 @@ import * as React from "react";
 import { View, Pressable, Platform } from "react-native";
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme, Text } from "react-native-paper";
+import { useTheme } from "react-native-paper";
 import { useDesign } from "../../contexts/designContext";
 import { useTabsUi } from "../../contexts/tabContext";
 import { useAuth } from "../../contexts/authContext";
 import { useOverlay } from "../../hooks/useOverlay";
 import { Plus, LogOut } from "lucide-react-native";
 import { useRouter } from "expo-router";
+import { BodySmall } from "../../components/atom/text";
 
 function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
   const { bottom } = useSafeAreaInsets();
@@ -49,10 +50,8 @@ function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
     : "default";
 
   const rightBg = variant === "destructive" ? colors.surface : colors.surface;
-
   const rightBorder =
     variant === "destructive" ? colors.error : colors.onSurface;
-
   const rightIconColor =
     variant === "destructive" ? colors.error : colors.onSurfaceVariant;
 
@@ -179,17 +178,14 @@ function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
                     size={tokens.sizes.icon.lg}
                   />
                 ) : null}
-                <Text
-                  style={{
-                    marginTop: tokens.spacing["xxs"],
-                    fontSize: tokens.typography.sizes.sm,
-                    color: focused ? colors.onSurface : colors.onSurfaceVariant,
-                    fontWeight: tokens.typography.weights.semibold,
-                  }}
+                <BodySmall
+                  weight="semibold"
+                  color={focused ? colors.onSurface : colors.onSurfaceVariant}
+                  style={{ marginTop: tokens.spacing["xxs"] }}
                   numberOfLines={1}
                 >
                   {label}
-                </Text>
+                </BodySmall>
               </Pressable>
             );
           })}

@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { View, Pressable, Animated, Platform } from "react-native";
-import { useTheme, Text } from "react-native-paper";
+import { useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDesign } from "../../contexts/designContext";
 import type { ToastOptions } from "../../contexts/overlayContext";
 import { Button } from "../../components/atom/button";
+import { Body, BodySmall } from "../../components/atom/text";
 
 const hex = (c: string) => {
   const s = c.replace("#", "");
@@ -21,9 +22,10 @@ const hex = (c: string) => {
     b: parseInt(n.slice(4, 6), 16),
   };
 };
+
 const mix = (a: string, b: string, t: number) => {
-  const A = hex(a),
-    B = hex(b);
+  const A = hex(a);
+  const B = hex(b);
   const r = Math.round(A.r + (B.r - A.r) * t);
   const g = Math.round(A.g + (B.g - A.g) * t);
   const b2 = Math.round(A.b + (B.b - A.b) * t);
@@ -153,16 +155,9 @@ export function ToastBar({
               }}
             >
               <View style={{ flex: 1, paddingVertical: tokens.spacing.xs }}>
-                <Text
-                  style={{
-                    color: fg,
-                    fontSize: tokens.typography.sizes.md,
-                    fontWeight: tokens.typography.weights.reg,
-                  }}
-                  numberOfLines={2}
-                >
+                <Body color={fg} numberOfLines={2}>
                   {state.message}
-                </Text>
+                </Body>
               </View>
 
               {state.actionLabel ? (
@@ -176,9 +171,9 @@ export function ToastBar({
                   rounded="sm"
                   style={{ paddingHorizontal: 0, paddingVertical: 0 }}
                 >
-                  <Text style={{ color: fg, fontWeight: "600" }}>
+                  <BodySmall color={fg} weight="semibold">
                     {state.actionLabel}
-                  </Text>
+                  </BodySmall>
                 </Button>
               ) : null}
             </Pressable>

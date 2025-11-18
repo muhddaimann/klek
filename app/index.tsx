@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
 import { View } from "react-native";
 import { useRouter } from "expo-router";
-import { useTheme, Text } from "react-native-paper";
+import { useTheme } from "react-native-paper";
 import { useDesign } from "../contexts/designContext";
 import { useAuth } from "../contexts/authContext";
 import { Button } from "../components/atom/button";
 import Logo from "../components/shared/logo";
+import { H2, Body } from "../components/atom/text";
 
 export default function Index() {
   const { colors } = useTheme();
@@ -29,18 +30,12 @@ export default function Index() {
     >
       <View style={{ alignItems: "center", gap: tokens.spacing.sm }}>
         <Logo size={tokens.typography.sizes["3xl"] * 2} />
-        <Text
-          style={{
-            color: colors.onBackground,
-            fontSize: tokens.typography.sizes["2xl"],
-            fontWeight: "700",
-          }}
-        >
+        <H2 align="center" color={colors.onBackground}>
           Welcome
-        </Text>
-        <Text style={{ color: colors.onSurfaceVariant }}>
+        </H2>
+        <Body align="center" muted>
           Sign in or create an account to continue
-        </Text>
+        </Body>
       </View>
 
       <View style={{ gap: tokens.spacing.md }}>

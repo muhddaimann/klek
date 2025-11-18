@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { View, ScrollView, Pressable } from "react-native";
-import { useTheme, Text, Avatar } from "react-native-paper";
+import { useTheme, Avatar } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDesign } from "../../../contexts/designContext";
 import { HandCoins, AlertCircle, Clock3 } from "lucide-react-native";
@@ -9,6 +9,7 @@ import { Header } from "../../../components/shared/header";
 import { useTab } from "../../../hooks/useTab";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useWishlist, WishlistFilterKey } from "../../../hooks/useWishlist";
+import { Body, BodySmall, Caption } from "../../../components/atom/text";
 
 export default function Wishlist() {
   const { colors } = useTheme();
@@ -78,15 +79,12 @@ export default function Wishlist() {
                 borderColor: useMock ? colors.primary : colors.outlineVariant,
               }}
             >
-              <Text
-                style={{
-                  fontSize: tokens.typography.sizes.xs,
-                  fontWeight: tokens.typography.weights.semibold,
-                  color: useMock ? colors.primary : colors.onSurfaceVariant,
-                }}
+              <BodySmall
+                weight="semibold"
+                color={useMock ? colors.primary : colors.onSurfaceVariant}
               >
                 {useMock ? "Mock on" : "Mock off"}
-              </Text>
+              </BodySmall>
             </Pressable>
           }
           style={{ paddingHorizontal: 0, paddingBottom: tokens.spacing.sm }}
@@ -114,39 +112,24 @@ export default function Wishlist() {
                 marginBottom: tokens.spacing.xs,
               }}
             >
-              <Text
-                style={{
-                  fontSize: tokens.typography.sizes.xs,
-                  color: colors.onPrimaryContainer,
-                }}
-              >
+              <Caption color={colors.onPrimaryContainer}>
                 {summary.title}
-              </Text>
+              </Caption>
               <HandCoins
                 size={tokens.sizes.icon.sm}
                 color={colors.onPrimaryContainer}
               />
             </View>
-            <Text
-              style={{
-                fontSize: tokens.typography.sizes["2xl"],
-                fontWeight: tokens.typography.weights.semibold,
-                color: colors.onPrimaryContainer,
-              }}
+            <Body
+              weight="semibold"
+              color={colors.onPrimaryContainer}
+              style={{ fontSize: tokens.typography.sizes["2xl"] }}
             >
               {summary.totalSavedAmount}
-            </Text>
-            <Text
-              style={{
-                marginTop: tokens.spacing.xs,
-                fontSize: tokens.typography.sizes.xs,
-                color: colors.onPrimaryContainer,
-                opacity: 0.85,
-              }}
-              numberOfLines={1}
-            >
+            </Body>
+            <Caption color={colors.onPrimaryContainer}>
               {summary.totalItems} items • {summary.itemsDone} reached
-            </Text>
+            </Caption>
           </View>
 
           <View
@@ -161,33 +144,12 @@ export default function Wishlist() {
             }}
           >
             <View style={{ gap: tokens.spacing["xxs"] }}>
-              <Text
-                style={{
-                  fontSize: tokens.typography.sizes.xs,
-                  color: colors.onSurfaceVariant,
-                }}
-              >
-                Tip
-              </Text>
-              <Text
-                style={{
-                  fontSize: tokens.typography.sizes.sm,
-                  color: colors.onSurface,
-                  fontWeight: tokens.typography.weights.med,
-                }}
-              >
+              <Caption muted>Tip</Caption>
+              <BodySmall weight="med" color={colors.onSurface}>
                 Rank your wishes
-              </Text>
+              </BodySmall>
             </View>
-            <Text
-              style={{
-                marginTop: tokens.spacing.xs,
-                fontSize: tokens.typography.sizes.xs,
-                color: colors.onSurfaceVariant,
-              }}
-            >
-              Focus on 2–3 high priority items at a time.
-            </Text>
+            <Caption muted>Focus on 2–3 high priority items at a time.</Caption>
           </View>
         </View>
 
@@ -199,15 +161,13 @@ export default function Wishlist() {
               alignItems: "center",
             }}
           >
-            <Text
-              style={{
-                fontSize: tokens.typography.sizes.md,
-                fontWeight: tokens.typography.weights.semibold,
-                color: colors.onSurface,
-              }}
+            <Body
+              weight="semibold"
+              color={colors.onSurface}
+              style={{ fontSize: tokens.typography.sizes.md }}
             >
               Things you are saving for
-            </Text>
+            </Body>
             <View style={{ flexDirection: "row", gap: tokens.spacing.xs }}>
               {filters.map((f) => {
                 const active = activeFilter === f.key;
@@ -228,17 +188,12 @@ export default function Wishlist() {
                         : colors.outlineVariant,
                     }}
                   >
-                    <Text
-                      style={{
-                        fontSize: tokens.typography.sizes.xs,
-                        color: active
-                          ? colors.primary
-                          : colors.onSurfaceVariant,
-                        fontWeight: tokens.typography.weights.semibold,
-                      }}
+                    <BodySmall
+                      weight="semibold"
+                      color={active ? colors.primary : colors.onSurfaceVariant}
                     >
                       {f.label}
-                    </Text>
+                    </BodySmall>
                   </Pressable>
                 );
               })}
@@ -285,24 +240,16 @@ export default function Wishlist() {
                     color={colors.onPrimaryContainer}
                   />
                   <View style={{ flex: 1, gap: tokens.spacing["xs"] }}>
-                    <Text
-                      style={{
-                        fontSize: tokens.typography.sizes.sm,
-                        color: colors.onSurface,
-                      }}
+                    <BodySmall
+                      weight="semibold"
+                      color={colors.onSurface}
                       numberOfLines={1}
                     >
                       {item.label}
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: tokens.typography.sizes.xs,
-                        color: colors.onSurfaceVariant,
-                      }}
-                      numberOfLines={1}
-                    >
+                    </BodySmall>
+                    <Caption muted numberOfLines={1}>
                       {item.category} · {item.monthlyPlan}
-                    </Text>
+                    </Caption>
                     <View
                       style={{
                         flexDirection: "row",
@@ -314,15 +261,9 @@ export default function Wishlist() {
                         size={tokens.sizes.icon.md}
                         color={colors.onSurfaceVariant}
                       />
-                      <Text
-                        style={{
-                          fontSize: tokens.typography.sizes.xs,
-                          color: colors.onSurfaceVariant,
-                        }}
-                        numberOfLines={1}
-                      >
+                      <Caption muted numberOfLines={1}>
                         {item.targetDateLabel} • {item.percentFunded}% funded
-                      </Text>
+                      </Caption>
                     </View>
                   </View>
                   <View
@@ -331,23 +272,12 @@ export default function Wishlist() {
                       gap: tokens.spacing["xs"],
                     }}
                   >
-                    <Text
-                      style={{
-                        fontSize: tokens.typography.sizes.sm,
-                        fontWeight: tokens.typography.weights.semibold,
-                        color: colors.onSurface,
-                      }}
-                    >
+                    <BodySmall weight="semibold" color={colors.onSurface}>
                       {item.savedAmount} / {item.targetAmount}
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: tokens.typography.sizes.xs,
-                        color: statusColor(item.status),
-                      }}
-                    >
+                    </BodySmall>
+                    <Caption color={statusColor(item.status)}>
                       {renderStatusLabel(item.status)}
-                    </Text>
+                    </Caption>
                   </View>
                 </View>
               ))
@@ -385,15 +315,9 @@ export default function Wishlist() {
             }}
             onPress={() => router.push("/(modals)/addWishlist")}
           >
-            <Text
-              style={{
-                fontSize: tokens.typography.sizes.sm,
-                fontWeight: tokens.typography.weights.semibold,
-                color: colors.onSurface,
-              }}
-            >
+            <BodySmall weight="semibold" color={colors.onSurface}>
               Add to wishlist
-            </Text>
+            </BodySmall>
           </Pressable>
         </View>
       </View>

@@ -3,13 +3,13 @@ import {
   Pressable,
   Platform,
   View,
-  Text,
   StyleSheet,
   GestureResponderEvent,
 } from "react-native";
 import { ActivityIndicator, useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDesign } from "../../contexts/designContext";
+import { Body } from "../../components/atom/text";
 
 type IconComp = React.ComponentType<{ color?: string; size?: number }>;
 type Variant = "primary" | "secondary" | "destructive" | "surface";
@@ -173,17 +173,14 @@ export function Fab({
           <>
             <Icon color={fg as string} size={iconSize} />
             {isExtended ? (
-              <Text
-                style={{
-                  color: fg as string,
-                  fontFamily: "Inter_600SemiBold",
-                  fontWeight: "600",
-                  fontSize: tokens.typography.sizes.md,
-                }}
+              <Body
+                weight="semibold"
+                color={fg as string}
                 numberOfLines={1}
+                style={{ fontSize: tokens.typography.sizes.md }}
               >
                 {label}
-              </Text>
+              </Body>
             ) : null}
           </>
         )}

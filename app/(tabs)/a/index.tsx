@@ -1,6 +1,6 @@
 import React from "react";
 import { View, ScrollView, Pressable } from "react-native";
-import { useTheme, Text } from "react-native-paper";
+import { useTheme } from "react-native-paper";
 import { useDesign } from "../../../contexts/designContext";
 import { useTab } from "../../../hooks/useTab";
 import {
@@ -15,6 +15,8 @@ import {
 import { EmptyState } from "../../../components/molecule/emptyState";
 import { useRouter } from "expo-router";
 import { useHome } from "../../../hooks/useHome";
+import { H2, Body, BodySmall, Caption } from "../../../components/atom/text";
+import { Button } from "../../../components/atom/button";
 
 export default function Home() {
   const { colors } = useTheme();
@@ -49,24 +51,12 @@ export default function Home() {
           }}
         >
           <View style={{ flex: 1, gap: tokens.spacing["xxs"] }}>
-            <Text
-              style={{
-                fontSize: tokens.typography.sizes.xs,
-                color: colors.onSurfaceVariant,
-              }}
-            >
+            <Caption muted weight="bold">
               Good evening
-            </Text>
-            <Text
-              style={{
-                fontSize: tokens.typography.sizes.xl,
-                fontWeight: tokens.typography.weights.semibold,
-                color: colors.onSurface,
-              }}
-            >
-              Your money at a glance
-            </Text>
+            </Caption>
+            <H2>Your money at a glance</H2>
           </View>
+
           <Pressable
             onPress={toggleMonth}
             style={{
@@ -79,14 +69,7 @@ export default function Home() {
               gap: tokens.spacing.xs,
             }}
           >
-            <Text
-              style={{
-                fontSize: tokens.typography.sizes.xs,
-                color: colors.onSurfaceVariant,
-              }}
-            >
-              {monthSummary.monthLabel}
-            </Text>
+            <BodySmall muted>{monthSummary.monthLabel}</BodySmall>
           </Pressable>
         </View>
 
@@ -108,24 +91,16 @@ export default function Home() {
                 ...card,
               }}
             >
-              <Text
-                style={{
-                  fontSize: tokens.typography.sizes.xs,
-                  color: colors.onSurfaceVariant,
-                }}
-              >
-                This month spent
-              </Text>
-              <Text
+              <Caption muted>This month spent</Caption>
+              <Body
+                weight="semibold"
                 style={{
                   marginTop: tokens.spacing.xs,
                   fontSize: tokens.typography.sizes["2xl"],
-                  fontWeight: tokens.typography.weights.semibold,
-                  color: colors.onSurface,
                 }}
               >
                 {monthSummary.spent}
-              </Text>
+              </Body>
             </View>
           </Pressable>
 
@@ -147,24 +122,10 @@ export default function Home() {
               }}
               onPress={() => router.push("/(tabs)/a/claim")}
             >
-              <Text
-                style={{
-                  fontSize: tokens.typography.sizes.xs,
-                  color: colors.inverseSurface,
-                }}
-              >
-                To claim
-              </Text>
-              <Text
-                style={{
-                  marginTop: tokens.spacing.xs,
-                  fontSize: tokens.typography.sizes.lg,
-                  fontWeight: tokens.typography.weights.semibold,
-                  color: colors.onSurface,
-                }}
-              >
+              <BodySmall color={colors.inverseSurface}>To claim</BodySmall>
+              <Body weight="semibold" style={{ marginTop: tokens.spacing.xs }}>
                 {monthSummary.toClaim}
-              </Text>
+              </Body>
             </Pressable>
 
             <Pressable
@@ -179,38 +140,16 @@ export default function Home() {
               }}
               onPress={() => router.push("/(tabs)/a/settlement")}
             >
-              <Text
-                style={{
-                  fontSize: tokens.typography.sizes.xs,
-                  color: colors.onSurfaceVariant,
-                }}
-              >
-                To pay
-              </Text>
-              <Text
-                style={{
-                  marginTop: tokens.spacing.xs,
-                  fontSize: tokens.typography.sizes.lg,
-                  fontWeight: tokens.typography.weights.semibold,
-                  color: colors.onSurface,
-                }}
-              >
+              <BodySmall muted>To pay</BodySmall>
+              <Body weight="semibold" style={{ marginTop: tokens.spacing.xs }}>
                 {monthSummary.toPay}
-              </Text>
+              </Body>
             </Pressable>
           </View>
         </View>
 
         <View style={{ gap: tokens.spacing.xs }}>
-          <Text
-            style={{
-              fontSize: tokens.typography.sizes.md,
-              fontWeight: tokens.typography.weights.semibold,
-              color: colors.onBackground,
-            }}
-          >
-            Overview
-          </Text>
+          <Body weight="semibold">Overview</Body>
 
           <View
             style={{
@@ -238,29 +177,15 @@ export default function Home() {
                     marginBottom: tokens.spacing["xs"],
                   }}
                 >
-                  <Text
-                    style={{
-                      fontSize: tokens.typography.sizes.xs,
-                      fontWeight: tokens.typography.weights.semibold,
-                      color: colors.onSurface,
-                    }}
-                  >
-                    Profile & setup
-                  </Text>
+                  <BodySmall weight="semibold">Profile & setup</BodySmall>
                   <UserRound
                     size={tokens.sizes.icon.sm}
                     color={colors.onSurfaceVariant}
                   />
                 </View>
-                <Text
-                  style={{
-                    fontSize: tokens.typography.sizes.xs,
-                    color: colors.onSurfaceVariant,
-                  }}
-                  numberOfLines={2}
-                >
+                <Caption>
                   Complete profile to unlock smarter suggestions.
-                </Text>
+                </Caption>
               </Pressable>
 
               <Pressable
@@ -282,51 +207,20 @@ export default function Home() {
                     marginBottom: tokens.spacing.sm,
                   }}
                 >
-                  <Text
-                    style={{
-                      fontSize: tokens.typography.sizes.xs,
-                      fontWeight: tokens.typography.weights.semibold,
-                      color: colors.onSurface,
-                    }}
-                  >
-                    Budget
-                  </Text>
+                  <BodySmall weight="semibold">Budget</BodySmall>
                   <Wallet
                     size={tokens.sizes.icon.sm}
                     color={colors.onSurfaceVariant}
                   />
                 </View>
-                <Text
-                  style={{
-                    fontSize: tokens.typography.sizes.sm,
-                    fontWeight: tokens.typography.weights.semibold,
-                    color: colors.onSurface,
-                  }}
-                  numberOfLines={1}
-                >
+                <Body weight="semibold" numberOfLines={1}>
                   {overview.budget.primary}
-                </Text>
-                <Text
-                  style={{
-                    marginTop: tokens.spacing["xs"],
-                    fontSize: tokens.typography.sizes.xs,
-                    color: colors.onSurfaceVariant,
-                  }}
-                  numberOfLines={1}
-                >
-                  {overview.budget.secondary}
-                </Text>
+                </Body>
+                <Caption numberOfLines={1}>{overview.budget.secondary}</Caption>
                 {overview.budget.topCategory && (
-                  <Text
-                    style={{
-                      marginTop: tokens.spacing["xs"],
-                      fontSize: tokens.typography.sizes.xs,
-                      color: colors.onSurfaceVariant,
-                    }}
-                    numberOfLines={1}
-                  >
+                  <Caption numberOfLines={1}>
                     Top spend: {overview.budget.topCategory}
-                  </Text>
+                  </Caption>
                 )}
               </Pressable>
 
@@ -349,51 +243,22 @@ export default function Home() {
                     marginBottom: tokens.spacing.sm,
                   }}
                 >
-                  <Text
-                    style={{
-                      fontSize: tokens.typography.sizes.xs,
-                      fontWeight: tokens.typography.weights.semibold,
-                      color: colors.onSurface,
-                    }}
-                  >
-                    Wishlist
-                  </Text>
+                  <BodySmall weight="semibold">Wishlist</BodySmall>
                   <PiggyBank
                     size={tokens.sizes.icon.sm}
                     color={colors.onSurfaceVariant}
                   />
                 </View>
-                <Text
-                  style={{
-                    fontSize: tokens.typography.sizes.sm,
-                    fontWeight: tokens.typography.weights.semibold,
-                    color: colors.onSurface,
-                  }}
-                  numberOfLines={1}
-                >
+                <Body weight="semibold" numberOfLines={1}>
                   {overview.wishlist.itemsCount} items ·{" "}
                   {overview.wishlist.totalSaved}
-                </Text>
-                <Text
-                  style={{
-                    marginTop: tokens.spacing["xs"],
-                    fontSize: tokens.typography.sizes.xs,
-                    color: colors.onSurfaceVariant,
-                  }}
-                  numberOfLines={1}
-                >
+                </Body>
+                <Caption numberOfLines={1}>
                   {overview.wishlist.fundedPercent}% of wishes funded
-                </Text>
-                <Text
-                  style={{
-                    marginTop: tokens.spacing["xs"],
-                    fontSize: tokens.typography.sizes.xs,
-                    color: colors.onSurfaceVariant,
-                  }}
-                  numberOfLines={1}
-                >
+                </Caption>
+                <Caption numberOfLines={1}>
                   {overview.wishlist.secondary}
-                </Text>
+                </Caption>
               </Pressable>
             </View>
 
@@ -417,51 +282,20 @@ export default function Home() {
                     marginBottom: tokens.spacing.sm,
                   }}
                 >
-                  <Text
-                    style={{
-                      fontSize: tokens.typography.sizes.xs,
-                      fontWeight: tokens.typography.weights.semibold,
-                      color: colors.onSurface,
-                    }}
-                  >
-                    Claims
-                  </Text>
+                  <BodySmall weight="semibold">Claims</BodySmall>
                   <ReceiptText
                     size={tokens.sizes.icon.sm}
                     color={colors.onSurfaceVariant}
                   />
                 </View>
-                <Text
-                  style={{
-                    fontSize: tokens.typography.sizes.sm,
-                    fontWeight: tokens.typography.weights.semibold,
-                    color: colors.onSurface,
-                  }}
-                  numberOfLines={1}
-                >
+                <Body weight="semibold" numberOfLines={1}>
                   {overview.claim.totalToClaim}
-                </Text>
-                <Text
-                  style={{
-                    marginTop: tokens.spacing["xs"],
-                    fontSize: tokens.typography.sizes.xs,
-                    color: colors.onSurfaceVariant,
-                  }}
-                  numberOfLines={1}
-                >
-                  {overview.claim.secondary}
-                </Text>
+                </Body>
+                <Caption numberOfLines={1}>{overview.claim.secondary}</Caption>
                 {overview.claim.lastLabel && (
-                  <Text
-                    style={{
-                      marginTop: tokens.spacing["xs"],
-                      fontSize: tokens.typography.sizes.xs,
-                      color: colors.onSurfaceVariant,
-                    }}
-                    numberOfLines={1}
-                  >
+                  <Caption numberOfLines={1}>
                     Last: {overview.claim.lastLabel}
-                  </Text>
+                  </Caption>
                 )}
               </Pressable>
 
@@ -484,50 +318,21 @@ export default function Home() {
                     marginBottom: tokens.spacing.sm,
                   }}
                 >
-                  <Text
-                    style={{
-                      fontSize: tokens.typography.sizes.xs,
-                      fontWeight: tokens.typography.weights.semibold,
-                      color: colors.onSurface,
-                    }}
-                  >
-                    Settlements
-                  </Text>
+                  <BodySmall weight="semibold">Settlements</BodySmall>
                   <HandCoins
                     size={tokens.sizes.icon.sm}
                     color={colors.onSurfaceVariant}
                   />
                 </View>
-                <Text
-                  style={{
-                    fontSize: tokens.typography.sizes.sm,
-                    fontWeight: tokens.typography.weights.semibold,
-                    color: colors.onSurface,
-                  }}
-                  numberOfLines={1}
-                >
+                <Body weight="semibold" numberOfLines={1}>
                   {overview.settlement.totalToPay}
-                </Text>
-                <Text
-                  style={{
-                    marginTop: tokens.spacing["xs"],
-                    fontSize: tokens.typography.sizes.xs,
-                    color: colors.onSurfaceVariant,
-                  }}
-                  numberOfLines={1}
-                >
+                </Body>
+                <Caption numberOfLines={1}>
                   {overview.settlement.breakdownLabel}
-                </Text>
-                <Text
-                  style={{
-                    marginTop: tokens.spacing["xs"],
-                    fontSize: tokens.typography.sizes.xs,
-                    color: colors.onSurfaceVariant,
-                  }}
-                  numberOfLines={1}
-                >
+                </Caption>
+                <Caption numberOfLines={1}>
                   {overview.settlement.secondary}
-                </Text>
+                </Caption>
               </Pressable>
 
               <Pressable
@@ -549,44 +354,23 @@ export default function Home() {
                     marginBottom: tokens.spacing["xs"],
                   }}
                 >
-                  <Text
-                    style={{
-                      fontSize: tokens.typography.sizes.xs,
-                      fontWeight: tokens.typography.weights.semibold,
-                      color: colors.onSurface,
-                    }}
-                  >
-                    Calculator tools
-                  </Text>
+                  <BodySmall weight="semibold">Calculator tools</BodySmall>
                   <CalculatorIcon
                     size={tokens.sizes.icon.sm}
                     color={colors.onSurfaceVariant}
                   />
                 </View>
-                <Text
-                  style={{
-                    fontSize: tokens.typography.sizes.sm,
-                    fontWeight: tokens.typography.weights.semibold,
-                    color: colors.onSurface,
-                  }}
-                  numberOfLines={1}
-                >
+                <Body weight="semibold" numberOfLines={1}>
                   {overview.calculator.primary}
-                </Text>
-                <Text
-                  style={{
-                    marginTop: tokens.spacing["xs"],
-                    fontSize: tokens.typography.sizes.xs,
-                    color: colors.onSurfaceVariant,
-                  }}
-                  numberOfLines={2}
-                >
+                </Body>
+                <Caption numberOfLines={2}>
                   {overview.calculator.secondary}
-                </Text>
+                </Caption>
               </Pressable>
             </View>
           </View>
         </View>
+
         <View style={{ gap: tokens.spacing.sm }}>
           <View
             style={{
@@ -595,26 +379,16 @@ export default function Home() {
               alignItems: "center",
             }}
           >
-            <Text
-              style={{
-                fontSize: tokens.typography.sizes.md,
-                fontWeight: tokens.typography.weights.semibold,
-                color: colors.onSurface,
-              }}
-            >
-              Recent activity
-            </Text>
+            <Body weight="semibold">Recent activity</Body>
 
-            <Pressable onPress={() => router.push("/(tabs)/a/activity")}>
-              <Text
-                style={{
-                  fontSize: tokens.typography.sizes.xs,
-                  color: colors.primary,
-                }}
-              >
-                View all
-              </Text>
-            </Pressable>
+            <Button
+              variant="secondary"
+              size="sm"
+              onPress={() => router.push("/(tabs)/a/activity")}
+              accessibilityLabel="View all activity"
+            >
+              View all
+            </Button>
           </View>
 
           <View
@@ -654,43 +428,13 @@ export default function Home() {
                       backgroundColor: colors.surfaceVariant,
                     }}
                   >
-                    <Text
-                      style={{
-                        fontSize: tokens.typography.sizes.xs,
-                        color: colors.onPrimaryContainer,
-                      }}
-                    >
-                      –
-                    </Text>
+                    <BodySmall color={colors.onPrimaryContainer}>–</BodySmall>
                   </View>
                   <View style={{ flex: 1, gap: tokens.spacing.xs }}>
-                    <Text
-                      style={{
-                        fontSize: tokens.typography.sizes.sm,
-                        color: colors.onSurface,
-                      }}
-                      numberOfLines={1}
-                    >
-                      {item.label}
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: tokens.typography.sizes.xs,
-                        color: colors.onSurfaceVariant,
-                      }}
-                    >
-                      {item.date}
-                    </Text>
+                    <Body numberOfLines={1}>{item.label}</Body>
+                    <Caption>{item.date}</Caption>
                   </View>
-                  <Text
-                    style={{
-                      fontSize: tokens.typography.sizes.sm,
-                      fontWeight: tokens.typography.weights.semibold,
-                      color: colors.onSurface,
-                    }}
-                  >
-                    {item.amount}
-                  </Text>
+                  <Body weight="semibold">{item.amount}</Body>
                 </View>
               ))
             )}

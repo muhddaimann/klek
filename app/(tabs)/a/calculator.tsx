@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { View, ScrollView, Pressable } from "react-native";
-import { useTheme, Text } from "react-native-paper";
+import { useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDesign } from "../../../contexts/designContext";
 import { Header } from "../../../components/shared/header";
@@ -12,6 +12,7 @@ import {
   Wallet2,
   TrendingUp,
 } from "lucide-react-native";
+import { Body, BodySmall, Caption } from "../../../components/atom/text";
 
 type ToolKey =
   | "safeCommit"
@@ -109,24 +110,17 @@ export default function Calculator() {
               ...card,
             }}
           >
-            <Text
-              style={{
-                fontSize: tokens.typography.sizes.xs,
-                color: colors.onPrimaryContainer,
-              }}
-            >
-              Planner helpers
-            </Text>
-            <Text
+            <Caption color={colors.onPrimaryContainer}>Planner helpers</Caption>
+            <Body
+              weight="semibold"
+              color={colors.onPrimaryContainer}
               style={{
                 marginTop: tokens.spacing["xs"],
                 fontSize: tokens.typography.sizes.lg,
-                fontWeight: tokens.typography.weights.semibold,
-                color: colors.onPrimaryContainer,
               }}
             >
               Try different money scenarios before committing.
-            </Text>
+            </Body>
           </View>
 
           <View
@@ -144,14 +138,9 @@ export default function Calculator() {
               size={tokens.sizes.icon.lg}
               color={colors.onSurface}
             />
-            <Text
-              style={{
-                fontSize: tokens.typography.sizes.xs,
-                color: colors.onSurfaceVariant,
-              }}
-            >
+            <Caption muted>
               Use these tools to feed into Budget, Settlement, and Wishlist.
-            </Text>
+            </Caption>
           </View>
         </View>
 
@@ -188,25 +177,16 @@ export default function Calculator() {
                 />
               </View>
               <View style={{ flex: 1, gap: tokens.spacing["xs"] }}>
-                <Text
-                  style={{
-                    fontSize: tokens.typography.sizes.sm,
-                    fontWeight: tokens.typography.weights.semibold,
-                    color: colors.onSurface,
-                  }}
+                <BodySmall
+                  weight="semibold"
+                  color={colors.onSurface}
                   numberOfLines={1}
                 >
                   {tool.label}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: tokens.typography.sizes.xs,
-                    color: colors.onSurfaceVariant,
-                  }}
-                  numberOfLines={2}
-                >
+                </BodySmall>
+                <Caption muted numberOfLines={2}>
                   {tool.subtitle}
-                </Text>
+                </Caption>
               </View>
             </Pressable>
           ))}

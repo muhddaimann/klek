@@ -1,9 +1,10 @@
 import React from "react";
 import { View, Pressable, StyleProp, ViewStyle } from "react-native";
-import { Text, useTheme } from "react-native-paper";
+import { useTheme } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import { useDesign } from "../../contexts/designContext";
+import { Body, BodySmall } from "../atom/text";
 
 type HeaderProps = {
   title: string;
@@ -73,27 +74,22 @@ export function Header({
         )}
 
         <View style={{ flex: 1 }}>
-          <Text
-            style={{
-              fontSize: tokens.typography.sizes.lg,
-              fontWeight: tokens.typography.weights.semibold,
-              color: colors.onSurface,
-            }}
+          <Body
+            weight="semibold"
+            color={colors.onSurface}
             numberOfLines={1}
+            style={{ fontSize: tokens.typography.sizes.lg }}
           >
             {title}
-          </Text>
+          </Body>
           {subtitle ? (
-            <Text
-              style={{
-                marginTop: tokens.spacing["xxs"],
-                fontSize: tokens.typography.sizes.xs,
-                color: colors.onSurfaceVariant,
-              }}
+            <BodySmall
+              muted
               numberOfLines={1}
+              style={{ marginTop: tokens.spacing["xxs"] }}
             >
               {subtitle}
-            </Text>
+            </BodySmall>
           ) : null}
         </View>
       </View>

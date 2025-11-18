@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, Animated, Easing } from "react-native";
-import { useTheme, Text } from "react-native-paper";
+import { useTheme } from "react-native-paper";
 import { router } from "expo-router";
 import { useDesign } from "../contexts/designContext";
-import { H1 } from "../components/atom/text";
+import { H1, Caption } from "../components/atom/text";
 import Logo from "../components/shared/logo";
 
 export default function Goodbye() {
@@ -78,9 +78,9 @@ export default function Goodbye() {
       >
         <Logo size={tokens.typography.sizes["3xl"] * 2} />
         <H1 style={{ color: colors.onSurface }}>Goodbye</H1>
-        <Text style={{ color: colors.onSurfaceVariant }}>
+        <Caption color={colors.onSurfaceVariant}>
           Returning to start in {count}s
-        </Text>
+        </Caption>
       </Animated.View>
     </View>
   );

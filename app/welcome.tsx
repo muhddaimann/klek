@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, Animated, Easing } from "react-native";
-import { useTheme, Text } from "react-native-paper";
+import { useTheme } from "react-native-paper";
 import { router } from "expo-router";
 import { useDesign } from "../contexts/designContext";
-import { H1 } from "../components/atom/text";
+import { H1, Caption } from "../components/atom/text";
 import Logo from "../components/shared/logo";
 import { IconCoin } from "tabler-icons-react-native";
 
@@ -85,7 +85,7 @@ export default function Welcome() {
 
       <Animated.View style={{ opacity: fade, alignItems: "center" }}>
         <H1 style={{ color: colors.onSurface }}>RM {rm.toFixed(2)}</H1>
-        <Text style={{ color: colors.onSurfaceVariant }}>collecting back…</Text>
+        <Caption color={colors.onSurfaceVariant}>collecting back…</Caption>
       </Animated.View>
 
       <Animated.View style={{ opacity: fade }}>

@@ -1,14 +1,13 @@
 import React from "react";
 import { View, Pressable } from "react-native";
-import { useTheme, Text, Divider } from "react-native-paper";
+import { useTheme, Divider } from "react-native-paper";
 import { useDesign } from "../../../contexts/designContext";
-import { useAuth } from "../../../contexts/authContext";
-import { UserRound, Globe2, Wallet, Moon, LogOut } from "lucide-react-native";
+import { UserRound, Globe2, Wallet, Moon } from "lucide-react-native";
+import { H2, Body, BodySmall, Caption } from "../../../components/atom/text";
 
 export default function Settings() {
   const { colors } = useTheme();
   const { tokens } = useDesign();
-  const { signOut } = useAuth();
 
   const card = { borderRadius: tokens.radii.lg } as const;
 
@@ -23,24 +22,9 @@ export default function Settings() {
         gap: tokens.spacing.lg,
       }}
     >
-      <View style={{ gap: tokens.spacing["xxs"] }}>
-        <Text
-          style={{
-            fontSize: tokens.typography.sizes.xl,
-            fontWeight: tokens.typography.weights.semibold,
-            color: colors.onSurface,
-          }}
-        >
-          Settings
-        </Text>
-        <Text
-          style={{
-            fontSize: tokens.typography.sizes.xs,
-            color: colors.onSurfaceVariant,
-          }}
-        >
-          Tune how Klek works for you.
-        </Text>
+      <View style={{ gap: tokens.spacing["xs"] }}>
+        <H2>Settings</H2>
+        <BodySmall muted>Tune how Klek works for you.</BodySmall>
       </View>
 
       <View
@@ -136,26 +120,15 @@ function Row({
     >
       {icon}
       <View style={{ flex: 1 }}>
-        <Text
-          style={{
-            fontSize: tokens.typography.sizes.sm,
-            fontWeight: tokens.typography.weights.semibold,
-            color: colors.onSurface,
-          }}
-        >
-          {label}
-        </Text>
+        <Body weight="semibold">{label}</Body>
         {value ? (
-          <Text
-            style={{
-              marginTop: tokens.spacing["3xs"],
-              fontSize: tokens.typography.sizes.xs,
-              color: colors.onSurfaceVariant,
-            }}
+          <Caption
+            muted
             numberOfLines={1}
+            style={{ marginTop: tokens.spacing["3xs"] }}
           >
             {value}
-          </Text>
+          </Caption>
         ) : null}
       </View>
     </Pressable>

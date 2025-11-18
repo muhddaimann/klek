@@ -5,12 +5,12 @@ import {
   GestureResponderEvent,
   StyleProp,
   ViewStyle,
-  Text,
   View,
   StyleSheet,
 } from "react-native";
 import { ActivityIndicator, useTheme } from "react-native-paper";
 import { useDesign } from "../../contexts/designContext";
+import { Body } from "./text";
 
 type Variant =
   | "default"
@@ -133,6 +133,13 @@ export function Button({
     default: undefined,
   });
 
+  const textSize =
+    size === "sm"
+      ? tokens.typography.sizes.sm
+      : size === "lg"
+      ? tokens.typography.sizes.lg
+      : tokens.typography.sizes.md;
+
   const content = loading ? (
     <ActivityIndicator size="small" color={palette.fg as string} />
   ) : (
@@ -141,30 +148,17 @@ export function Button({
         <IconLeft color={palette.fg as string} size={iconSize} />
       ) : null}
       {typeof children === "string" ? (
-        <Text
+        <Body
+          weight="med"
+          color={palette.fg as string}
+          numberOfLines={1}
           style={{
-            color: palette.fg as string,
-            fontFamily: "Inter_500Medium",
-            fontWeight: "500",
-            fontSize:
-              size === "sm"
-                ? tokens.typography.sizes.sm
-                : size === "lg"
-                ? tokens.typography.sizes.lg
-                : tokens.typography.sizes.md,
-            lineHeight: Math.round(
-              (size === "sm"
-                ? tokens.typography.sizes.sm
-                : size === "lg"
-                ? tokens.typography.sizes.lg
-                : tokens.typography.sizes.md) * 1.25
-            ),
+            fontSize: textSize,
             textDecorationLine: variant === "link" ? "underline" : "none",
           }}
-          numberOfLines={1}
         >
           {children}
-        </Text>
+        </Body>
       ) : (
         children
       )}

@@ -1,7 +1,9 @@
 import * as React from "react";
-import { View, Pressable } from "react-native";
-import { Text, useTheme } from "react-native-paper";
+import { View } from "react-native";
+import { useTheme } from "react-native-paper";
 import { useDesign } from "../../contexts/designContext";
+import { Body, BodySmall } from "../atom/text";
+import { Button } from "../atom/button";
 
 type IconComp = React.ComponentType<{ size?: number; color?: string }>;
 
@@ -13,7 +15,13 @@ type Props = {
   onAction?: () => void;
 };
 
-export function EmptyState({ Icon, title, subtitle, actionLabel, onAction }: Props) {
+export function EmptyState({
+  Icon,
+  title,
+  subtitle,
+  actionLabel,
+  onAction,
+}: Props) {
   const { colors } = useTheme();
   const { tokens } = useDesign();
 
@@ -36,56 +44,33 @@ export function EmptyState({ Icon, title, subtitle, actionLabel, onAction }: Pro
             alignItems: "center",
             justifyContent: "center",
             marginBottom: tokens.spacing.xs,
+            backgroundColor: colors.surfaceVariant,
           }}
         >
           <Icon size={tokens.sizes.icon.lg} color={colors.onSurfaceVariant} />
         </View>
       ) : null}
 
-      <Text
-        style={{
-          fontSize: tokens.typography.sizes.sm,
-          fontWeight: tokens.typography.weights.semibold,
-          color: colors.onSurface,
-          textAlign: "center",
-        }}
-      >
+      <Body weight="semibold" align="center">
         {title}
-      </Text>
+      </Body>
 
       {subtitle ? (
-        <Text
-          style={{
-            fontSize: tokens.typography.sizes.xs,
-            color: colors.onSurfaceVariant,
-            textAlign: "center",
-          }}
-        >
+        <BodySmall muted align="center">
           {subtitle}
-        </Text>
+        </BodySmall>
       ) : null}
 
       {actionLabel && onAction ? (
-        <Pressable
+        <Button
+          size="sm"
+          rounded="pill"
           onPress={onAction}
-          style={{
-            marginTop: tokens.spacing.sm,
-            paddingHorizontal: tokens.spacing.md,
-            paddingVertical: tokens.spacing.xs,
-            borderRadius: tokens.radii.pill,
-            backgroundColor: colors.primary,
-          }}
+          accessibilityLabel={actionLabel}
+          style={{ marginTop: tokens.spacing.sm }}
         >
-          <Text
-            style={{
-              fontSize: tokens.typography.sizes.xs,
-              fontWeight: tokens.typography.weights.semibold,
-              color: colors.onPrimary,
-            }}
-          >
-            {actionLabel}
-          </Text>
-        </Pressable>
+          {actionLabel}
+        </Button>
       ) : null}
     </View>
   );

@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Pressable, Platform } from "react-native";
-import { useTheme, Divider, Text } from "react-native-paper";
+import { View, Pressable, Platform, StyleProp, ViewStyle } from "react-native";
+import { useTheme, Divider } from "react-native-paper";
 import { Button } from "../../components/atom/button";
+import { Subtitle, Body } from "../../components/atom/text";
 import { useDesign } from "../../contexts/designContext";
 import type { AlertOptions } from "../../contexts/overlayContext";
 
@@ -78,15 +79,9 @@ export function AlertDialog({
                 paddingBottom: tokens.spacing.xs,
               }}
             >
-              <Text
-                style={{
-                  color: colors.onBackground,
-                  fontSize: tokens.typography.sizes.lg,
-                  fontWeight: tokens.typography.weights.semibold,
-                }}
-              >
+              <Subtitle color={colors.onBackground} numberOfLines={2}>
                 {state.title}
-              </Text>
+              </Subtitle>
             </View>
           ) : null}
 
@@ -97,15 +92,7 @@ export function AlertDialog({
                 paddingBottom: tokens.spacing.lg,
               }}
             >
-              <Text
-                style={{
-                  color: colors.onSurfaceVariant,
-                  fontSize: tokens.typography.sizes.md,
-                  fontWeight: tokens.typography.weights.reg,
-                }}
-              >
-                {state.message}
-              </Text>
+              <Body color={colors.onSurfaceVariant}>{state.message}</Body>
             </View>
           ) : null}
 

@@ -1,8 +1,11 @@
 import React from "react";
 import { View, Pressable, Platform } from "react-native";
-import { useTheme, Text, Divider } from "react-native-paper";
+import { useTheme, Divider } from "react-native-paper";
 import { useDesign } from "../../contexts/designContext";
 import type { OptionsOverlayOptions } from "../../contexts/overlayContext";
+import { H3, Body, BodySmall } from "../atom/text";
+
+const DURATION = 240;
 
 export function OptionsCenter({
   visible,
@@ -77,29 +80,11 @@ export function OptionsCenter({
                 paddingBottom: tokens.spacing.sm,
               }}
             >
-              {state.title ? (
-                <Text
-                  style={{
-                    color: colors.onBackground,
-                    fontSize: tokens.typography.sizes.lg,
-                    fontWeight: tokens.typography.weights.semibold,
-                    textAlign: "left",
-                  }}
-                >
-                  {state.title}
-                </Text>
-              ) : null}
+              {state.title ? <H3>{state.title}</H3> : null}
               {state.message ? (
-                <Text
-                  style={{
-                    marginTop: tokens.spacing["xs"],
-                    color: colors.onSurfaceVariant,
-                    fontSize: tokens.typography.sizes.md,
-                    fontWeight: tokens.typography.weights.reg,
-                  }}
-                >
+                <BodySmall muted style={{ marginTop: tokens.spacing.xs }}>
                   {state.message}
-                </Text>
+                </BodySmall>
               ) : null}
             </View>
           )}
@@ -110,7 +95,7 @@ export function OptionsCenter({
 
           <View
             style={{
-              paddingVertical: tokens.spacing["xs"],
+              paddingVertical: tokens.spacing.xs,
             }}
           >
             {state.options.map((opt, index) => (
@@ -125,14 +110,7 @@ export function OptionsCenter({
                     : "transparent",
                 })}
               >
-                <Text
-                  style={{
-                    fontSize: tokens.typography.sizes.md,
-                    color: colors.onSurface,
-                  }}
-                >
-                  {opt.label}
-                </Text>
+                <Body>{opt.label}</Body>
               </Pressable>
             ))}
           </View>
