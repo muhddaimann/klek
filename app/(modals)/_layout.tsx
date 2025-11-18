@@ -19,6 +19,7 @@ export default function ModalLayout() {
       <Stack.Screen name="billSplit" />
       <Stack.Screen name="addBudget" />
       <Stack.Screen name="addRecord" />
+      <Stack.Screen name="addWishlist" />
     </Stack>
   );
 }

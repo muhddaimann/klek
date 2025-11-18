@@ -124,6 +124,7 @@ klek/
 │  ├─ (tabs)/
 │  │  ├─ a/
 │  │  │  ├─ _layout.tsx
+│  │  │  ├─ claim.tsx
 │  │  │  └─ index.tsx
 │  │  ├─ b/
 │  │  │  ├─ _layout.tsx
@@ -167,74 +168,47 @@ klek/
 ├─ README.md
 └─ tsconfig.json
 
-Hi Everyone! 👋
-
-🌩️ We’re Hiring: Cloud & Application Support Engineer 🌩️
-📍 Location: Kota Damansara
-💼 Employment Type: Full-time
-💰 Salary: RM3,000 – RM6,000/month
-
-✨ What You’ll Do:
-Be the first line of support for incidents and troubleshooting
-Monitor system performance and security alerts
-Support application deployment and cloud configurations
-Contribute to automation and continuous improvement
-
 Klek – personal finance & fronts tracker
 ├─ Core
-│  ├─ Timeline — All money moves (spend, income, lent, received)
-│  ├─ Categories — Food, Transport, Bills, etc.
-│  ├─ Insights — This month spend, by category, basic charts
-│  ├─ To Claim — Friends owe you (focus on this month)
-│  ├─ To Pay   — You owe others (focus on this month)
-│
-├─ Front / Claim Extras (Klek’s special sauce)
-│  ├─ Informal Debt — “Lend / Borrow” with friends
-│  ├─ Bill Splitting — Group meals, rides, etc.
-│  ├─ Wishlist — Planned trips / eats / events to track later spends
-│  ├─ Settlements — Mark as paid, partial, overpaid
-|
-├─ Home
-│  ├─ Informal Debt — To claim from friends list
-│  ├─ Bill Splitting — Group meals, rides, etc.
-│  ├─ Wishlist — Planned trips / eats / events to track later spends
-│  ├─ Settlements — Mark as paid, partial, overpaid
-
-├─ App Layout
-├─ HeaderBar
-│  ├─ App name ("Klek") / greeting
-│  ├─ Current month selector (◀ Oct 2025 ▶)
-│  ├─ Small avatar / entry to Settings
-│
-├─ SummaryStrip
-│  ├─ "This month spent"
-│  ├─ "To claim" (friends owe you)
-│  ├─ "To pay" (you owe others)
-│
-├─ QuickActionsRow
-│  ├─ [+ Expense]
-│  ├─ [+ Lent to friend]
-│  ├─ [+ Split bill]
-│
-├─ ToClaimSection
-│  ├─ Title: "To claim"
-│  ├─ Small list (top 3) – friend name, amount, due tag
-│  ├─ "View all" link
-│
-├─ ToPaySection
-│  ├─ Title: "To pay"
-│  ├─ Small list – who you owe, amount, due tag
-│  ├─ "View all" link
-│
-├─ WishlistStrip (optional v1.1)
-│  ├─ Horizontal chips/cards for trips / eats
-│
-├─ TimelineSection
-│  ├─ Title: "Recent activity"
-│  ├─ List of last 5–10 transactions:
-│      • icon (expense / lent / split)
-│      • label, friend (if any), amount, date
-│  ├─ Settings —
-│  ├─ Auth — Sign in, up, forgot, onboarding
+│ ├─ Budget — Budget Tracker
+│ │ ├─ Set monthly budget caps by category (food, transport, bills, etc.)
+│ │ ├─ Track actual spending vs budget in real time
+│ │ ├─ See status labels (On track / High / Over budget)
+│ │ ├─ Highlight top spending categories and simple trends
+│ │ └─ Notify Hit Limit
+│ ├─ Claim — Claim Tracker
+│ │ ├─ Record upfront payments and split bills with friends + auto record
+│ │ ├─ Track what others owe you and claim status (Pending / Paid / Overdue)
+│ │ ├- Get a quick view of total amount to claim for the month
+│ │ └─ Notify Pending to claim
+│ ├─ Settlement — Settlement Tracker
+│ │ ├─ Log recurring commitments (loans, credit cards, subscriptions, rent)
+│ │ ├─ See total amount to pay and upcoming due dates
+│ │ ├─ Mark items as Upcoming, Overdue or Paid
+│ │ └─ Notify Pending to pay
+│ ├─ Wishlist — Wishlist Tracker
+│ │ ├─ Create wishlist items with target amount (trip, gadget, hobby, etc.)
+│ │ ├─ Track how much you’ve already saved towards each goal
+│ │ └─ Set priority and rough tenure (3 months, 6 months, 1 year)
+│ ├─ Calculator — Finance Tools
+│ │ ├─ Safe Commit — Suggest a monthly amount you can safely commit from income
+│ │ ├─ Loan Estimator — Approximate monthly instalment and total interest
+│ │ ├─ Saving Estimator — Compare monthly saving vs target amount or date
+│ │ └─ Compounding Estimator — Estimate future value with simple compounding
+│ ├─ Overview — Overall Modules Widgets
+│ │ ├─ Home widgets for Budget, Claims, Settlements, Wishlist, and Calculator
+│ │ ├─ Month toggle to switch data views
+│ │ ├─ Budget (Total spent & %) ()
+│ │ ├─ Claims 
+│ │ ├─ To Pay
+│ │ ├─ Settlements
+│ │ ├─ Wishlist
+│ │ ├─ Calculator
+│ │ ├─ Quick Entry
+│ ├─ Timeline — Activity Tracking
+│ │ ├─ Chronological list of spends, fronts, claims and settlements
+│ │ ├─ Tag each activity as expense, lent, or received
+│ │ ├─ Show amount, short label, and date for each event
+│ │ ├─ Filter by month to review what happened over time
 
 ```

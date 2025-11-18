@@ -63,6 +63,11 @@ function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
       showOptions({
         options: [
           {
+            id: "budget",
+            label: "Add Spending",
+            onPress: () => router.push("/addRecord"),
+          },
+          {
             id: "manual",
             label: "New claim",
             onPress: () => router.push("/manualClaim"),

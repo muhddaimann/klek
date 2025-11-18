@@ -44,6 +44,24 @@ export default function HomeLayout() {
               headerShown: false,
             }}
           />
+          <Stack.Screen
+            name="wishlist"
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="calculator"
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="activity"
+            options={{
+              headerShown: false,
+            }}
+          />
         </Stack>
       </View>
     </>
