@@ -5,25 +5,42 @@ import { useRouter } from "expo-router";
 import { Bell } from "lucide-react-native";
 import { useDesign } from "../../contexts/designContext";
 import { useOverlay } from "../../hooks/useOverlay";
+import { useGreeting } from "../../hooks/useGreeting";
 import { H2, Caption, BodySmall } from "../atom/text";
 
 type Props = {
   username: string;
   monthLabel: string;
-  onToggleMonth: () => void;
+  onMonthSelect: (month: string) => void;
   onBellPress?: () => void;
 };
+
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 export function MainHeader({
   username,
   monthLabel,
-  onToggleMonth,
+  onMonthSelect,
   onBellPress,
 }: Props) {
   const { colors } = useTheme();
   const { tokens } = useDesign();
   const router = useRouter();
   const { options: showOptions } = useOverlay();
+  const { greeting } = useGreeting();
 
   const CIRCLE = tokens.spacing["2xl"];
 
@@ -61,6 +78,21 @@ export function MainHeader({
     if (onBellPress) onBellPress();
   };
 
+  const handleMonthPress = () => {
+    const monthOptions = MONTHS.map((month, index) => ({
+      id: String(index),
+      label: month,
+      onPress: () => {
+        onMonthSelect(month);
+      },
+    }));
+
+    showOptions({
+      title: "Select month to view",
+      options: monthOptions,
+    });
+  };
+
   return (
     <View
       style={{
@@ -72,7 +104,7 @@ export function MainHeader({
     >
       <View style={{ flex: 1, gap: tokens.spacing["xxs"] }}>
         <Caption muted weight="bold">
-          {`Good evening, ${username}.`}
+          {`${greeting}, ${username}.`}
         </Caption>
         <H2>Your money at a glance</H2>
       </View>
@@ -117,13 +149,10 @@ export function MainHeader({
               borderRadius: CIRCLE / 2,
               alignItems: "center",
               justifyContent: "center",
-              backgroundColor: colors.surface,
-              borderWidth: 1,
-              borderColor: colors.outlineVariant,
             }}
           >
             <Avatar.Text
-              size={CIRCLE - tokens.spacing.sm}
+              size={CIRCLE}
               label={username?.charAt(0).toUpperCase() || "K"}
               style={{ backgroundColor: colors.primary }}
               color={colors.onPrimary}
@@ -150,7 +179,7 @@ export function MainHeader({
           </View>
 
           <Pressable
-            onPress={onToggleMonth}
+            onPress={handleMonthPress}
             style={{
               borderRadius: tokens.radii.lg,
               paddingHorizontal: tokens.spacing.sm,

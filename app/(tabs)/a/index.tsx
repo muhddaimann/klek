@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, ScrollView, Pressable } from "react-native";
 import { useTheme } from "react-native-paper";
 import { useDesign } from "../../../contexts/designContext";
@@ -18,15 +18,33 @@ import { useHome } from "../../../hooks/useHome";
 import { Body, BodySmall, Caption } from "../../../components/atom/text";
 import { Button } from "../../../components/atom/button";
 import { MainHeader } from "../../../components/shared/homeHeader";
+import { useToast } from "../../../hooks/useOverlay";
 
 export default function Home() {
   const { colors } = useTheme();
   const { tokens } = useDesign();
   const { onScroll } = useTab();
   const router = useRouter();
-  const { monthSummary, overview, timeline, toggleMonth } = useHome();
-
+  const toast = useToast();
+  const { monthSummary, overview, timeline, hasData, setMonth } = useHome();
   const card = { borderRadius: tokens.radii.lg } as const;
+
+  useEffect(() => {
+    if (!hasData) {
+      toast("No data to be shown");
+    }
+  }, [hasData, toast]);
+
+  const handleMonthSelect = (month: string) => {
+    if (month !== "November") {
+      toast({
+        message: `No records found in ${month}.`,
+        variant:"error",
+      });
+      return;
+    }
+    setMonth(month);
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -46,7 +64,7 @@ export default function Home() {
         <MainHeader
           username="Aiman"
           monthLabel={monthSummary.monthLabel}
-          onToggleMonth={toggleMonth}
+          onMonthSelect={handleMonthSelect}
           onBellPress={() => router.push("/(tabs)/a/notification")}
         />
 

@@ -45,7 +45,7 @@ export function ToastBar({
   const { tokens } = useDesign();
   const insets = useSafeAreaInsets();
 
-  const { bg, fg, border } = useMemo(() => {
+  const { bg, fg } = useMemo(() => {
     const base =
       state.variant === "success"
         ? colors.tertiary
@@ -55,44 +55,54 @@ export function ToastBar({
         ? colors.error
         : colors.primary;
 
-    const t = dark ? 0.2 : 0.12;
+    const t = dark ? 0.3 : 0.18;
     const softBg = mix(colors.surface, base, t);
-    const brd = mix(softBg, colors.outlineVariant, 0.6);
     const fg = colors.onSurface;
 
-    return { bg: softBg, fg, border: brd };
+    return { bg: softBg, fg };
   }, [state.variant, colors, dark]);
 
-  const translateY = useRef(new Animated.Value(80)).current;
+  const translateY = useRef(new Animated.Value(40)).current;
   const opacity = useRef(new Animated.Value(0)).current;
+  const scale = useRef(new Animated.Value(0.96)).current;
 
   useEffect(() => {
     const show = Animated.parallel([
       Animated.timing(translateY, {
         toValue: 0,
-        duration: 180,
+        duration: 220,
         useNativeDriver: true,
       }),
       Animated.timing(opacity, {
         toValue: 1,
-        duration: 180,
+        duration: 220,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scale, {
+        toValue: 1,
+        duration: 220,
         useNativeDriver: true,
       }),
     ]);
     const hide = Animated.parallel([
       Animated.timing(translateY, {
-        toValue: 80,
-        duration: 150,
+        toValue: 40,
+        duration: 160,
         useNativeDriver: true,
       }),
       Animated.timing(opacity, {
         toValue: 0,
-        duration: 150,
+        duration: 160,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scale, {
+        toValue: 0.96,
+        duration: 160,
         useNativeDriver: true,
       }),
     ]);
     (visible ? show : hide).start();
-  }, [visible, translateY, opacity]);
+  }, [visible, translateY, opacity, scale]);
 
   useEffect(() => {
     if (!visible) return;
@@ -114,19 +124,32 @@ export function ToastBar({
         paddingHorizontal: tokens.spacing.lg,
         paddingBottom: Math.max(insets.bottom, tokens.spacing.lg),
         zIndex: 9999,
+        alignItems: "center",
         ...(Platform.OS === "android" ? { elevation: 9999 } : null),
       }}
     >
-      <Animated.View style={{ transform: [{ translateY }], opacity }}>
+      <Animated.View
+        style={{
+          transform: [{ translateY }, { scale }],
+          opacity,
+          maxWidth: 480,
+          width: "100%",
+        }}
+      >
         <View
           style={{
-            borderRadius: tokens.radii.lg,
-            backgroundColor: "transparent",
+            borderRadius: tokens.radii["2xl"],
+            backgroundColor: bg,
+            paddingVertical: tokens.spacing.sm,
+            paddingHorizontal: tokens.spacing.md,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: tokens.spacing.sm,
             ...Platform.select({
               ios: {
                 shadowColor: colors.shadow,
-                shadowOpacity: 0.18,
-                shadowRadius: tokens.elevation.level5 * 2,
+                shadowOpacity: 0.16,
+                shadowRadius: tokens.elevation.level5 * 1.8,
                 shadowOffset: { width: 0, height: tokens.elevation.level5 },
               },
               android: { elevation: tokens.elevation.level5 },
@@ -134,50 +157,35 @@ export function ToastBar({
             }),
           }}
         >
-          <View
+          <Pressable
+            onPress={onDismiss}
+            accessibilityLabel="Dismiss notification"
             style={{
-              backgroundColor: bg,
-              borderRadius: tokens.radii.lg,
-              overflow: "hidden",
-              paddingVertical: tokens.spacing.sm,
-              paddingHorizontal: tokens.spacing.md,
-              borderWidth: 1,
-              borderColor: border,
+              flex: 1,
+              paddingVertical: tokens.spacing.xs,
             }}
           >
-            <Pressable
-              onPress={onDismiss}
-              accessibilityLabel="Dismiss notification"
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: tokens.spacing.sm,
-              }}
-            >
-              <View style={{ flex: 1, paddingVertical: tokens.spacing.xs }}>
-                <Body color={fg} numberOfLines={2}>
-                  {state.message}
-                </Body>
-              </View>
+            <Body color={fg} numberOfLines={2}>
+              {state.message}
+            </Body>
+          </Pressable>
 
-              {state.actionLabel ? (
-                <Button
-                  variant="link"
-                  size="sm"
-                  onPress={() => {
-                    state.onAction?.();
-                    onDismiss();
-                  }}
-                  rounded="sm"
-                  style={{ paddingHorizontal: 0, paddingVertical: 0 }}
-                >
-                  <BodySmall color={fg} weight="semibold">
-                    {state.actionLabel}
-                  </BodySmall>
-                </Button>
-              ) : null}
-            </Pressable>
-          </View>
+          {state.actionLabel ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              onPress={() => {
+                state.onAction?.();
+                onDismiss();
+              }}
+              rounded="pill"
+              style={{ paddingHorizontal: tokens.spacing.xs }}
+            >
+              <BodySmall color={fg} weight="semibold">
+                {state.actionLabel}
+              </BodySmall>
+            </Button>
+          ) : null}
         </View>
       </Animated.View>
     </View>

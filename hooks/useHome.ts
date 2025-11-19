@@ -64,156 +64,122 @@ export type HomeOverview = {
   calculator: HomeCalculatorOverview;
 };
 
-type HomeMonthKey = "october" | "november";
-
-const NOVEMBER_MONTH: HomeMonthSummary = {
-  monthLabel: "November",
-  spent: "RM 1,480",
-  toClaim: "RM 320",
-  toPay: "RM 540",
+const formatMoney = (num: number) => {
+  return `RM ${num.toLocaleString("en-US", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  })}`;
 };
 
-const NOVEMBER_OVERVIEW: HomeOverview = {
-  budget: {
-    title: "Budget",
-    primary: "RM 1,480 / RM 2,500",
-    secondary: "59% used · On track",
-    statusLabel: "On track",
-    percentUsed: 59,
-    topCategory: "Food",
-  },
-  claim: {
-    title: "To claim",
-    totalToClaim: "RM 320",
-    secondary: "3 claims · 1 overdue",
-    count: 3,
-    overdueCount: 1,
-    lastLabel: "Lunch with team",
-  },
-  settlement: {
-    title: "To pay",
-    totalToPay: "RM 540",
-    secondary: "Next due: 25 Nov",
-    nextDueLabel: "25 Nov",
-    breakdownLabel: "2 loans · 1 sub",
-  },
-  wishlist: {
-    title: "Wishlist",
-    itemsCount: 3,
-    totalSaved: "RM 3,200",
-    secondary: "Next: Europe trip",
-    nextTargetLabel: "Europe trip",
-    fundedPercent: 34,
-  },
-  calculator: {
-    title: "Calculator tools",
-    primary: "Try a scenario",
-    secondary: "Safe commit, loans, savings, compounding",
-  },
+const generateMonthData = (month: string) => {
+  const hasDataForMonth = month === "November";
+
+  const spent = hasDataForMonth ? 1000 + Math.random() * 1500 : 0;
+  const toClaim = hasDataForMonth ? Math.random() * 500 : 0;
+  const toPay = hasDataForMonth ? Math.random() * 1000 : 0;
+
+  const monthSummary: HomeMonthSummary = {
+    monthLabel: month,
+    spent: formatMoney(spent),
+    toClaim: formatMoney(toClaim),
+    toPay: formatMoney(toPay),
+  };
+
+  const totalBudget = hasDataForMonth ? 2500 + Math.random() * 1000 : 0;
+  const percentUsed = totalBudget > 0 ? (spent / totalBudget) * 100 : 0;
+  const budgetStatus =
+    percentUsed > 90 ? "High" : percentUsed > 60 ? "On track" : "Low";
+
+  const overview: HomeOverview = {
+    budget: {
+      title: "Budget",
+      primary: `${formatMoney(spent)} / ${formatMoney(totalBudget)}`,
+      secondary:
+        totalBudget > 0
+          ? `${percentUsed.toFixed(0)}% used · ${budgetStatus}`
+          : "No budget data",
+      statusLabel: budgetStatus,
+      percentUsed: percentUsed,
+      topCategory: hasDataForMonth ? "Food" : null,
+    },
+    claim: {
+      title: "To claim",
+      totalToClaim: formatMoney(toClaim),
+      secondary: hasDataForMonth ? "3 claims · 1 overdue" : "No claims",
+      count: hasDataForMonth ? 3 : 0,
+      overdueCount: hasDataForMonth ? 1 : 0,
+      lastLabel: hasDataForMonth ? "Lunch with team" : null,
+    },
+    settlement: {
+      title: "To pay",
+      totalToPay: formatMoney(toPay),
+      secondary: hasDataForMonth ? "Next due: 25 Nov" : "No commitments",
+      nextDueLabel: hasDataForMonth ? "25 Nov" : null,
+      breakdownLabel: hasDataForMonth ? "2 loans · 1 sub" : "0 items",
+    },
+    wishlist: {
+      title: "Wishlist",
+      itemsCount: hasDataForMonth ? 3 : 0,
+      totalSaved: hasDataForMonth ? formatMoney(3200) : formatMoney(0),
+      secondary: hasDataForMonth ? "Next: Europe trip" : "No wishlist",
+      nextTargetLabel: hasDataForMonth ? "Europe trip" : null,
+      fundedPercent: hasDataForMonth ? 34 : 0,
+    },
+    calculator: {
+      title: "Calculator tools",
+      primary: "Try a scenario",
+      secondary: "Safe commit, loans, savings, compounding",
+    },
+  };
+
+  const timeline: HomeTimelineItem[] = hasDataForMonth
+    ? [
+        {
+          id: "t1",
+          type: "expense",
+          label: "Groceries – Jaya Grocer",
+          amount: formatMoney(120),
+          date: "12 Nov",
+        },
+        {
+          id: "t2",
+          type: "lent",
+          label: "Brunch – Fronted for friends",
+          amount: formatMoney(85),
+          date: "10 Nov",
+        },
+        {
+          id: "t3",
+          type: "receive",
+          label: "Reimbursed – Team dinner",
+          amount: formatMoney(150),
+          date: "08 Nov",
+        },
+      ]
+    : [];
+
+  return { monthSummary, overview, timeline };
 };
-
-const NOVEMBER_TIMELINE: HomeTimelineItem[] = [
-  {
-    id: "t1",
-    type: "expense",
-    label: "Groceries – Jaya Grocer",
-    amount: "RM 120",
-    date: "12 Nov",
-  },
-  {
-    id: "t2",
-    type: "lent",
-    label: "Brunch – Fronted for friends",
-    amount: "RM 85",
-    date: "10 Nov",
-  },
-  {
-    id: "t3",
-    type: "receive",
-    label: "Reimbursed – Team dinner",
-    amount: "RM 150",
-    date: "08 Nov",
-  },
-];
-
-const OCTOBER_MONTH: HomeMonthSummary = {
-  monthLabel: "October",
-  spent: "RM 0",
-  toClaim: "RM 0",
-  toPay: "RM 0",
-};
-
-const OCTOBER_OVERVIEW: HomeOverview = {
-  budget: {
-    title: "Budget",
-    primary: "RM 0 / RM 0",
-    secondary: "No data for this month",
-    statusLabel: "No data",
-    percentUsed: 0,
-    topCategory: null,
-  },
-  claim: {
-    title: "To claim",
-    totalToClaim: "RM 0",
-    secondary: "No claims this month",
-    count: 0,
-    overdueCount: 0,
-    lastLabel: null,
-  },
-  settlement: {
-    title: "To pay",
-    totalToPay: "RM 0",
-    secondary: "No commitments this month",
-    nextDueLabel: null,
-    breakdownLabel: "0 items",
-  },
-  wishlist: {
-    title: "Wishlist",
-    itemsCount: 0,
-    totalSaved: "RM 0",
-    secondary: "No wishlist progress this month",
-    nextTargetLabel: null,
-    fundedPercent: 0,
-  },
-  calculator: {
-    title: "Calculator tools",
-    primary: "Try a scenario",
-    secondary: "Safe commit, loans, savings, compounding",
-  },
-};
-
-const OCTOBER_TIMELINE: HomeTimelineItem[] = [];
 
 export function useHome() {
-  const [monthKey, setMonthKey] = useState<HomeMonthKey>("november");
+  const [selectedMonth, setSelectedMonth] = useState<string>("November");
 
-  const monthSummary = useMemo(
-    () => (monthKey === "november" ? NOVEMBER_MONTH : OCTOBER_MONTH),
-    [monthKey]
-  );
+  const { monthSummary, overview, timeline } = useMemo(() => {
+    return generateMonthData(selectedMonth);
+  }, [selectedMonth]);
 
-  const overview = useMemo(
-    () => (monthKey === "november" ? NOVEMBER_OVERVIEW : OCTOBER_OVERVIEW),
-    [monthKey]
-  );
+  const hasData = useMemo(() => timeline.length > 0, [timeline]);
 
-  const timeline = useMemo(
-    () => (monthKey === "november" ? NOVEMBER_TIMELINE : OCTOBER_TIMELINE),
-    [monthKey]
-  );
-
-  const hasData = timeline.length > 0 || monthKey === "november";
-
-  const toggleMonth = useCallback(() => {
-    setMonthKey((prev) => (prev === "november" ? "october" : "november"));
+  const setMonth = useCallback((month: string) => {
+    setSelectedMonth(month);
   }, []);
 
   return {
-    monthKey,
+    selectedMonth,
     monthSummary,
     overview,
     timeline,
     hasData,
-    toggleMonth,
+    setMonth,
   };
 }

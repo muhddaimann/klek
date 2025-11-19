@@ -18,7 +18,7 @@ Turn fronts into fast reimbursements.
 
 ```bash
 
-Klek – collect/claim/back finance app
+Klek – personal finance & fronts tracker
 ├─ About
 │  ├─ Mission — Turn fronts into fast reimbursements.
 │  ├─ Problem — You pay first; collecting is slow.
@@ -27,91 +27,54 @@ Klek – collect/claim/back finance app
 │  ├─ Primary — Young pro, fronts meals/rides.
 │  ├─ Secondary — Small teams, housemates.
 │  ├─ Pain — Forget who owes; awkward chasing.
-├─ User Persona
-│  ├─ Primary — Young pro, fronts meals/rides.
-│  ├─ Secondary — Small teams, housemates.
-│  ├─ Pain — Forget who owes; awkward chasing.
-├─ Core Flows
-│ ├─ Quick Add — Amount, title, default split.
-│ ├─ Template Add — Save common splits.
-│ ├─ Repeat Last — Clone previous expense.
-│ ├─ Itemized Split — Assign by line items.
-│ ├─ Weighted Split — Percent or ratio.
-│ ├─ Round Shares — Up/nearest rules.
-│ ├─ Fees & Tips — Auto allocate SST/service/tip.
-│ ├─ Due Date — Soft or firm.
-│ ├─ Partial Payment — Track remaining.
-│ ├─ Overpayment — Auto adjust next claim.
-│ ├─ Attach Proof — Photo/PDF/note.
-│ ├─ Receipt Scan — OCR → totals/items.
-│ ├─ Location Tag — Place of spend.
-│ ├─ Category Tag — Meal/ride/misc.
-│ ├─ Multi-Currency — FX note on date.
-│ ├─ Reassign Payer — Change who owes.
-│ ├─ Merge Duplicates — Combine entries.
-│ ├─ Group Mode — House/team/trip tabs.
-│ ├─ Invite via Link — Join claim group.
-│ ├─ Deep Link — Open exact claim/expense.
-│ ├─ QR Share — Show scan-to-claim.
-│ ├─ Payment Handoff — eWallet/bank deeplinks.
-│ ├─ Payment Note — Ref no. and channel.
-│ ├─ Self-Confirm — Trusted contacts bypass.
-│ ├─ Counter-Confirm — Payer marks paid.
-│ ├─ Nudge Ladder — Gentle → firm → final.
-│ ├─ Smart Timing — After payday/9am windows.
-│ ├─ Quiet Hours — No pings at night.
-│ ├─ Per-Contact Caps — Limit reminders/day.
-│ ├─ Bulk Settle — Clear many at once.
-│ ├─ Archive Old — Hide stale debts.
-│ ├─ Owed Today — Action list first.
-│ ├─ Aging Buckets — 0–7 / 8–30 / 31+ days.
-│ ├─ People Ledger — Who owes / I owe.
-│ ├─ Netting — Offset mutual debts.
-│ ├─ Statements — Monthly per-person PDF.
-│ ├─ CSV Export — Raw ledger out.
-│ ├─ Claim Summary — Trip/event PDF.
-│ ├─ Cashflow View — Out vs back-in chart.
-│ ├─ Uncollected Trend — Week/month line.
-│ ├─ Alerts — Due soon, overdue, paid.
-│ ├─ Inbox — New confirmations & proofs.
-│ ├─ Tags & Search — Fast filter.
-│ ├─ Saved Views — One-tap filters.
-│ ├─ Shortcuts — OS quick actions.
-│ ├─ Widgets — Owed today, quick add.
-├─ Onboarding & Setup
-│ ├─ Sample Data — Demo claims preloaded.
-│ ├─ Import Contacts — Optional mapping.
-│ ├─ Default Split — Equal/weights preset.
-│ ├─ Reminder Style — Soft/neutral/firm tone.
-│ ├─ Currency & Locale — MYR first.
-├─ Reliability & Privacy
-│ ├─ Offline-First — Queue ops, sync later.
-│ ├─ Conflict Resolve — Last write + timeline.
-│ ├─ Backup — JSON to Drive/iCloud.
-│ ├─ Restore — Import backup.
-│ ├─ Biometric Lock — Face/Touch.
-│ ├─ Blur Amounts — Hide in public.
-│ ├─ Redact Screens — Share safe view.
-│ ├─ Audit Trail — Who/what/when.
-├─ Integrations
-│ ├─ Contacts Picker — Names/photos.
-│ ├─ Calendar Drop — Due date events.
-│ ├─ Email/SMS Share — Multi-channel.
-│ ├─ Web Claim Page — Payer breakdown.
-│ ├─ Mileage Hook — Add km→claim flow.
-│ ├─ Parking Ticket — Timer + attach proof.
-├─ Smart Assist
-│ ├─ Suggested Payers — Based on history.
-│ ├─ Smart Titles — From receipt/location.
-│ ├─ Smart Splits — Learn typical ratios.
-│ ├─ Anomaly Flag — Weird totals/FX dates.
-├─ Settings & Support
-│ ├─ Profile — Name, handle, avatar.
-│ ├─ Themes — Light/dark/system.
-│ ├─ Data Reset — Nuke local data.
-│ ├─ Send Logs — Opt-in diagnostics.
-│ ├─ Changelog — What’s new.
-│ ├─ Rate Prompt — After first paid claim.
+├─ Core
+│ ├─ Budget — Budget Tracker
+│ │ ├─ Set monthly budget caps by category (food, transport, bills, etc.)
+│ │ ├─ Track actual spending vs budget in real time
+│ │ ├─ See status labels (On track / High / Over budget)
+│ │ ├─ Highlight top spending categories and simple trends
+│ │ └─ Notify Hit Limit
+│ ├─ Claim — Claim Tracker
+│ │ ├─ Record upfront payments and split bills with friends + auto record
+│ │ ├─ Track what others owe you and claim status (Pending / Paid / Overdue)
+│ │ ├- Get a quick view of total amount to claim for the month
+│ │ └─ Notify Pending to claim
+│ ├─ Settlement — Settlement Tracker
+│ │ ├─ Log recurring commitments (loans, credit cards, subscriptions, rent)
+│ │ ├─ See total amount to pay and upcoming due dates
+│ │ ├─ Mark items as Upcoming, Overdue or Paid
+│ │ └─ Notify Pending to pay
+│ ├─ Wishlist — Wishlist Tracker
+│ │ ├─ Create wishlist items with target amount (trip, gadget, hobby, etc.)
+│ │ ├─ Track how much you’ve already saved towards each goal
+│ │ └─ Set priority and rough tenure (3 months, 6 months, 1 year)
+│ ├─ Calculator — Finance Tools
+│ │ ├─ Safe Commit — Suggest a monthly amount you can safely commit from income
+│ │ ├─ Loan Estimator — Approximate monthly instalment and total interest
+│ │ ├─ Saving Estimator — Compare monthly saving vs target amount or date
+│ │ └─ Compounding Estimator — Estimate future value with simple compounding
+│ ├─ Activity — Activity Tracking
+│ │ ├─ Chronological list of spends, fronts, claims and settlements
+│ │ ├─ Tag each activity as expense, lent, or received
+│ │ ├─ Show amount, short label, and date for each event
+│ │ ├─ Filter by month to review what happened over time
+│ ├─ Notification — Smart Alerts
+│ │ ├─ Remind upcoming payments and due dates
+│ │ ├─ Alert when friends still owe you (Pending / Overdue)
+│ │ ├─ Notify when monthly budget caps are hit or close
+│ │ ├─ Nudge to log new fronts or update claim status
+│ │ └─ Send weekly summary of spends, fronts, and progress
+│ ├─ Overview — Overall Modules Widgets
+│ │ ├─ Home widgets for Budget, Claims, Settlements, Wishlist, and Calculator
+│ │ ├─ Month toggle to switch data views
+│ │ ├─ Budget (Total spent & %) ()
+│ │ ├─ Claims
+│ │ ├─ To Pay
+│ │ ├─ Settlements
+│ │ ├─ Wishlist
+│ │ ├─ Calculator
+│ │ ├─ Quick Entry
+
 
 
 klek/
@@ -168,47 +131,122 @@ klek/
 ├─ README.md
 └─ tsconfig.json
 
-Klek – personal finance & fronts tracker
-├─ Core
-│ ├─ Budget — Budget Tracker
-│ │ ├─ Set monthly budget caps by category (food, transport, bills, etc.)
-│ │ ├─ Track actual spending vs budget in real time
-│ │ ├─ See status labels (On track / High / Over budget)
-│ │ ├─ Highlight top spending categories and simple trends
-│ │ └─ Notify Hit Limit
-│ ├─ Claim — Claim Tracker
-│ │ ├─ Record upfront payments and split bills with friends + auto record
-│ │ ├─ Track what others owe you and claim status (Pending / Paid / Overdue)
-│ │ ├- Get a quick view of total amount to claim for the month
-│ │ └─ Notify Pending to claim
-│ ├─ Settlement — Settlement Tracker
-│ │ ├─ Log recurring commitments (loans, credit cards, subscriptions, rent)
-│ │ ├─ See total amount to pay and upcoming due dates
-│ │ ├─ Mark items as Upcoming, Overdue or Paid
-│ │ └─ Notify Pending to pay
-│ ├─ Wishlist — Wishlist Tracker
-│ │ ├─ Create wishlist items with target amount (trip, gadget, hobby, etc.)
-│ │ ├─ Track how much you’ve already saved towards each goal
-│ │ └─ Set priority and rough tenure (3 months, 6 months, 1 year)
-│ ├─ Calculator — Finance Tools
-│ │ ├─ Safe Commit — Suggest a monthly amount you can safely commit from income
-│ │ ├─ Loan Estimator — Approximate monthly instalment and total interest
-│ │ ├─ Saving Estimator — Compare monthly saving vs target amount or date
-│ │ └─ Compounding Estimator — Estimate future value with simple compounding
-│ ├─ Overview — Overall Modules Widgets
-│ │ ├─ Home widgets for Budget, Claims, Settlements, Wishlist, and Calculator
-│ │ ├─ Month toggle to switch data views
-│ │ ├─ Budget (Total spent & %) ()
-│ │ ├─ Claims 
-│ │ ├─ To Pay
-│ │ ├─ Settlements
-│ │ ├─ Wishlist
-│ │ ├─ Calculator
-│ │ ├─ Quick Entry
-│ ├─ Timeline — Activity Tracking
-│ │ ├─ Chronological list of spends, fronts, claims and settlements
-│ │ ├─ Tag each activity as expense, lent, or received
-│ │ ├─ Show amount, short label, and date for each event
-│ │ ├─ Filter by month to review what happened over time
+Module to database
+├─ User
+│  ├─ profiles
+│  │  ├─ id (uuid, PK, = auth.user.id)
+│  │  ├─ email
+│  │  ├─ display_name
+│  │  ├─ created_at
+│  │  ├─ updated_at
+│  │  └─ settings_json (optional extra prefs)
+│
+├─ Budget
+│  ├─ budgets
+│  │  ├─ id
+│  │  ├─ user_id
+│  │  ├─ month (e.g. 2025-11-01 as “month key”)
+│  │  ├─ total_limit
+│  │  └─ created_at
+│  ├─ budget_categories
+│  │  ├─ id
+│  │  ├─ budget_id
+│  │  ├─ category_key (food, transport, bills…)
+│  │  ├─ limit_amount
+│  │  └─ (spent_amount is derived from Activity/transactions)
+│
+├─ Claim
+│  ├─ claims
+│  │  ├─ id
+│  │  ├─ user_id        (person who paid first)
+│  │  ├─ title          (Lunch with team, Grab to KLCC)
+│  │  ├─ total_amount
+│  │  ├─ status         (pending, paid, overdue)
+│  │  ├─ due_date
+│  │  ├─ created_at
+│  │  └─ note
+│  ├─ claim_participants
+│  │  ├─ id
+│  │  ├─ claim_id
+│  │  ├─ participant_name (or participant_user_id later)
+│  │  ├─ share_amount
+│  │  └─ status (pending, paid)
+│
+├─ Settlement
+│  ├─ settlements
+│  │  ├─ id
+│  │  ├─ user_id
+│  │  ├─ name         (Car loan, Credit Card, Netflix)
+│  │  ├─ type         (loan, card, sub, rent, other)
+│  │  ├─ amount       (per cycle)
+│  │  ├─ cycle        (monthly, weekly, yearly)
+│  │  ├─ due_day      (e.g. 7 = 7th of month) or due_date
+│  │  ├─ status       (active, closed)
+│  │  └─ created_at
+│  ├─ settlement_payments (optional, if you want history)
+│  │  ├─ id
+│  │  ├─ settlement_id
+│  │  ├─ paid_amount
+│  │  ├─ paid_date
+│  │  └─ status (paid, overdue)
+│
+├─ Wishlist
+│  ├─ wishlists
+│  │  ├─ id
+│  │  ├─ user_id
+│  │  ├─ title          (Japan trip, New guitar)
+│  │  ├─ target_amount
+│  │  ├─ saved_amount
+│  │  ├─ priority       (low, medium, high)
+│  │  ├─ tenure_months  (3, 6, 12)
+│  │  └─ created_at
+│
+├─ Calculator
+│  ├─ saved_calculations (optional)
+│  │  ├─ id
+│  │  ├─ user_id
+│  │  ├─ type (safe_commit, loan, saving, compounding)
+│  │  ├─ input_json
+│  │  ├─ result_json
+│  │  └─ created_at
+│  └─ (calculators can also be pure logic with no tables)
+│
+├─ Activity
+│  ├─ activities
+│  │  ├─ id
+│  │  ├─ user_id
+│  │  ├─ kind          (expense, lent, received, settlement, wishlist_save)
+│  │  ├─ source_module (budget, claim, settlement, wishlist)
+│  │  ├─ source_id     (id from that module)
+│  │  ├─ amount
+│  │  ├─ label         (short text shown in list)
+│  │  ├─ occurred_at
+│  │  └─ meta_json     (extra info if needed)
+│
+├─ Notification
+│  ├─ notification_settings
+│  │  ├─ id
+│  │  ├─ user_id
+│  │  ├─ email_enabled
+│  │  ├─ push_enabled
+│  │  ├─ budget_alert_thresholds_json
+│  │  └─ quiet_hours_json
+│  ├─ notifications
+│  │  ├─ id
+│  │  ├─ user_id
+│  │  ├─ type         (budget_hit, claim_overdue, due_soon…)
+│  │  ├─ title
+│  │  ├─ body
+│  │  ├─ source_module
+│  │  ├─ source_id
+│  │  ├─ read_at
+│  │  └─ created_at
+│
+├─ Overview
+│  ├─ (mostly computed, not raw table)
+│  │  ├─ Use SQL views/materialized views like:
+│  │  │  ├─ monthly_overview_view
+│  │  │  └─ dashboard_stats_view
+
 
 ```
