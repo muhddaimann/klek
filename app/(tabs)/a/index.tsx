@@ -15,8 +15,9 @@ import {
 import { EmptyState } from "../../../components/molecule/emptyState";
 import { useRouter } from "expo-router";
 import { useHome } from "../../../hooks/useHome";
-import { H2, Body, BodySmall, Caption } from "../../../components/atom/text";
+import { Body, BodySmall, Caption } from "../../../components/atom/text";
 import { Button } from "../../../components/atom/button";
+import { MainHeader } from "../../../components/shared/homeHeader";
 
 export default function Home() {
   const { colors } = useTheme();
@@ -42,36 +43,12 @@ export default function Home() {
         showsVerticalScrollIndicator={false}
         overScrollMode="never"
       >
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: tokens.spacing.md,
-          }}
-        >
-          <View style={{ flex: 1, gap: tokens.spacing["xxs"] }}>
-            <Caption muted weight="bold">
-              Good evening
-            </Caption>
-            <H2>Your money at a glance</H2>
-          </View>
-
-          <Pressable
-            onPress={toggleMonth}
-            style={{
-              borderRadius: tokens.radii.lg,
-              paddingHorizontal: tokens.spacing.sm,
-              paddingVertical: tokens.spacing.xs,
-              backgroundColor: colors.surface,
-              flexDirection: "row",
-              alignItems: "center",
-              gap: tokens.spacing.xs,
-            }}
-          >
-            <BodySmall muted>{monthSummary.monthLabel}</BodySmall>
-          </Pressable>
-        </View>
+        <MainHeader
+          username="Aiman"
+          monthLabel={monthSummary.monthLabel}
+          onToggleMonth={toggleMonth}
+          onBellPress={() => router.push("/(tabs)/a/notification")}
+        />
 
         <View
           style={{

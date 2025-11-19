@@ -20,6 +20,7 @@ export default function ModalLayout() {
       <Stack.Screen name="addBudget" />
       <Stack.Screen name="addRecord" />
       <Stack.Screen name="addWishlist" />
+      <Stack.Screen name="myQR" />
     </Stack>
   );
 }

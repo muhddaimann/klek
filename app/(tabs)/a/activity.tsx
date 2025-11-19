@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { View, ScrollView, Pressable } from "react-native";
 import { useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -19,18 +19,26 @@ import {
   type ActivityItem,
 } from "../../../hooks/useActivity";
 import { Body, BodySmall, Caption } from "../../../components/atom/text";
+import { useFocusEffect } from "expo-router";
 
 export default function Activity() {
   const { colors } = useTheme();
   const { tokens } = useDesign();
   const insets = useSafeAreaInsets();
-  const { onScroll } = useTab();
+  const { onScroll, lockHidden, unlockHidden } = useTab();
 
   const [monthKey, setMonthKey] = useState<ActivityMonthKey>("november");
   const { items, filters, activeFilter, setActiveFilter, summary, hasData } =
     useActivity(monthKey);
 
   const card = { borderRadius: tokens.radii.lg } as const;
+
+  useFocusEffect(
+    useCallback(() => {
+      lockHidden();
+      return () => unlockHidden();
+    }, [lockHidden, unlockHidden])
+  );
 
   const toggleMonth = () => {
     setMonthKey((prev) => (prev === "november" ? "october" : "november"));

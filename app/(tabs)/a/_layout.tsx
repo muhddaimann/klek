@@ -27,6 +27,12 @@ export default function HomeLayout() {
         >
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen
+            name="notification"
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
             name="budget"
             options={{
               headerShown: false,
