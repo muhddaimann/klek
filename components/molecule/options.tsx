@@ -1,11 +1,10 @@
 import React from "react";
 import { View, Pressable, Platform } from "react-native";
 import { useTheme, Divider } from "react-native-paper";
+import { BlurView } from "expo-blur";
 import { useDesign } from "../../contexts/designContext";
 import type { OptionsOverlayOptions } from "../../contexts/overlayContext";
 import { H3, Body, BodySmall } from "../atom/text";
-
-const DURATION = 240;
 
 export function OptionsCenter({
   visible,
@@ -18,7 +17,7 @@ export function OptionsCenter({
   onSelect: (index: number) => void;
   onDismiss: () => void;
 }) {
-  const { colors } = useTheme();
+  const { colors, dark } = useTheme();
   const { tokens } = useDesign();
 
   const canDismiss = state?.dismissible ?? true;
@@ -39,23 +38,48 @@ export function OptionsCenter({
       accessibilityViewIsModal
       accessibilityLiveRegion="polite"
     >
+      {Platform.OS === "ios" || Platform.OS === "web" ? (
+        <>
+          <BlurView
+            intensity={40}
+            tint={dark ? "dark" : "light"}
+            style={{ position: "absolute", inset: 0 }}
+          />
+          <View
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundColor: dark ? "rgba(0,0,0,0.45)" : "rgba(0,0,0,0.30)",
+            }}
+          />
+        </>
+      ) : (
+        <View
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundColor: dark ? "rgba(0,0,0,0.55)" : "rgba(0,0,0,0.35)",
+          }}
+        />
+      )}
+
       <Pressable
         onPress={canDismiss ? onDismiss : undefined}
         accessible={false}
-        style={{ position: "absolute", inset: 0, backgroundColor: "#00000088" }}
+        style={{ position: "absolute", inset: 0 }}
       />
 
       <View
         style={{
           width: "90%",
           maxWidth: 420,
-          borderRadius: tokens.radii.lg,
+          borderRadius: tokens.radii["2xl"],
           backgroundColor: "transparent",
           ...Platform.select({
             ios: {
-              shadowColor: "#000",
-              shadowOpacity: 0.18,
-              shadowRadius: tokens.elevation.level5 * 2,
+              shadowColor: colors.shadow,
+              shadowOpacity: 0.24,
+              shadowRadius: tokens.elevation.level5 * 2.2,
               shadowOffset: { width: 0, height: tokens.elevation.level5 },
             },
             android: { elevation: tokens.elevation.level5 },
@@ -66,10 +90,8 @@ export function OptionsCenter({
         <View
           style={{
             backgroundColor: colors.surface,
-            borderRadius: tokens.radii.lg,
+            borderRadius: tokens.radii["2xl"],
             overflow: "hidden",
-            borderWidth: 1,
-            borderColor: colors.outlineVariant,
           }}
         >
           {(state.title || state.message) && (
@@ -90,7 +112,7 @@ export function OptionsCenter({
           )}
 
           <Divider
-            style={{ backgroundColor: colors.outlineVariant, opacity: 0.6 }}
+            style={{ backgroundColor: colors.outlineVariant, opacity: 0.35 }}
           />
 
           <View

@@ -1,6 +1,7 @@
 import React from "react";
-import { View, Pressable, Platform, StyleProp, ViewStyle } from "react-native";
+import { View, Pressable, Platform } from "react-native";
 import { useTheme, Divider } from "react-native-paper";
+import { BlurView } from "expo-blur";
 import { Button } from "../../components/atom/button";
 import { Subtitle, Body } from "../../components/atom/text";
 import { useDesign } from "../../contexts/designContext";
@@ -15,7 +16,7 @@ export function AlertDialog({
   state: AlertOptions | null;
   onDismiss: () => void;
 }) {
-  const { colors } = useTheme();
+  const { colors, dark } = useTheme();
   const { tokens } = useDesign();
   if (!visible || !state) return null;
 
@@ -39,10 +40,32 @@ export function AlertDialog({
       accessible
       accessibilityRole="alert"
     >
-      <Pressable
-        onPress={onDismiss}
-        style={{ position: "absolute", inset: 0, backgroundColor: "#00000088" }}
-      />
+      {Platform.OS === "ios" || Platform.OS === "web" ? (
+        <>
+          <BlurView
+            intensity={40}
+            tint={dark ? "dark" : "light"}
+            style={{ position: "absolute", inset: 0 }}
+          />
+          <Pressable
+            onPress={onDismiss}
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundColor: dark ? "rgba(0,0,0,0.45)" : "rgba(0,0,0,0.32)",
+            }}
+          />
+        </>
+      ) : (
+        <Pressable
+          onPress={onDismiss}
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundColor: "#00000088",
+          }}
+        />
+      )}
 
       <View
         style={{

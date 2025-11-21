@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Pressable, Platform } from "react-native";
 import { useTheme, Divider } from "react-native-paper";
+import { BlurView } from "expo-blur";
 import { Button } from "../../components/atom/button";
 import { Subtitle, Body } from "../../components/atom/text";
 import { useDesign } from "../../contexts/designContext";
@@ -17,7 +18,7 @@ export function ConfirmDialog({
   onOk: () => void;
   onCancel: () => void;
 }) {
-  const { colors } = useTheme();
+  const { colors, dark } = useTheme();
   const { tokens } = useDesign();
   if (!visible || !state) return null;
 
@@ -38,23 +39,46 @@ export function ConfirmDialog({
       accessibilityViewIsModal
       accessibilityLiveRegion="polite"
     >
-      <Pressable
-        onPress={onCancel}
-        accessible={false}
-        style={{ position: "absolute", inset: 0, backgroundColor: "#00000088" }}
-      />
+      {Platform.OS === "ios" || Platform.OS === "web" ? (
+        <>
+          <BlurView
+            intensity={40}
+            tint={dark ? "dark" : "light"}
+            style={{ position: "absolute", inset: 0 }}
+          />
+          <Pressable
+            onPress={onCancel}
+            accessible={false}
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundColor: dark ? "rgba(0,0,0,0.45)" : "rgba(0,0,0,0.30)",
+            }}
+          />
+        </>
+      ) : (
+        <Pressable
+          onPress={onCancel}
+          accessible={false}
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundColor: dark ? "rgba(0,0,0,0.55)" : "rgba(0,0,0,0.35)",
+          }}
+        />
+      )}
 
       <View
         style={{
           width: "90%",
           maxWidth: 420,
-          borderRadius: tokens.radii.lg,
+          borderRadius: tokens.radii["2xl"],
           backgroundColor: "transparent",
           ...Platform.select({
             ios: {
-              shadowColor: "#000",
-              shadowOpacity: 0.18,
-              shadowRadius: tokens.elevation.level5 * 2,
+              shadowColor: colors.shadow,
+              shadowOpacity: 0.24,
+              shadowRadius: tokens.elevation.level5 * 2.2,
               shadowOffset: { width: 0, height: tokens.elevation.level5 },
             },
             android: { elevation: tokens.elevation.level5 },
@@ -65,10 +89,8 @@ export function ConfirmDialog({
         <View
           style={{
             backgroundColor: colors.surface,
-            borderRadius: tokens.radii.lg,
+            borderRadius: tokens.radii["2xl"],
             overflow: "hidden",
-            borderWidth: 1,
-            borderColor: colors.outlineVariant,
           }}
         >
           {state.title ? (
@@ -97,7 +119,7 @@ export function ConfirmDialog({
           ) : null}
 
           <Divider
-            style={{ backgroundColor: colors.outlineVariant, opacity: 0.6 }}
+            style={{ backgroundColor: colors.outlineVariant, opacity: 0.35 }}
           />
 
           <View
