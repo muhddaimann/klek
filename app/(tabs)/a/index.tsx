@@ -39,7 +39,7 @@ export default function Home() {
     if (month !== "November") {
       toast({
         message: `No records found in ${month}.`,
-        variant:"error",
+        variant: "error",
       });
       return;
     }
@@ -175,7 +175,7 @@ export default function Home() {
                   <BodySmall weight="semibold">Profile & setup</BodySmall>
                   <UserRound
                     size={tokens.sizes.icon.sm}
-                    color={colors.onSurfaceVariant}
+                    color={colors.primary}
                   />
                 </View>
                 <Caption>
@@ -203,10 +203,7 @@ export default function Home() {
                   }}
                 >
                   <BodySmall weight="semibold">Budget</BodySmall>
-                  <Wallet
-                    size={tokens.sizes.icon.sm}
-                    color={colors.onSurfaceVariant}
-                  />
+                  <Wallet size={tokens.sizes.icon.sm} color={colors.primary} />
                 </View>
                 <Body weight="semibold" numberOfLines={1}>
                   {overview.budget.primary}
@@ -241,7 +238,7 @@ export default function Home() {
                   <BodySmall weight="semibold">Wishlist</BodySmall>
                   <PiggyBank
                     size={tokens.sizes.icon.sm}
-                    color={colors.onSurfaceVariant}
+                    color={colors.primary}
                   />
                 </View>
                 <Body weight="semibold" numberOfLines={1}>
@@ -280,7 +277,7 @@ export default function Home() {
                   <BodySmall weight="semibold">Claims</BodySmall>
                   <ReceiptText
                     size={tokens.sizes.icon.sm}
-                    color={colors.onSurfaceVariant}
+                    color={colors.primary}
                   />
                 </View>
                 <Body weight="semibold" numberOfLines={1}>
@@ -316,7 +313,7 @@ export default function Home() {
                   <BodySmall weight="semibold">Settlements</BodySmall>
                   <HandCoins
                     size={tokens.sizes.icon.sm}
-                    color={colors.onSurfaceVariant}
+                    color={colors.primary}
                   />
                 </View>
                 <Body weight="semibold" numberOfLines={1}>
@@ -352,7 +349,7 @@ export default function Home() {
                   <BodySmall weight="semibold">Calculator tools</BodySmall>
                   <CalculatorIcon
                     size={tokens.sizes.icon.sm}
-                    color={colors.onSurfaceVariant}
+                    color={colors.primary}
                   />
                 </View>
                 <Body weight="semibold" numberOfLines={1}>

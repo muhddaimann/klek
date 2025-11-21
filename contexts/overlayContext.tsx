@@ -36,8 +36,10 @@ export type ToastOptions = {
 export type OptionItem = {
   id?: string;
   label: string;
+  icon?: React.ReactNode;
   onPress?: () => void;
 };
+
 export type OptionsOverlayOptions = {
   title?: string;
   message?: string;

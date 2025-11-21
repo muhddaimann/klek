@@ -7,7 +7,14 @@ import { useDesign } from "../../contexts/designContext";
 import { useTabsUi } from "../../contexts/tabContext";
 import { useAuth } from "../../contexts/authContext";
 import { useOverlay } from "../../hooks/useOverlay";
-import { Plus, LogOut } from "lucide-react-native";
+import {
+  Plus,
+  LogOut,
+  Wallet,
+  ReceiptText,
+  Users,
+  CalendarClock,
+} from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { BodySmall } from "../../components/atom/text";
 
@@ -49,11 +56,11 @@ function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
     ? "destructive"
     : "default";
 
-  const rightBg = variant === "destructive" ? colors.surface : colors.surface;
+  const rightBg = variant === "destructive" ? colors.error : colors.primary;
   const rightBorder =
-    variant === "destructive" ? colors.error : colors.onSurface;
+    variant === "destructive" ? colors.onError : colors.onPrimary;
   const rightIconColor =
-    variant === "destructive" ? colors.error : colors.onSurfaceVariant;
+    variant === "destructive" ? colors.onError : colors.onPrimary;
 
   const RightIcon = isHome ? Plus : isSettings ? LogOut : null;
 
@@ -64,21 +71,25 @@ function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
           {
             id: "budget",
             label: "Add Spending",
+            icon: <Wallet color={colors.primary} />,
             onPress: () => router.push("/addRecord"),
           },
           {
             id: "manual",
             label: "New claim",
+            icon: <ReceiptText color={colors.primary} />,
             onPress: () => router.push("/manualClaim"),
           },
           {
             id: "bill-split",
             label: "Split bill",
+            icon: <Users color={colors.primary} />,
             onPress: () => router.push("/billSplit"),
           },
           {
             id: "commitment",
             label: "New payment",
+            icon: <CalendarClock color={colors.primary} />,
             onPress: () => router.push("/addCommitment"),
           },
         ],
@@ -86,7 +97,15 @@ function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
     } else if (isSettings) {
       signOut();
     }
-  }, [isHome, isSettings, showOptions, signOut, router]);
+  }, [
+    isHome,
+    isSettings,
+    showOptions,
+    signOut,
+    router,
+    colors.onSurfaceVariant,
+    tokens.sizes.icon.md,
+  ]);
 
   return (
     <View
@@ -167,20 +186,18 @@ function Bar({ state, descriptors, navigation }: BottomTabBarProps) {
                   borderRadius: tokens.radii.pill,
                   alignItems: "center",
                   justifyContent: "center",
-                  backgroundColor: focused
-                    ? colors.surfaceVariant
-                    : "transparent",
+                  backgroundColor: focused ? colors.background : "transparent",
                 }}
               >
                 {Icon ? (
                   <Icon
-                    color={focused ? colors.onSurface : colors.onSurfaceVariant}
+                    color={focused ? colors.primary : colors.onSurfaceVariant}
                     size={tokens.sizes.icon.lg}
                   />
                 ) : null}
                 <BodySmall
                   weight="semibold"
-                  color={focused ? colors.onSurface : colors.onSurfaceVariant}
+                  color={focused ? colors.primary : colors.onSurfaceVariant}
                   style={{ marginTop: tokens.spacing["xxs"] }}
                   numberOfLines={1}
                 >

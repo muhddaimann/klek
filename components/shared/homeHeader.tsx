@@ -7,6 +7,7 @@ import { useDesign } from "../../contexts/designContext";
 import { useOverlay } from "../../hooks/useOverlay";
 import { useGreeting } from "../../hooks/useGreeting";
 import { H2, Caption, BodySmall } from "../atom/text";
+import { UserCircle2, QrCode } from "lucide-react-native";
 
 type Props = {
   username: string;
@@ -59,6 +60,7 @@ export function MainHeader({
         {
           id: "update-profile",
           label: "Update profile",
+          icon: <UserCircle2 color={colors.primary} />,
           onPress: () => {
             router.push("/(tabs)/b");
           },
@@ -66,6 +68,7 @@ export function MainHeader({
         {
           id: "show-qr",
           label: "Show my QR",
+          icon: <QrCode color={colors.primary} />,
           onPress: () => {
             router.push("/(modals)/myQR");
           },
@@ -88,7 +91,6 @@ export function MainHeader({
     }));
 
     showOptions({
-      title: "Select month to view",
       options: monthOptions,
     });
   };
