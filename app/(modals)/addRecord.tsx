@@ -101,6 +101,8 @@ export default function BudgetRecord() {
         keyboardShouldPersistTaps="handled"
         bounces={false}
         stickyHeaderIndices={[0]}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       >
         <View
           style={{

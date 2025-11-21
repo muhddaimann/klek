@@ -1,22 +1,42 @@
 import React, { useState, useRef, useMemo, useEffect } from "react";
 import { View, ScrollView } from "react-native";
-import { useTheme, Text, TextInput } from "react-native-paper";
+import { useTheme, TextInput } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
 import { useDesign } from "../../contexts/designContext";
 import { Button } from "../../components/atom/button";
 import { Header } from "../../components/shared/header";
+import { Body, BodySmall } from "../../components/atom/text";
+import {
+  UtensilsCrossed,
+  Car,
+  Receipt,
+  Clapperboard,
+  PiggyBank,
+  Shapes,
+} from "lucide-react-native";
+import type { ComponentType } from "react";
+
+type CategoryKey = string;
+type IconComp = ComponentType<{ color?: string; size?: number }>;
+
+const CATEGORY_ICON_MAP: Record<CategoryKey, IconComp> = {
+  food: UtensilsCrossed,
+  transport: Car,
+  bills: Receipt,
+  entertainment: Clapperboard,
+  savings: PiggyBank,
+  other: Shapes,
+};
 
 const CATEGORY_OPTIONS = [
   { key: "food", label: "Food" },
   { key: "transport", label: "Transport" },
   { key: "bills", label: "Bills" },
-  { key: "fun", label: "Fun money" },
+  { key: "entertainment", label: "Entertainment" },
   { key: "savings", label: "Savings" },
   { key: "other", label: "Others" },
 ] as const;
-
-type CategoryKey = string;
 
 type CategoryBudget = {
   key: CategoryKey;
@@ -150,11 +170,14 @@ export default function AddBudget() {
     const label = newCategoryName.trim();
     if (!label) return;
     const key = label.toLowerCase().replace(/\s+/g, "-");
+
     setCategoryBudgets((prev) => {
       if (prev.some((c) => c.key === key)) return prev;
       return [...prev, { key, label, amount: "" }];
     });
+
     setNewCategoryName("");
+    setCustomMode(false);
   };
 
   const numericTotal = Number(totalAmount.replace(/,/g, ""));
@@ -204,219 +227,245 @@ export default function AddBudget() {
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingHorizontal: tokens.spacing.lg,
-          paddingTop: tokens.spacing.lg,
           paddingBottom: insets.bottom + tokens.spacing["3xl"] * 2,
-          gap: tokens.spacing.lg,
         }}
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
         bounces={false}
+        stickyHeaderIndices={[0]}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       >
-        <Header
-          title={isUpdateMode ? "Update budget" : "Set budget"}
-          subtitle="For this month"
-        />
-
-        <View style={{ gap: tokens.spacing["xs"] }}>
-          <Text
-            style={{
-              fontSize: tokens.typography.sizes.xs,
-              color: colors.onSurfaceVariant,
-            }}
-          >
-            {periodLabel} · until {periodDateText}
-          </Text>
-        </View>
-
-        <View style={{ gap: tokens.spacing.md }}>
-          <TextInput
-            mode="outlined"
-            label="Total budget (RM)"
-            value={totalAmount}
-            onChangeText={handleTotalChange}
-            keyboardType="decimal-pad"
-            error={totalAmount.length > 0 && !isTotalValid}
-            ref={totalRef}
+        <View
+          style={{
+            backgroundColor: colors.background,
+            paddingTop: tokens.spacing.lg,
+            paddingHorizontal: tokens.spacing.lg,
+            paddingBottom: tokens.spacing.sm,
+          }}
+        >
+          <Header
+            title={isUpdateMode ? "Update budget" : "Set budget"}
+            subtitle={periodLabel}
+            rightSlot={
+              <BodySmall
+                muted
+                style={{
+                  fontSize: tokens.typography.sizes.xs,
+                }}
+              >
+                until {periodDateText}
+              </BodySmall>
+            }
           />
-
-          {totalAmount.length > 0 && !isTotalValid && (
-            <Text
-              style={{
-                marginTop: -tokens.spacing["xs"],
-                color: colors.error,
-                fontSize: tokens.typography.sizes.xs,
-              }}
-            >
-              Enter a valid amount above 0
-            </Text>
-          )}
-
-          {isTotalValid && (
-            <Text
-              style={{
-                marginTop: tokens.spacing["xs"],
-                fontSize: tokens.typography.sizes.xs,
-                color: hasDiff ? colors.error : colors.onSurfaceVariant,
-              }}
-            >
-              Categories total: RM {numericCategoryTotal.toFixed(2)}{" "}
-              {hasDiff
-                ? `(${
-                    diff > 0
-                      ? "RM " + diff.toFixed(2) + " unassigned"
-                      : "RM " + Math.abs(diff).toFixed(2) + " over"
-                  })`
-                : "• Matches total budget"}
-            </Text>
-          )}
         </View>
 
-        <View style={{ gap: tokens.spacing.sm }}>
-          <Text
-            style={{
-              fontSize: tokens.typography.sizes.sm,
-              fontWeight: tokens.typography.weights.semibold,
-              color: colors.onSurface,
-            }}
-          >
-            Suggested categories
-          </Text>
-          <View
-            style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              gap: tokens.spacing.xs,
-            }}
-          >
-            {CATEGORY_OPTIONS.map((opt) => {
-              const isOther = opt.key === "other";
-              const active = isOther
-                ? customMode
-                : categoryBudgets.some((c) => c.key === opt.key);
-              return (
-                <View
-                  key={opt.key}
-                  style={{
-                    borderRadius: tokens.radii.pill,
-                    borderWidth: 1,
-                    borderColor: active
-                      ? colors.primary
-                      : colors.outlineVariant,
-                    backgroundColor: active
-                      ? colors.primaryContainer
-                      : colors.surface,
-                  }}
-                >
-                  <Button
-                    onPress={() => handleSuggestedPress(opt.key, opt.label)}
-                    variant="ghost"
-                    size="sm"
-                    rounded="pill"
-                    style={{
-                      paddingHorizontal: tokens.spacing.sm,
-                      paddingVertical: tokens.spacing["xs"],
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: tokens.typography.sizes.xs,
-                        color: active
-                          ? colors.primary
-                          : colors.onSurfaceVariant,
-                        fontWeight: tokens.typography.weights.semibold,
-                      }}
-                    >
-                      {opt.label}
-                    </Text>
-                  </Button>
-                </View>
-              );
-            })}
+        <View
+          style={{
+            paddingHorizontal: tokens.spacing.lg,
+            gap: tokens.spacing.lg,
+          }}
+        >
+          <View style={{ gap: tokens.spacing.md }}>
+            <TextInput
+              mode="outlined"
+              label="Total budget (RM)"
+              value={totalAmount}
+              onChangeText={handleTotalChange}
+              keyboardType="decimal-pad"
+              error={totalAmount.length > 0 && !isTotalValid}
+              ref={totalRef}
+            />
+
+            {totalAmount.length > 0 && !isTotalValid && (
+              <BodySmall
+                color={colors.error}
+                style={{
+                  marginTop: -tokens.spacing["xs"],
+                  fontSize: tokens.typography.sizes.xs,
+                }}
+              >
+                Enter a valid amount above 0
+              </BodySmall>
+            )}
+
+            {isTotalValid && (
+              <BodySmall
+                style={{
+                  marginTop: tokens.spacing["xs"],
+                  fontSize: tokens.typography.sizes.xs,
+                  color: hasDiff ? colors.error : colors.onSurfaceVariant,
+                }}
+              >
+                Categories total: RM {numericCategoryTotal.toFixed(2)}{" "}
+                {hasDiff
+                  ? `(${
+                      diff > 0
+                        ? "RM " + diff.toFixed(2) + " unassigned"
+                        : "RM " + Math.abs(diff).toFixed(2) + " over"
+                    })`
+                  : "• Matches total budget"}
+              </BodySmall>
+            )}
           </View>
 
-          {customMode && (
+          <View style={{ gap: tokens.spacing.sm }}>
+            <BodySmall
+              weight="semibold"
+              color={colors.onSurface}
+              style={{
+                fontSize: tokens.typography.sizes.sm,
+              }}
+            >
+              Suggested categories
+            </BodySmall>
             <View
               style={{
                 flexDirection: "row",
-                marginTop: tokens.spacing.sm,
-                gap: tokens.spacing.sm,
-                alignItems: "center",
+                flexWrap: "wrap",
+                gap: tokens.spacing.xs,
               }}
             >
-              <View style={{ flex: 1 }}>
-                <TextInput
-                  mode="outlined"
-                  label="Custom category"
-                  value={newCategoryName}
-                  onChangeText={setNewCategoryName}
-                  autoCapitalize="words"
-                />
-              </View>
-              <Button
-                onPress={handleAddCustomCategory}
-                variant="outline"
-                rounded="sm"
-                disabled={!newCategoryName.trim()}
-              >
-                Add
-              </Button>
+              {CATEGORY_OPTIONS.map((opt) => {
+                const isOther = opt.key === "other";
+                const active = isOther
+                  ? customMode
+                  : categoryBudgets.some((c) => c.key === opt.key);
+
+                const BaseIcon = CATEGORY_ICON_MAP[opt.key as CategoryKey];
+
+                const IconLeft: IconComp = ({ size }) => (
+                  <BaseIcon
+                    size={size ?? tokens.sizes.icon.sm}
+                    color={colors.primary}
+                  />
+                );
+
+                return (
+                  <View
+                    key={opt.key}
+                    style={{
+                      borderRadius: tokens.radii.pill,
+                      borderWidth: 1,
+                      borderColor: active
+                        ? colors.primary
+                        : colors.outlineVariant,
+                      backgroundColor: active
+                        ? colors.primaryContainer
+                        : colors.surface,
+                    }}
+                  >
+                    <Button
+                      onPress={() => handleSuggestedPress(opt.key, opt.label)}
+                      variant="outline"
+                      size="md"
+                      rounded="pill"
+                      IconLeft={IconLeft}
+                      style={{
+                        paddingHorizontal: tokens.spacing.sm,
+                        paddingVertical: tokens.spacing["xs"],
+                      }}
+                    >
+                      <BodySmall
+                        weight="semibold"
+                        style={{
+                          fontSize: tokens.typography.sizes.xs,
+                          color: active
+                            ? colors.primary
+                            : colors.onSurfaceVariant,
+                        }}
+                      >
+                        {opt.label}
+                      </BodySmall>
+                    </Button>
+                  </View>
+                );
+              })}
             </View>
-          )}
-        </View>
 
-        <View style={{ gap: tokens.spacing.sm }}>
-          <Text
-            style={{
-              fontSize: tokens.typography.sizes.sm,
-              fontWeight: tokens.typography.weights.semibold,
-              color: colors.onSurface,
-            }}
-          >
-            Category limits
-          </Text>
-
-          {categoryBudgets.length === 0 ? (
-            <Text
-              style={{
-                fontSize: tokens.typography.sizes.xs,
-                color: colors.onSurfaceVariant,
-              }}
-            >
-              Pick or add categories to allocate your budget.
-            </Text>
-          ) : (
-            categoryBudgets.map((c) => (
+            {customMode && (
               <View
-                key={c.key}
                 style={{
                   flexDirection: "row",
-                  alignItems: "center",
+                  marginTop: tokens.spacing.sm,
                   gap: tokens.spacing.sm,
+                  alignItems: "center",
                 }}
               >
                 <View style={{ flex: 1 }}>
-                  <Text
-                    style={{
-                      fontSize: tokens.typography.sizes.sm,
-                      color: colors.onSurface,
-                    }}
-                  >
-                    {c.label}
-                  </Text>
-                </View>
-                <View style={{ width: 140 }}>
                   <TextInput
                     mode="outlined"
-                    label="RM"
-                    value={c.amount}
-                    onChangeText={(v) => handleCategoryAmountChange(c.key, v)}
-                    keyboardType="decimal-pad"
+                    label="Custom category"
+                    value={newCategoryName}
+                    onChangeText={setNewCategoryName}
+                    autoCapitalize="words"
                   />
                 </View>
+                <Button
+                  onPress={handleAddCustomCategory}
+                  variant="outline"
+                  rounded="pill"
+                  disabled={!newCategoryName.trim()}
+                >
+                  <Body weight="semibold">Add</Body>
+                </Button>
               </View>
-            ))
-          )}
+            )}
+          </View>
+
+          <View style={{ gap: tokens.spacing.sm }}>
+            <BodySmall
+              weight="semibold"
+              color={colors.onSurface}
+              style={{
+                fontSize: tokens.typography.sizes.sm,
+              }}
+            >
+              Category limits
+            </BodySmall>
+
+            {categoryBudgets.length === 0 ? (
+              <BodySmall
+                muted
+                style={{
+                  fontSize: tokens.typography.sizes.xs,
+                }}
+              >
+                Pick or add categories to allocate your budget.
+              </BodySmall>
+            ) : (
+              categoryBudgets.map((c) => (
+                <View
+                  key={c.key}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: tokens.spacing.sm,
+                  }}
+                >
+                  <View style={{ flex: 1 }}>
+                    <Body
+                      style={{
+                        fontSize: tokens.typography.sizes.sm,
+                        color: colors.onSurface,
+                      }}
+                    >
+                      {c.label}
+                    </Body>
+                  </View>
+                  <View style={{ width: 140 }}>
+                    <TextInput
+                      mode="outlined"
+                      label="RM"
+                      value={c.amount}
+                      onChangeText={(v) => handleCategoryAmountChange(c.key, v)}
+                      keyboardType="decimal-pad"
+                    />
+                  </View>
+                </View>
+              ))
+            )}
+          </View>
         </View>
       </ScrollView>
 
@@ -439,9 +488,11 @@ export default function AddBudget() {
             variant="default"
             disabled={!isValid}
             fullWidth
-            rounded="sm"
+            rounded="pill"
           >
-            {isUpdateMode ? "Update budget" : "Save budget"}
+            <Body weight="semibold" color={colors.onPrimary}>
+              {isUpdateMode ? "Update budget" : "Save budget"}
+            </Body>
           </Button>
         </View>
       </View>

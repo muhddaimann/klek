@@ -49,7 +49,6 @@ export function OptionTile({ active, label, icon, onPress }: OptionTileProps) {
         weight="semibold"
         numberOfLines={2}
         style={{
-          fontSize: tokens.typography.sizes.xs,
           color: active ? colors.onPrimaryContainer : colors.onSurfaceVariant,
         }}
       >
