@@ -1,17 +1,26 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, ScrollView } from "react-native";
-import { useTheme, Text, TextInput } from "react-native-paper";
+import { View, ScrollView, Pressable } from "react-native";
+import { useTheme, TextInput } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  UtensilsCrossed,
+  Dumbbell,
+  Clapperboard,
+  Plane,
+  Shapes,
+} from "lucide-react-native";
 import { useDesign } from "../../contexts/designContext";
 import { Button } from "../../components/atom/button";
+import { OptionTile } from "../../components/atom/optionTile";
 import { Header } from "../../components/shared/header";
+import { Body, BodySmall } from "../../components/atom/text";
 
 const CATEGORY_OPTIONS = [
   { key: "food", label: "Food" },
   { key: "sport", label: "Sport" },
   { key: "entertainment", label: "Entertainment" },
   { key: "travel", label: "Travel" },
-  { key: "other", label: "Other" },
+  { key: "other", label: "Others" },
 ] as const;
 
 type CategoryKey = (typeof CATEGORY_OPTIONS)[number]["key"];
@@ -23,7 +32,6 @@ export default function BudgetRecord() {
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState<CategoryKey | null>(null);
-
   const titleRef = useRef<any>(null);
 
   useEffect(() => {
@@ -49,7 +57,6 @@ export default function BudgetRecord() {
 
   const numericAmount = Number(amount.replace(/,/g, ""));
   const isAmountValid = !Number.isNaN(numericAmount) && numericAmount > 0;
-
   const isValid = title.trim().length > 0 && isAmountValid && category !== null;
 
   const handleSave = () => {
@@ -65,110 +72,118 @@ export default function BudgetRecord() {
     console.log("budget-record-add", payload);
   };
 
+  const renderCategoryIcon = (key: CategoryKey) => {
+    const size = tokens.sizes.icon.md;
+    const iconColor = colors.primary;
+    switch (key) {
+      case "food":
+        return <UtensilsCrossed size={size} color={iconColor} />;
+      case "sport":
+        return <Dumbbell size={size} color={iconColor} />;
+      case "entertainment":
+        return <Clapperboard size={size} color={iconColor} />;
+      case "travel":
+        return <Plane size={size} color={iconColor} />;
+      case "other":
+      default:
+        return <Shapes size={size} color={iconColor} />;
+    }
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingHorizontal: tokens.spacing.lg,
-          paddingTop: tokens.spacing.lg,
-          paddingBottom: insets.bottom + tokens.spacing["3xl"] * 2,
-          gap: tokens.spacing.lg,
+          paddingBottom: insets.bottom + tokens.spacing.lg,
         }}
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
         bounces={false}
+        stickyHeaderIndices={[0]}
       >
-        <Header title="Add spending" subtitle="Log this under your budget" />
-
-        <View style={{ gap: tokens.spacing.md }}>
-          <TextInput
-            mode="outlined"
-            label="What did you spend on?"
-            value={title}
-            onChangeText={setTitle}
-            autoCapitalize="sentences"
-            ref={titleRef}
-          />
-          <TextInput
-            mode="outlined"
-            label="Amount (RM)"
-            value={amount}
-            onChangeText={handleAmountChange}
-            keyboardType="decimal-pad"
-            error={amount.length > 0 && !isAmountValid}
-          />
-          {amount.length > 0 && !isAmountValid && (
-            <Text
-              style={{
-                marginTop: -tokens.spacing["xs"],
-                color: colors.error,
-                fontSize: tokens.typography.sizes.xs,
-              }}
-            >
-              Enter a valid amount above 0
-            </Text>
-          )}
+        <View
+          style={{
+            backgroundColor: colors.background,
+            paddingTop: tokens.spacing.lg,
+            paddingHorizontal: tokens.spacing.lg,
+            paddingBottom: tokens.spacing.sm,
+          }}
+        >
+          <Header title="Add spending" subtitle="Log this under your budget" />
         </View>
 
-        <View style={{ gap: tokens.spacing.sm }}>
-          <Text
-            style={{
-              fontSize: tokens.typography.sizes.sm,
-              fontWeight: tokens.typography.weights.semibold,
-              color: colors.onSurface,
-            }}
-          >
-            Category
-          </Text>
-          <View
-            style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              gap: tokens.spacing.xs,
-            }}
-          >
-            {CATEGORY_OPTIONS.map((opt) => {
-              const active = category === opt.key;
-              return (
-                <View
-                  key={opt.key}
-                  style={{
-                    borderRadius: tokens.radii.pill,
-                    borderWidth: 1,
-                    borderColor: active
-                      ? colors.primary
-                      : colors.outlineVariant,
-                    backgroundColor: active
-                      ? colors.primaryContainer
-                      : colors.surface,
-                  }}
-                >
-                  <Button
+        <View
+          style={{
+            paddingHorizontal: tokens.spacing.lg,
+            gap: tokens.spacing.lg,
+          }}
+        >
+          <View style={{ gap: tokens.spacing.md }}>
+            <TextInput
+              mode="outlined"
+              label="What did you spend on?"
+              value={title}
+              onChangeText={setTitle}
+              autoCapitalize="sentences"
+              ref={titleRef}
+            />
+            <TextInput
+              mode="outlined"
+              label="Amount (RM)"
+              value={amount}
+              onChangeText={handleAmountChange}
+              keyboardType="decimal-pad"
+              error={amount.length > 0 && !isAmountValid}
+            />
+            {amount.length > 0 && !isAmountValid && (
+              <BodySmall
+                color={colors.error}
+                style={{
+                  marginTop: -tokens.spacing["xs"],
+                  fontSize: tokens.typography.sizes.xs,
+                }}
+              >
+                Enter a valid amount above 0
+              </BodySmall>
+            )}
+          </View>
+
+          <View style={{ gap: tokens.spacing.sm }}>
+            <BodySmall
+              weight="semibold"
+              color={colors.onSurface}
+              style={{
+                fontSize: tokens.typography.sizes.sm,
+              }}
+            >
+              Category
+            </BodySmall>
+
+            <View
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                rowGap: tokens.spacing.sm,
+                columnGap: tokens.spacing.sm,
+                justifyContent: "center",
+                alignSelf: "center",
+                width: "100%",
+              }}
+            >
+              {CATEGORY_OPTIONS.map((opt) => {
+                const active = category === opt.key;
+                return (
+                  <OptionTile
+                    key={opt.key}
+                    active={active}
+                    label={opt.label}
+                    icon={renderCategoryIcon(opt.key)}
                     onPress={() => setCategory(opt.key)}
-                    variant="ghost"
-                    size="sm"
-                    rounded="pill"
-                    style={{
-                      paddingHorizontal: tokens.spacing.sm,
-                      paddingVertical: tokens.spacing["xs"],
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: tokens.typography.sizes.xs,
-                        color: active
-                          ? colors.primary
-                          : colors.onSurfaceVariant,
-                        fontWeight: tokens.typography.weights.semibold,
-                      }}
-                    >
-                      {opt.label}
-                    </Text>
-                  </Button>
-                </View>
-              );
-            })}
+                  />
+                );
+              })}
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -192,9 +207,11 @@ export default function BudgetRecord() {
             variant="default"
             disabled={!isValid}
             fullWidth
-            rounded="sm"
+            rounded="pill"
           >
-            Save record
+            <Body weight="semibold" color={colors.onPrimary}>
+              Save record
+            </Body>
           </Button>
         </View>
       </View>

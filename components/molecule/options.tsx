@@ -1,10 +1,13 @@
 import React from "react";
-import { View, Pressable, Platform } from "react-native";
+import { View, Pressable, Platform, Animated, Easing } from "react-native";
 import { useTheme, Divider } from "react-native-paper";
 import { BlurView } from "expo-blur";
 import { useDesign } from "../../contexts/designContext";
 import type { OptionsOverlayOptions } from "../../contexts/overlayContext";
 import { H3, Body, BodySmall } from "../atom/text";
+
+const DURATION_IN = 220;
+const DURATION_OUT = 180;
 
 export function OptionsCenter({
   visible,
@@ -21,10 +24,22 @@ export function OptionsCenter({
   const { tokens } = useDesign();
 
   const canDismiss = state?.dismissible ?? true;
-  if (!visible || !state) return null;
 
-  const total = state.options.length;
-  const hasHeader = !!(state.title || state.message);
+  const backdropOpacity = React.useRef(new Animated.Value(0)).current;
+  const panelOpacity = React.useRef(new Animated.Value(0)).current;
+  const panelScale = React.useRef(new Animated.Value(0.96)).current;
+  const closingRef = React.useRef(false);
+  const [mounted, setMounted] = React.useState(visible);
+
+  const [internalState, setInternalState] =
+    React.useState<OptionsOverlayOptions | null>(state ?? null);
+
+  React.useEffect(() => {
+    if (state) setInternalState(state);
+  }, [state]);
+
+  const total = internalState?.options.length ?? 0;
+  const hasHeader = !!(internalState?.title || internalState?.message);
 
   const LONG_LIST_THRESHOLD_WITH_HEADER = 8;
   const LONG_LIST_THRESHOLD_NO_HEADER = 12;
@@ -34,6 +49,83 @@ export function OptionsCenter({
     (hasHeader
       ? LONG_LIST_THRESHOLD_WITH_HEADER
       : LONG_LIST_THRESHOLD_NO_HEADER);
+
+  const animateIn = React.useCallback(() => {
+    closingRef.current = false;
+    backdropOpacity.setValue(0);
+    panelOpacity.setValue(0);
+    panelScale.setValue(0.96);
+
+    Animated.parallel([
+      Animated.timing(backdropOpacity, {
+        toValue: 1,
+        duration: DURATION_IN,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }),
+      Animated.timing(panelOpacity, {
+        toValue: 1,
+        duration: DURATION_IN,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }),
+      Animated.timing(panelScale, {
+        toValue: 1,
+        duration: DURATION_IN,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [backdropOpacity, panelOpacity, panelScale]);
+
+  const animateOut = React.useCallback(
+    (after?: () => void) => {
+      if (closingRef.current) return;
+      closingRef.current = true;
+
+      Animated.parallel([
+        Animated.timing(backdropOpacity, {
+          toValue: 0,
+          duration: DURATION_OUT,
+          easing: Easing.in(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.timing(panelOpacity, {
+          toValue: 0,
+          duration: DURATION_OUT,
+          easing: Easing.in(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.timing(panelScale, {
+          toValue: 0.96,
+          duration: DURATION_OUT,
+          easing: Easing.in(Easing.cubic),
+          useNativeDriver: true,
+        }),
+      ]).start(({ finished }) => {
+        if (!finished) return;
+        closingRef.current = false;
+        setMounted(false);
+        setInternalState(null);
+        after?.();
+      });
+    },
+    [backdropOpacity, panelOpacity, panelScale]
+  );
+
+  React.useEffect(() => {
+    if (visible) {
+      if (!mounted) setMounted(true);
+      requestAnimationFrame(animateIn);
+    } else if (mounted && !closingRef.current) {
+      animateOut();
+    }
+  }, [visible, mounted, animateIn, animateOut]);
+
+  const handleBackdropPress = () => {
+    if (!canDismiss || closingRef.current) return;
+    animateOut(onDismiss);
+  };
 
   const renderOption = (
     opt: any,
@@ -45,7 +137,7 @@ export function OptionsCenter({
         <Divider
           style={{
             backgroundColor: colors.outlineVariant,
-            opacity: 0.8,
+            opacity: 0.6,
           }}
         />
       )}
@@ -74,6 +166,8 @@ export function OptionsCenter({
     </React.Fragment>
   );
 
+  if (!mounted || !internalState) return null;
+
   return (
     <View
       pointerEvents="box-none"
@@ -85,57 +179,52 @@ export function OptionsCenter({
         zIndex: 9999,
       }}
       accessible
-      accessibilityLabel={state.title ?? "Options dialog"}
+      accessibilityLabel={internalState.title ?? "Options dialog"}
       accessibilityViewIsModal
       accessibilityLiveRegion="polite"
     >
-      {Platform.OS === "ios" || Platform.OS === "web" ? (
-        <>
-          <BlurView
-            intensity={40}
-            tint={dark ? "dark" : "light"}
-            style={{ position: "absolute", inset: 0 }}
-          />
-          <View
+      <Animated.View
+        style={{
+          position: "absolute",
+          inset: 0,
+          opacity: backdropOpacity,
+        }}
+      >
+        {Platform.OS === "ios" || Platform.OS === "web" ? (
+          <>
+            <BlurView
+              intensity={30}
+              tint={dark ? "dark" : "light"}
+              style={{ position: "absolute", inset: 0 }}
+            />
+            <Pressable
+              onPress={handleBackdropPress}
+              style={{
+                position: "absolute",
+                inset: 0,
+                backgroundColor: dark ? "rgba(0,0,0,0.35)" : "rgba(0,0,0,0.18)",
+              }}
+            />
+          </>
+        ) : (
+          <Pressable
+            onPress={handleBackdropPress}
             style={{
-              position: "absolute",
-              inset: 0,
-              backgroundColor: dark ? "rgba(0,0,0,0.45)" : "rgba(0,0,0,0.30)",
+              flex: 1,
+              backgroundColor: dark ? "rgba(0,0,0,0.40)" : "rgba(0,0,0,0.22)",
             }}
           />
-        </>
-      ) : (
-        <View
-          style={{
-            position: "absolute",
-            inset: 0,
-            backgroundColor: dark ? "rgba(0,0,0,0.55)" : "rgba(0,0,0,0.35)",
-          }}
-        />
-      )}
+        )}
+      </Animated.View>
 
-      <Pressable
-        onPress={canDismiss ? onDismiss : undefined}
-        accessible={false}
-        style={{ position: "absolute", inset: 0 }}
-      />
-
-      <View
+      <Animated.View
         style={{
           width: "90%",
           maxWidth: 420,
           borderRadius: tokens.radii["2xl"],
           backgroundColor: "transparent",
-          ...Platform.select({
-            ios: {
-              shadowColor: colors.shadow,
-              shadowOpacity: 0.24,
-              shadowRadius: tokens.elevation.level5 * 2.2,
-              shadowOffset: { width: 0, height: tokens.elevation.level5 },
-            },
-            android: { elevation: tokens.elevation.level5 },
-            default: { elevation: tokens.elevation.level5 },
-          }),
+          opacity: panelOpacity,
+          transform: [{ scale: panelScale }],
         }}
       >
         <View
@@ -146,7 +235,7 @@ export function OptionsCenter({
             overflow: "hidden",
           }}
         >
-          {(state.title || state.message) && (
+          {(internalState.title || internalState.message) && (
             <View
               style={{
                 paddingHorizontal: tokens.spacing.lg,
@@ -154,17 +243,17 @@ export function OptionsCenter({
                 paddingBottom: tokens.spacing.sm,
               }}
             >
-              {state.title ? <H3>{state.title}</H3> : null}
-              {state.message ? (
+              {internalState.title ? <H3>{internalState.title}</H3> : null}
+              {internalState.message ? (
                 <BodySmall muted style={{ marginTop: tokens.spacing.xs }}>
-                  {state.message}
+                  {internalState.message}
                 </BodySmall>
               ) : null}
             </View>
           )}
 
           <Divider
-            style={{ backgroundColor: colors.outlineVariant, opacity: 0.8 }}
+            style={{ backgroundColor: colors.outlineVariant, opacity: 0.6 }}
           />
 
           <View
@@ -178,13 +267,13 @@ export function OptionsCenter({
                 width: "100%",
               }}
             >
-              {state.options.map((opt, index) =>
+              {internalState.options.map((opt, index) =>
                 renderOption(opt, index, index > 0)
               )}
             </View>
           </View>
         </View>
-      </View>
+      </Animated.View>
     </View>
   );
 }
