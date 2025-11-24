@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { View, ScrollView, Pressable } from "react-native";
+import { View, ScrollView } from "react-native";
 import { useTheme, Avatar } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDesign } from "../../../contexts/designContext";
@@ -10,6 +10,7 @@ import { useTab } from "../../../hooks/useTab";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useClaim, ClaimFilterKey } from "../../../hooks/useClaim";
 import { Body, BodySmall, Caption } from "../../../components/atom/text";
+import { Button } from "../../../components/atom/button";
 
 export default function Claim() {
   const { colors } = useTheme();
@@ -38,45 +39,55 @@ export default function Claim() {
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingHorizontal: tokens.spacing.lg,
-          paddingTop: tokens.spacing.lg,
           paddingBottom: tokens.spacing["3xl"] * 4,
           gap: tokens.spacing.md,
         }}
         showsVerticalScrollIndicator={false}
         overScrollMode="never"
         bounces={false}
+        stickyHeaderIndices={[0]}
       >
-        <Header
-          title="Claim dashboard"
-          subtitle={useMock ? "Showing sample claims" : "No sample data"}
-          rightSlot={
-            <Pressable
-              onPress={toggleMock}
-              style={{
-                paddingHorizontal: tokens.spacing.sm,
-                paddingVertical: tokens.spacing.xs,
-                borderRadius: tokens.radii.pill,
-                backgroundColor: useMock
-                  ? colors.primaryContainer
-                  : colors.surface,
-                borderWidth: 1,
-                borderColor: useMock ? colors.primary : colors.outlineVariant,
-              }}
-            >
-              <BodySmall
-                weight="semibold"
-                color={useMock ? colors.primary : colors.onSurfaceVariant}
+        <View
+          style={{
+            backgroundColor: colors.background,
+            paddingTop: tokens.spacing.lg,
+            paddingHorizontal: tokens.spacing.lg,
+            paddingBottom: tokens.spacing.sm,
+          }}
+        >
+          <Header
+            title="Claim dashboard"
+            subtitle={useMock ? "Showing sample claims" : "No sample data"}
+            rightSlot={
+              <Button
+                onPress={toggleMock}
+                variant="outline"
+                size="sm"
+                rounded="pill"
+                style={{
+                  paddingHorizontal: tokens.spacing.sm,
+                  paddingVertical: tokens.spacing.xs,
+                  backgroundColor: useMock
+                    ? colors.primaryContainer
+                    : colors.surface,
+                  borderColor: useMock ? colors.primary : colors.outlineVariant,
+                }}
               >
-                {useMock ? "Mock on" : "Mock off"}
-              </BodySmall>
-            </Pressable>
-          }
-          style={{ paddingHorizontal: 0, paddingBottom: tokens.spacing.sm }}
-        />
+                <BodySmall
+                  weight="semibold"
+                  color={useMock ? colors.primary : colors.onSurfaceVariant}
+                >
+                  {useMock ? "Mock on" : "Mock off"}
+                </BodySmall>
+              </Button>
+            }
+            style={{ paddingHorizontal: 0 }}
+          />
+        </View>
 
         <View
           style={{
+            paddingHorizontal: tokens.spacing.lg,
             flexDirection: "row",
             gap: tokens.spacing.sm,
           }}
@@ -140,7 +151,12 @@ export default function Claim() {
           </View>
         </View>
 
-        <View style={{ gap: tokens.spacing.sm }}>
+        <View
+          style={{
+            paddingHorizontal: tokens.spacing.lg,
+            gap: tokens.spacing.sm,
+          }}
+        >
           <View
             style={{
               flexDirection: "row",
@@ -159,13 +175,15 @@ export default function Claim() {
               {filters.map((f) => {
                 const active = activeFilter === f.key;
                 return (
-                  <Pressable
+                  <Button
                     key={f.key}
                     onPress={() => setActiveFilter(f.key)}
+                    variant="ghost"
+                    size="sm"
+                    rounded="pill"
                     style={{
                       paddingHorizontal: tokens.spacing.sm,
                       paddingVertical: tokens.spacing["xs"],
-                      borderRadius: tokens.radii.pill,
                       backgroundColor: active
                         ? colors.primaryContainer
                         : colors.surface,
@@ -181,7 +199,7 @@ export default function Claim() {
                     >
                       {f.label}
                     </BodySmall>
-                  </Pressable>
+                  </Button>
                 );
               })}
             </View>
@@ -299,41 +317,31 @@ export default function Claim() {
             borderTopColor: colors.outlineVariant,
           }}
         >
-          <Pressable
+          <Button
+            onPress={() => router.push("/(modals)/manualClaim")}
+            variant="secondary"
+            rounded="lg"
             style={{
               flex: 1,
-              paddingVertical: tokens.spacing.sm,
-              borderRadius: tokens.radii.lg,
-              backgroundColor: colors.surface,
-              borderWidth: 1,
-              borderColor: colors.outlineVariant,
-              alignItems: "center",
-              justifyContent: "center",
             }}
-            onPress={() => router.push("/(modals)/manualClaim")}
           >
             <BodySmall weight="semibold" color={colors.onSurface}>
               Manual claim
             </BodySmall>
-          </Pressable>
+          </Button>
 
-          <Pressable
+          <Button
+            onPress={() => router.push("/(modals)/billSplit")}
+            variant="default"
+            rounded="lg"
             style={{
               flex: 1,
-              paddingVertical: tokens.spacing.sm,
-              borderRadius: tokens.radii.lg,
-              backgroundColor: colors.surface,
-              borderWidth: 1,
-              borderColor: colors.outlineVariant,
-              alignItems: "center",
-              justifyContent: "center",
             }}
-            onPress={() => router.push("/(modals)/billSplit")}
           >
-            <BodySmall weight="semibold" color={colors.onSurface}>
+            <BodySmall weight="semibold" color={colors.onPrimary}>
               Bill split
             </BodySmall>
-          </Pressable>
+          </Button>
         </View>
       </View>
     </View>

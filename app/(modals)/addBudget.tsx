@@ -228,6 +228,7 @@ export default function AddBudget() {
         style={{ flex: 1 }}
         contentContainerStyle={{
           paddingBottom: insets.bottom + tokens.spacing["3xl"] * 2,
+          gap: tokens.spacing.xxs,
         }}
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"

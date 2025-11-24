@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, ScrollView, Pressable } from "react-native";
+import { View, ScrollView } from "react-native";
 import { useTheme, TextInput } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
@@ -96,6 +96,7 @@ export default function BudgetRecord() {
         style={{ flex: 1 }}
         contentContainerStyle={{
           paddingBottom: insets.bottom + tokens.spacing.lg,
+          gap: tokens.spacing.xxs,
         }}
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"

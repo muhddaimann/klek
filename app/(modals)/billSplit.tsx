@@ -1,10 +1,13 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import { View, ScrollView, StyleSheet } from "react-native";
 import { useTheme, Text, TextInput } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Clock3, Percent, Settings2 } from "lucide-react-native";
 import { useDesign } from "../../contexts/designContext";
 import { Button } from "../../components/atom/button";
 import { Header } from "../../components/shared/header";
+import { OptionTile } from "../../components/atom/optionTile";
+import { BodySmall } from "../../components/atom/text";
 
 const DUE_OPTIONS = [
   { key: "none", label: "None" },
@@ -20,6 +23,13 @@ const MODE_OPTIONS = [
 
 type DueKey = (typeof DUE_OPTIONS)[number]["key"];
 type SplitModeKey = (typeof MODE_OPTIONS)[number]["key"];
+
+type ModeIconComp = React.ComponentType<{ size?: number; color?: string }>;
+
+const MODE_ICON_MAP: Record<SplitModeKey, ModeIconComp> = {
+  equal: Percent,
+  custom: Settings2,
+};
 
 type Friend = {
   id: string;
@@ -82,16 +92,23 @@ export default function BillSplit() {
   const createdAtRef = useRef(new Date());
   const createdAt = createdAtRef.current;
 
-  const [step, setStep] = useState<1 | 2>(1);
+  const titleRef = useRef<any>(null);
 
+  const [step, setStep] = useState<1 | 2>(1);
   const [title, setTitle] = useState("");
   const [totalAmountCents, setTotalAmountCents] = useState("");
   const [headCount, setHeadCount] = useState("");
   const [dueKey, setDueKey] = useState<DueKey>("none");
   const [mode, setMode] = useState<SplitModeKey | null>(null);
-
   const [friends, setFriends] = useState<Friend[]>([]);
   const [youAmount, setYouAmount] = useState<number>(0);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      titleRef.current?.focus();
+    });
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   const numericTotal = totalAmountCents ? Number(totalAmountCents) / 100 : 0;
   const isTotalValid = numericTotal > 0;
@@ -253,404 +270,408 @@ export default function BillSplit() {
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingHorizontal: tokens.spacing.lg,
-          paddingTop: tokens.spacing.lg,
           paddingBottom: insets.bottom + tokens.spacing["3xl"] * 2,
-          gap: tokens.spacing.lg,
+          gap: tokens.spacing.xxs,
         }}
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
         bounces={false}
+        stickyHeaderIndices={[0]}
+        showsVerticalScrollIndicator={false}
       >
-        <Header
-          title={step === 1 ? "Split a bill" : "Add friends & shares"}
-          subtitle={
-            step === 1
-              ? "You paid first, now set up the split"
-              : "You are the payee. Add who owes you and how much."
-          }
-        />
+        <View
+          style={{
+            backgroundColor: colors.background,
+            paddingTop: tokens.spacing.lg,
+            paddingHorizontal: tokens.spacing.lg,
+            paddingBottom: tokens.spacing.sm,
+          }}
+        >
+          <Header
+            title={step === 1 ? "Split a bill" : "Add friends & shares"}
+            subtitle={
+              step === 1
+                ? "You paid first, now set up the split"
+                : "You are the payee. Add who owes you and how much."
+            }
+          />
+        </View>
 
-        {step === 1 && (
-          <>
-            <View style={{ gap: tokens.spacing.md }}>
-              <TextInput
-                mode="outlined"
-                label="What is this bill for?"
-                value={title}
-                onChangeText={setTitle}
-                autoCapitalize="sentences"
-              />
-              <TextInput
-                mode="outlined"
-                label="Total amount you paid"
-                value={formatCents(totalAmountCents)}
-                onChangeText={handleTotalAmountChange}
-                keyboardType="number-pad"
-                error={hasTotalInput && !isTotalValid}
-              />
-              {hasTotalInput && !isTotalValid && (
+        <View
+          style={{
+            paddingHorizontal: tokens.spacing.lg,
+            gap: tokens.spacing.lg,
+          }}
+        >
+          {step === 1 && (
+            <>
+              <View style={{ gap: tokens.spacing.md }}>
+                <TextInput
+                  mode="outlined"
+                  label="What is this bill for?"
+                  value={title}
+                  onChangeText={setTitle}
+                  autoCapitalize="sentences"
+                  ref={titleRef}
+                />
+                <TextInput
+                  mode="outlined"
+                  label="Total amount you paid"
+                  value={formatCents(totalAmountCents)}
+                  onChangeText={handleTotalAmountChange}
+                  keyboardType="number-pad"
+                  error={hasTotalInput && !isTotalValid}
+                />
+                {hasTotalInput && !isTotalValid && (
+                  <Text
+                    style={{
+                      marginTop: -tokens.spacing["xs"],
+                      color: colors.error,
+                      fontSize: tokens.typography.sizes.xs,
+                    }}
+                  >
+                    Enter a valid amount above 0
+                  </Text>
+                )}
+
+                <TextInput
+                  mode="outlined"
+                  label="How many people in total? (including you)"
+                  value={headCount}
+                  onChangeText={setHeadCount}
+                  keyboardType="number-pad"
+                  error={headCount.length > 0 && !isHeadCountValid}
+                />
+                {headCount.length > 0 && !isHeadCountValid && (
+                  <Text
+                    style={{
+                      marginTop: -tokens.spacing["xs"],
+                      color: colors.error,
+                      fontSize: tokens.typography.sizes.xs,
+                    }}
+                  >
+                    At least 2 people needed to split
+                  </Text>
+                )}
+              </View>
+
+              <View style={{ gap: tokens.spacing.sm }}>
                 <Text
                   style={{
-                    marginTop: -tokens.spacing["xs"],
-                    color: colors.error,
-                    fontSize: tokens.typography.sizes.xs,
+                    fontSize: tokens.typography.sizes.sm,
+                    fontWeight: tokens.typography.weights.semibold,
+                    color: colors.onSurface,
                   }}
                 >
-                  Enter a valid amount above 0
+                  Due
                 </Text>
-              )}
+                <View style={{ gap: tokens.spacing["xs"] }}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      flexWrap: "wrap",
+                      gap: tokens.spacing.xs,
+                    }}
+                  >
+                    {DUE_OPTIONS.map((opt) => {
+                      const active = dueKey === opt.key;
 
-              <TextInput
-                mode="outlined"
-                label="How many people in total? (including you)"
-                value={headCount}
-                onChangeText={setHeadCount}
-                keyboardType="number-pad"
-                error={headCount.length > 0 && !isHeadCountValid}
-              />
-              {headCount.length > 0 && !isHeadCountValid && (
-                <Text
-                  style={{
-                    marginTop: -tokens.spacing["xs"],
-                    color: colors.error,
-                    fontSize: tokens.typography.sizes.xs,
-                  }}
-                >
-                  At least 2 people needed to split
-                </Text>
-              )}
-            </View>
+                      const IconLeft = ({ size }: { size?: number }) => (
+                        <Clock3
+                          size={size ?? tokens.sizes.icon.sm}
+                          color={
+                            active ? colors.primary : colors.onSurfaceVariant
+                          }
+                        />
+                      );
 
-            <View style={{ gap: tokens.spacing.sm }}>
-              <Text
-                style={{
-                  fontSize: tokens.typography.sizes.sm,
-                  fontWeight: tokens.typography.weights.semibold,
-                  color: colors.onSurface,
-                }}
-              >
-                Due
-              </Text>
-              <View style={{ gap: tokens.spacing["xs"] }}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    flexWrap: "wrap",
-                    gap: tokens.spacing.xs,
-                  }}
-                >
-                  {DUE_OPTIONS.map((opt) => {
-                    const active = dueKey === opt.key;
-                    return (
-                      <View
-                        key={opt.key}
-                        style={{
-                          borderRadius: tokens.radii.pill,
-                          borderWidth: 1,
-                          borderColor: active
-                            ? colors.primary
-                            : colors.outlineVariant,
-                          backgroundColor: active
-                            ? colors.primaryContainer
-                            : colors.surface,
-                        }}
-                      >
+                      return (
                         <Button
+                          key={opt.key}
                           onPress={() => setDueKey(opt.key)}
-                          variant="ghost"
+                          variant="outline"
                           size="sm"
                           rounded="pill"
+                          IconLeft={IconLeft}
                           style={{
                             paddingHorizontal: tokens.spacing.sm,
                             paddingVertical: tokens.spacing["xs"],
+                            borderRadius: tokens.radii.pill,
+                            borderWidth: 1,
+                            borderColor: active
+                              ? colors.primary
+                              : colors.outlineVariant,
+                            backgroundColor: active
+                              ? colors.primaryContainer
+                              : colors.surface,
                           }}
                         >
-                          <Text
+                          <BodySmall
+                            weight="semibold"
                             style={{
                               fontSize: tokens.typography.sizes.xs,
                               color: active
                                 ? colors.primary
                                 : colors.onSurfaceVariant,
-                              fontWeight: tokens.typography.weights.semibold,
                             }}
                           >
                             {opt.label}
-                          </Text>
+                          </BodySmall>
                         </Button>
-                      </View>
-                    );
-                  })}
-                </View>
+                      );
+                    })}
+                  </View>
 
-                <View
-                  style={{
-                    marginTop: tokens.spacing.sm,
-                  }}
-                >
                   <View
                     style={{
-                      flexDirection: "row",
-                      alignItems: "center",
+                      marginTop: tokens.spacing.sm,
                     }}
                   >
                     <View
                       style={{
-                        flex: 1,
-                        height: StyleSheet.hairlineWidth,
-                        backgroundColor: colors.outlineVariant,
-                      }}
-                    />
-                    <View
-                      style={{
-                        paddingHorizontal: tokens.spacing.sm,
+                        flexDirection: "row",
+                        alignItems: "center",
                       }}
                     >
-                      <Text
+                      <View
                         style={{
-                          fontSize: tokens.typography.sizes.xs,
-                          color: colors.onSurfaceVariant,
-                          textAlign: "center",
+                          flex: 1,
+                          height: StyleSheet.hairlineWidth,
+                          backgroundColor: colors.outlineVariant,
                         }}
-                      >
-                        {dueLabel} · {dueDateText}
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        flex: 1,
-                        height: StyleSheet.hairlineWidth,
-                        backgroundColor: colors.outlineVariant,
-                      }}
-                    />
-                  </View>
-                </View>
-              </View>
-            </View>
-
-            <View style={{ gap: tokens.spacing.sm }}>
-              <Text
-                style={{
-                  fontSize: tokens.typography.sizes.sm,
-                  fontWeight: tokens.typography.weights.semibold,
-                  color: colors.onSurface,
-                }}
-              >
-                Split mode
-              </Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                  gap: tokens.spacing.xs,
-                }}
-              >
-                {MODE_OPTIONS.map((opt) => {
-                  const active = mode === opt.key;
-                  return (
-                    <View
-                      key={opt.key}
-                      style={{
-                        borderRadius: tokens.radii.pill,
-                        borderWidth: 1,
-                        borderColor: active
-                          ? colors.primary
-                          : colors.outlineVariant,
-                        backgroundColor: active
-                          ? colors.primaryContainer
-                          : colors.surface,
-                      }}
-                    >
-                      <Button
-                        onPress={() => setMode(opt.key)}
-                        variant="ghost"
-                        size="sm"
-                        rounded="pill"
+                      />
+                      <View
                         style={{
                           paddingHorizontal: tokens.spacing.sm,
-                          paddingVertical: tokens.spacing["xs"],
                         }}
                       >
                         <Text
                           style={{
                             fontSize: tokens.typography.sizes.xs,
-                            color: active
-                              ? colors.primary
-                              : colors.onSurfaceVariant,
-                            fontWeight: tokens.typography.weights.semibold,
+                            color: colors.onSurfaceVariant,
+                            textAlign: "center",
                           }}
                         >
-                          {opt.label}
+                          {dueLabel} · {dueDateText}
                         </Text>
-                      </Button>
+                      </View>
+                      <View
+                        style={{
+                          flex: 1,
+                          height: StyleSheet.hairlineWidth,
+                          backgroundColor: colors.outlineVariant,
+                        }}
+                      />
                     </View>
-                  );
-                })}
+                  </View>
+                </View>
               </View>
-            </View>
-          </>
-        )}
 
-        {step === 2 && (
-          <>
-            <View
-              style={{
-                padding: tokens.spacing.md,
-                borderRadius: tokens.radii.lg,
-                borderWidth: 1,
-                borderColor: colors.outlineVariant,
-                backgroundColor: colors.surface,
-                gap: tokens.spacing["xs"],
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: tokens.typography.sizes.sm,
-                  fontWeight: tokens.typography.weights.semibold,
-                  color: colors.onSurface,
-                }}
-              >
-                {title || "Untitled bill"}
-              </Text>
-              <Text
-                style={{
-                  fontSize: tokens.typography.sizes.xs,
-                  color: colors.onSurfaceVariant,
-                }}
-              >
-                You paid RM {isTotalValid ? numericTotal.toFixed(2) : "-"} ·{" "}
-                {dueLabel.toLowerCase()} · {dueDateText}
-              </Text>
-              {isHeadCountValid && (
+              <View style={{ gap: tokens.spacing.sm }}>
                 <Text
                   style={{
-                    marginTop: tokens.spacing["xs"],
-                    fontSize: tokens.typography.sizes.xs,
-                    color: colors.onSurfaceVariant,
+                    fontSize: tokens.typography.sizes.sm,
+                    fontWeight: tokens.typography.weights.semibold,
+                    color: colors.onSurface,
                   }}
                 >
-                  Total heads: {numericHeadCount} (you +{" "}
-                  {Math.max(0, numericHeadCount - 1)} friends)
+                  Split mode
                 </Text>
-              )}
-            </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                    gap: tokens.spacing.xs,
+                  }}
+                >
+                  {MODE_OPTIONS.map((opt) => {
+                    const active = mode === opt.key;
+                    const Icon = MODE_ICON_MAP[opt.key];
 
-            <View style={{ gap: tokens.spacing.sm }}>
-              <Text
-                style={{
-                  fontSize: tokens.typography.sizes.sm,
-                  fontWeight: tokens.typography.weights.semibold,
-                  color: colors.onSurface,
-                }}
-              >
-                You (payee)
-              </Text>
+                    return (
+                      <OptionTile
+                        key={opt.key}
+                        label={opt.label}
+                        active={active}
+                        onPress={() => setMode(opt.key)}
+                        icon={
+                          <Icon
+                            size={tokens.sizes.icon.md}
+                            color={colors.primary}
+                          />
+                        }
+                      />
+                    );
+                  })}
+                </View>
+              </View>
+            </>
+          )}
+
+          {step === 2 && (
+            <>
               <View
                 style={{
-                  flexDirection: "row",
-                  gap: tokens.spacing.sm,
-                  alignItems: "center",
-                  paddingVertical: tokens.spacing["xs"],
+                  padding: tokens.spacing.md,
+                  borderRadius: tokens.radii.lg,
+                  borderWidth: 1,
+                  borderColor: colors.outlineVariant,
+                  backgroundColor: colors.surface,
+                  gap: tokens.spacing["xs"],
                 }}
               >
                 <Text
                   style={{
                     fontSize: tokens.typography.sizes.sm,
+                    fontWeight: tokens.typography.weights.semibold,
                     color: colors.onSurface,
-                    flex: 1,
                   }}
                 >
-                  You
+                  {title || "Untitled bill"}
                 </Text>
-                {mode === "custom" ? (
-                  <View style={{ width: 120 }}>
-                    <TextInput
-                      mode="outlined"
-                      label="RM"
-                      value={
-                        youAmount || youAmount === 0 ? youAmount.toFixed(2) : ""
-                      }
-                      onChangeText={handleYouAmountChange}
-                      keyboardType="number-pad"
-                    />
-                  </View>
-                ) : (
-                  <Text
-                    style={{
-                      fontSize: tokens.typography.sizes.sm,
-                      fontWeight: tokens.typography.weights.semibold,
-                      color: colors.onSurface,
-                    }}
-                  >
-                    RM {youShare.toFixed(2)}
-                  </Text>
-                )}
-              </View>
-            </View>
-
-            <View style={{ gap: tokens.spacing.sm }}>
-              <Text
-                style={{
-                  fontSize: tokens.typography.sizes.sm,
-                  fontWeight: tokens.typography.weights.semibold,
-                  color: colors.onSurface,
-                }}
-              >
-                Friends who owe you
-              </Text>
-
-              {friends.map((f) => (
-                <View
-                  key={f.id}
-                  style={{
-                    flexDirection: "row",
-                    gap: tokens.spacing.sm,
-                    alignItems: "center",
-                  }}
-                >
-                  <View style={{ flex: 1 }}>
-                    <TextInput
-                      mode="outlined"
-                      label="Name"
-                      value={f.name}
-                      onChangeText={(v) => handleFriendNameChange(f.id, v)}
-                      autoCapitalize="words"
-                    />
-                  </View>
-                  <View style={{ width: 120 }}>
-                    <TextInput
-                      mode="outlined"
-                      label="RM"
-                      value={
-                        mode === "equal"
-                          ? f.amount.toFixed(2)
-                          : f.amount || f.amount === 0
-                          ? f.amount.toFixed(2)
-                          : ""
-                      }
-                      onChangeText={(v) => handleFriendAmountChange(f.id, v)}
-                      keyboardType="number-pad"
-                      disabled={mode === "equal"}
-                    />
-                  </View>
-                </View>
-              ))}
-
-              {mode === "custom" && isTotalValid && (
                 <Text
                   style={{
-                    marginTop: tokens.spacing["xs"],
                     fontSize: tokens.typography.sizes.xs,
                     color: colors.onSurfaceVariant,
                   }}
                 >
-                  Friends total: RM {friendsTotal.toFixed(2)} · You: RM{" "}
-                  {youShare.toFixed(2)} · Bill: RM {numericTotal.toFixed(2)}
+                  You paid RM {isTotalValid ? numericTotal.toFixed(2) : "-"} ·{" "}
+                  {dueLabel.toLowerCase()} · {dueDateText}
                 </Text>
-              )}
-            </View>
-          </>
-        )}
+                {isHeadCountValid && (
+                  <Text
+                    style={{
+                      marginTop: tokens.spacing["xs"],
+                      fontSize: tokens.typography.sizes.xs,
+                      color: colors.onSurfaceVariant,
+                    }}
+                  >
+                    Total heads: {numericHeadCount} (you +{" "}
+                    {Math.max(0, numericHeadCount - 1)} friends)
+                  </Text>
+                )}
+              </View>
+
+              <View style={{ gap: tokens.spacing.sm }}>
+                <Text
+                  style={{
+                    fontSize: tokens.typography.sizes.sm,
+                    fontWeight: tokens.typography.weights.semibold,
+                    color: colors.onSurface,
+                  }}
+                >
+                  You (payee)
+                </Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    gap: tokens.spacing.sm,
+                    alignItems: "center",
+                    paddingVertical: tokens.spacing["xs"],
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: tokens.typography.sizes.sm,
+                      color: colors.onSurface,
+                      flex: 1,
+                    }}
+                  >
+                    You
+                  </Text>
+                  {mode === "custom" ? (
+                    <View style={{ width: 120 }}>
+                      <TextInput
+                        mode="outlined"
+                        label="RM"
+                        value={
+                          youAmount || youAmount === 0
+                            ? youAmount.toFixed(2)
+                            : ""
+                        }
+                        onChangeText={handleYouAmountChange}
+                        keyboardType="number-pad"
+                      />
+                    </View>
+                  ) : (
+                    <Text
+                      style={{
+                        fontSize: tokens.typography.sizes.sm,
+                        fontWeight: tokens.typography.weights.semibold,
+                        color: colors.onSurface,
+                      }}
+                    >
+                      RM {youShare.toFixed(2)}
+                    </Text>
+                  )}
+                </View>
+              </View>
+
+              <View style={{ gap: tokens.spacing.sm }}>
+                <Text
+                  style={{
+                    fontSize: tokens.typography.sizes.sm,
+                    fontWeight: tokens.typography.weights.semibold,
+                    color: colors.onSurface,
+                  }}
+                >
+                  Friends who owe you
+                </Text>
+
+                {friends.map((f) => (
+                  <View
+                    key={f.id}
+                    style={{
+                      flexDirection: "row",
+                      gap: tokens.spacing.sm,
+                      alignItems: "center",
+                    }}
+                  >
+                    <View style={{ flex: 1 }}>
+                      <TextInput
+                        mode="outlined"
+                        label="Name"
+                        value={f.name}
+                        onChangeText={(v) => handleFriendNameChange(f.id, v)}
+                        autoCapitalize="words"
+                      />
+                    </View>
+                    <View style={{ width: 120 }}>
+                      <TextInput
+                        mode="outlined"
+                        label="RM"
+                        value={
+                          mode === "equal"
+                            ? f.amount.toFixed(2)
+                            : f.amount || f.amount === 0
+                            ? f.amount.toFixed(2)
+                            : ""
+                        }
+                        onChangeText={(v) => handleFriendAmountChange(f.id, v)}
+                        keyboardType="number-pad"
+                        disabled={mode === "equal"}
+                      />
+                    </View>
+                  </View>
+                ))}
+
+                {mode === "custom" && isTotalValid && (
+                  <Text
+                    style={{
+                      marginTop: tokens.spacing["xs"],
+                      fontSize: tokens.typography.sizes.xs,
+                      color: colors.onSurfaceVariant,
+                    }}
+                  >
+                    Friends total: RM {friendsTotal.toFixed(2)} · You: RM{" "}
+                    {youShare.toFixed(2)} · Bill: RM {numericTotal.toFixed(2)}
+                  </Text>
+                )}
+              </View>
+            </>
+          )}
+        </View>
       </ScrollView>
 
       <View

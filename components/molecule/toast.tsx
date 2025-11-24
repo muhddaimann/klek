@@ -122,7 +122,7 @@ export function ToastBar({
         right: 0,
         bottom: 0,
         paddingHorizontal: tokens.spacing.lg,
-        paddingBottom: Math.max(insets.bottom, tokens.spacing.lg),
+        paddingBottom: Math.max(insets.bottom, tokens.spacing["2xl"]),
         zIndex: 9999,
         alignItems: "center",
         ...(Platform.OS === "android" ? { elevation: 9999 } : null),
