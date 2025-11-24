@@ -181,7 +181,7 @@ export default function ManualClaim() {
         style={{ flex: 1 }}
         contentContainerStyle={{
           paddingBottom: insets.bottom + tokens.spacing["3xl"] * 2,
-          gap: tokens.spacing.xxs,
+          gap: tokens.spacing.md,
         }}
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"

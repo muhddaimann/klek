@@ -183,7 +183,7 @@ export default function Claim() {
                     rounded="pill"
                     style={{
                       paddingHorizontal: tokens.spacing.sm,
-                      paddingVertical: tokens.spacing["xs"],
+                      paddingVertical: tokens.spacing["xxs"],
                       backgroundColor: active
                         ? colors.primaryContainer
                         : colors.surface,

@@ -21,6 +21,10 @@ export default function ModalLayout() {
       <Stack.Screen name="addRecord" />
       <Stack.Screen name="addWishlist" />
       <Stack.Screen name="myQR" />
+      <Stack.Screen name="safeCommit" />
+      <Stack.Screen name="loanEstimator" />
+      <Stack.Screen name="saveEstimator" />
+      <Stack.Screen name="compoundEstimator" />
     </Stack>
   );
 }

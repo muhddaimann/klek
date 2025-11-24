@@ -1,10 +1,13 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, ComponentType } from "react";
 import { View, ScrollView, StyleSheet } from "react-native";
-import { useTheme, Text, TextInput } from "react-native-paper";
+import { useTheme, TextInput } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Plane, Smartphone, Gamepad2, Home, Shapes } from "lucide-react-native";
 import { useDesign } from "../../contexts/designContext";
 import { Button } from "../../components/atom/button";
 import { Header } from "../../components/shared/header";
+import { OptionTile } from "../../components/atom/optionTile";
+import { BodySmall } from "../../components/atom/text";
 
 const CATEGORY_OPTIONS = [
   { key: "travel", label: "Travel" },
@@ -30,6 +33,16 @@ const TENURE_OPTIONS = [
 type CategoryKey = (typeof CATEGORY_OPTIONS)[number]["key"];
 type PriorityKey = (typeof PRIORITY_OPTIONS)[number]["key"];
 type TenureKey = (typeof TENURE_OPTIONS)[number]["key"];
+
+type CategoryIconComp = ComponentType<{ size?: number; color?: string }>;
+
+const CATEGORY_ICON_MAP: Record<CategoryKey, CategoryIconComp> = {
+  travel: Plane,
+  gadget: Smartphone,
+  hobby: Gamepad2,
+  home: Home,
+  other: Shapes,
+};
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -129,194 +142,121 @@ export default function AddWishlist() {
     console.log("wishlist-add", payload);
   };
 
+  const renderCategoryIcon = (key: CategoryKey) => {
+    const Icon = CATEGORY_ICON_MAP[key];
+    return <Icon size={tokens.sizes.icon.md} color={colors.primary} />;
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingHorizontal: tokens.spacing.lg,
-          paddingTop: tokens.spacing.lg,
           paddingBottom: insets.bottom + tokens.spacing["3xl"] * 2,
-          gap: tokens.spacing.lg,
+          gap: tokens.spacing.md,
         }}
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
         bounces={false}
+        stickyHeaderIndices={[0]}
+        showsVerticalScrollIndicator={false}
       >
-        <Header
-          title="Add to wishlist"
-          subtitle="Plan what you want and how to fund it"
-        />
-
-        <View style={{ gap: tokens.spacing.sm }}>
-          <Text
-            style={{
-              fontSize: tokens.typography.sizes.sm,
-              fontWeight: tokens.typography.weights.semibold,
-              color: colors.onSurface,
-            }}
-          >
-            Category
-          </Text>
-          <View
-            style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              gap: tokens.spacing.xs,
-            }}
-          >
-            {CATEGORY_OPTIONS.map((opt) => {
-              const active = category === opt.key;
-              return (
-                <View
-                  key={opt.key}
-                  style={{
-                    borderRadius: tokens.radii.pill,
-                    borderWidth: 1,
-                    borderColor: active
-                      ? colors.primary
-                      : colors.outlineVariant,
-                    backgroundColor: active
-                      ? colors.primaryContainer
-                      : colors.surface,
-                  }}
-                >
-                  <Button
-                    onPress={() => setCategory(opt.key)}
-                    variant="ghost"
-                    size="sm"
-                    rounded="pill"
-                    style={{
-                      paddingHorizontal: tokens.spacing.sm,
-                      paddingVertical: tokens.spacing["xs"],
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: tokens.typography.sizes.xs,
-                        color: active
-                          ? colors.primary
-                          : colors.onSurfaceVariant,
-                        fontWeight: tokens.typography.weights.semibold,
-                      }}
-                    >
-                      {opt.label}
-                    </Text>
-                  </Button>
-                </View>
-              );
-            })}
-          </View>
+        <View
+          style={{
+            backgroundColor: colors.background,
+            paddingTop: tokens.spacing.lg,
+            paddingHorizontal: tokens.spacing.lg,
+            paddingBottom: tokens.spacing.sm,
+          }}
+        >
+          <Header
+            title="Add to wishlist"
+            subtitle="Plan what you want and how to fund it"
+            style={{ paddingHorizontal: 0 }}
+          />
         </View>
 
-        <View style={{ gap: tokens.spacing.md }}>
-          <TextInput
-            mode="outlined"
-            label="Wishlist item"
-            value={name}
-            onChangeText={setName}
-            autoCapitalize="sentences"
-          />
-          <TextInput
-            mode="outlined"
-            label="Target amount"
-            value={formatCents(amountCents)}
-            onChangeText={handleAmountChange}
-            keyboardType="number-pad"
-            error={hasAmountInput && !isAmountValid}
-          />
-          {hasAmountInput && !isAmountValid && (
-            <Text
+        <View
+          style={{
+            paddingHorizontal: tokens.spacing.lg,
+            gap: tokens.spacing.lg,
+          }}
+        >
+          <View style={{ gap: tokens.spacing.sm }}>
+            <BodySmall
+              weight="semibold"
+              color={colors.onSurface}
+              style={{ fontSize: tokens.typography.sizes.sm }}
+            >
+              Category
+            </BodySmall>
+            <View
               style={{
-                marginTop: -tokens.spacing["xs"],
-                color: colors.error,
-                fontSize: tokens.typography.sizes.xs,
+                flexDirection: "row",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                gap: tokens.spacing.xs,
               }}
             >
-              Enter a valid amount above 0
-            </Text>
-          )}
-          <TextInput
-            mode="outlined"
-            label="Optional monthly top-up"
-            value={formatCents(monthlyCents)}
-            onChangeText={handleMonthlyChange}
-            keyboardType="number-pad"
-          />
-        </View>
-
-        <View style={{ gap: tokens.spacing.sm }}>
-          <Text
-            style={{
-              fontSize: tokens.typography.sizes.sm,
-              fontWeight: tokens.typography.weights.semibold,
-              color: colors.onSurface,
-            }}
-          >
-            Priority
-          </Text>
-          <View
-            style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              gap: tokens.spacing.xs,
-            }}
-          >
-            {PRIORITY_OPTIONS.map((opt) => {
-              const active = priority === opt.key;
-              return (
-                <View
-                  key={opt.key}
-                  style={{
-                    borderRadius: tokens.radii.pill,
-                    borderWidth: 1,
-                    borderColor: active
-                      ? colors.primary
-                      : colors.outlineVariant,
-                    backgroundColor: active
-                      ? colors.primaryContainer
-                      : colors.surface,
-                  }}
-                >
-                  <Button
-                    onPress={() => setPriority(opt.key)}
-                    variant="ghost"
-                    size="sm"
-                    rounded="pill"
-                    style={{
-                      paddingHorizontal: tokens.spacing.sm,
-                      paddingVertical: tokens.spacing["xs"],
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: tokens.typography.sizes.xs,
-                        color: active
-                          ? colors.primary
-                          : colors.onSurfaceVariant,
-                        fontWeight: tokens.typography.weights.semibold,
-                      }}
-                    >
-                      {opt.label}
-                    </Text>
-                  </Button>
-                </View>
-              );
-            })}
+              {CATEGORY_OPTIONS.map((opt) => {
+                const active = category === opt.key;
+                return (
+                  <OptionTile
+                    key={opt.key}
+                    label={opt.label}
+                    active={active}
+                    onPress={() => setCategory(opt.key)}
+                    icon={renderCategoryIcon(opt.key)}
+                  />
+                );
+              })}
+            </View>
           </View>
-        </View>
 
-        <View style={{ gap: tokens.spacing.sm }}>
-          <Text
-            style={{
-              fontSize: tokens.typography.sizes.sm,
-              fontWeight: tokens.typography.weights.semibold,
-              color: colors.onSurface,
-            }}
-          >
-            Tenure estimate
-          </Text>
-          <View style={{ gap: tokens.spacing["xs"] }}>
+          <View style={{ gap: tokens.spacing.md }}>
+            <TextInput
+              mode="outlined"
+              label="Wishlist item"
+              value={name}
+              onChangeText={setName}
+              autoCapitalize="sentences"
+            />
+            <TextInput
+              mode="outlined"
+              label="Target amount"
+              value={formatCents(amountCents)}
+              onChangeText={handleAmountChange}
+              keyboardType="number-pad"
+              error={hasAmountInput && !isAmountValid}
+            />
+            {hasAmountInput && !isAmountValid && (
+              <BodySmall
+                color={colors.error}
+                style={{
+                  marginTop: -tokens.spacing["xs"],
+                  fontSize: tokens.typography.sizes.xs,
+                }}
+              >
+                Enter a valid amount above 0
+              </BodySmall>
+            )}
+            <TextInput
+              mode="outlined"
+              label="Optional monthly top-up"
+              value={formatCents(monthlyCents)}
+              onChangeText={handleMonthlyChange}
+              keyboardType="number-pad"
+            />
+          </View>
+
+          <View style={{ gap: tokens.spacing.sm }}>
+            <BodySmall
+              weight="semibold"
+              color={colors.onSurface}
+              style={{ fontSize: tokens.typography.sizes.sm }}
+            >
+              Priority
+            </BodySmall>
             <View
               style={{
                 flexDirection: "row",
@@ -324,12 +264,18 @@ export default function AddWishlist() {
                 gap: tokens.spacing.xs,
               }}
             >
-              {TENURE_OPTIONS.map((opt) => {
-                const active = tenureKey === opt.key;
+              {PRIORITY_OPTIONS.map((opt) => {
+                const active = priority === opt.key;
                 return (
-                  <View
+                  <Button
                     key={opt.key}
+                    onPress={() => setPriority(opt.key)}
+                    variant="outline"
+                    size="sm"
+                    rounded="pill"
                     style={{
+                      paddingHorizontal: tokens.spacing.sm,
+                      paddingVertical: tokens.spacing["xs"],
                       borderRadius: tokens.radii.pill,
                       borderWidth: 1,
                       borderColor: active
@@ -340,73 +286,118 @@ export default function AddWishlist() {
                         : colors.surface,
                     }}
                   >
+                    <BodySmall
+                      weight="semibold"
+                      style={{
+                        fontSize: tokens.typography.sizes.xs,
+                        color: active
+                          ? colors.primary
+                          : colors.onSurfaceVariant,
+                      }}
+                    >
+                      {opt.label}
+                    </BodySmall>
+                  </Button>
+                );
+              })}
+            </View>
+          </View>
+
+          <View style={{ gap: tokens.spacing.sm }}>
+            <BodySmall
+              weight="semibold"
+              color={colors.onSurface}
+              style={{ fontSize: tokens.typography.sizes.sm }}
+            >
+              Tenure estimate
+            </BodySmall>
+            <View style={{ gap: tokens.spacing["xs"] }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  gap: tokens.spacing.xs,
+                }}
+              >
+                {TENURE_OPTIONS.map((opt) => {
+                  const active = tenureKey === opt.key;
+                  return (
                     <Button
+                      key={opt.key}
                       onPress={() => setTenureKey(opt.key)}
-                      variant="ghost"
+                      variant="outline"
                       size="sm"
                       rounded="pill"
                       style={{
                         paddingHorizontal: tokens.spacing.sm,
                         paddingVertical: tokens.spacing["xs"],
+                        borderRadius: tokens.radii.pill,
+                        borderWidth: 1,
+                        borderColor: active
+                          ? colors.primary
+                          : colors.outlineVariant,
+                        backgroundColor: active
+                          ? colors.primaryContainer
+                          : colors.surface,
                       }}
                     >
-                      <Text
+                      <BodySmall
+                        weight="semibold"
                         style={{
                           fontSize: tokens.typography.sizes.xs,
                           color: active
                             ? colors.primary
                             : colors.onSurfaceVariant,
-                          fontWeight: tokens.typography.weights.semibold,
                         }}
                       >
                         {opt.label}
-                      </Text>
+                      </BodySmall>
                     </Button>
-                  </View>
-                );
-              })}
-            </View>
+                  );
+                })}
+              </View>
 
-            <View
-              style={{
-                marginTop: tokens.spacing.sm,
-              }}
-            >
               <View
                 style={{
-                  flexDirection: "row",
-                  alignItems: "center",
+                  marginTop: tokens.spacing.sm,
                 }}
               >
                 <View
                   style={{
-                    flex: 1,
-                    height: StyleSheet.hairlineWidth,
-                    backgroundColor: colors.outlineVariant,
-                  }}
-                />
-                <View
-                  style={{
-                    paddingHorizontal: tokens.spacing.sm,
+                    flexDirection: "row",
+                    alignItems: "center",
                   }}
                 >
-                  <Text
+                  <View
                     style={{
-                      fontSize: tokens.typography.sizes.xs,
-                      color: colors.onSurfaceVariant,
-                      textAlign: "center",
+                      flex: 1,
+                      height: StyleSheet.hairlineWidth,
+                      backgroundColor: colors.outlineVariant,
+                    }}
+                  />
+                  <View
+                    style={{
+                      paddingHorizontal: tokens.spacing.sm,
                     }}
                   >
-                    {tenureLabel} · {targetDateText}
-                  </Text>
+                    <BodySmall
+                      style={{
+                        fontSize: tokens.typography.sizes.xs,
+                        color: colors.onSurfaceVariant,
+                        textAlign: "center",
+                      }}
+                    >
+                      {tenureLabel} · {targetDateText}
+                    </BodySmall>
+                  </View>
+                  <View
+                    style={{
+                      flex: 1,
+                      height: StyleSheet.hairlineWidth,
+                      backgroundColor: colors.outlineVariant,
+                    }}
+                  />
                 </View>
-                <View
-                  style={{
-                    flex: 1,
-                    height: StyleSheet.hairlineWidth,
-                    backgroundColor: colors.outlineVariant,
-                  }}
-                />
               </View>
             </View>
           </View>

@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { View, ScrollView, Pressable } from "react-native";
+import { View, ScrollView } from "react-native";
 import { useTheme, Avatar } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDesign } from "../../../contexts/designContext";
@@ -10,6 +10,7 @@ import { useTab } from "../../../hooks/useTab";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useWishlist, WishlistFilterKey } from "../../../hooks/useWishlist";
 import { Body, BodySmall, Caption } from "../../../components/atom/text";
+import { Button } from "../../../components/atom/button";
 
 export default function Wishlist() {
   const { colors } = useTheme();
@@ -51,47 +52,59 @@ export default function Wishlist() {
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingHorizontal: tokens.spacing.lg,
-          paddingTop: tokens.spacing.lg,
-          paddingBottom: tokens.spacing["3xl"] * 4,
+          paddingBottom: tokens.spacing["3xl"] * 9,
           gap: tokens.spacing.md,
         }}
         showsVerticalScrollIndicator={false}
         overScrollMode="never"
         bounces={false}
+        stickyHeaderIndices={[0]}
       >
-        <Header
-          title="Wishlist"
-          subtitle={
-            useMock ? "Showing sample wishlist items" : "Your current wishlist"
-          }
-          rightSlot={
-            <Pressable
-              onPress={toggleMock}
-              style={{
-                paddingHorizontal: tokens.spacing.sm,
-                paddingVertical: tokens.spacing.xs,
-                borderRadius: tokens.radii.pill,
-                backgroundColor: useMock
-                  ? colors.primaryContainer
-                  : colors.surface,
-                borderWidth: 1,
-                borderColor: useMock ? colors.primary : colors.outlineVariant,
-              }}
-            >
-              <BodySmall
-                weight="semibold"
-                color={useMock ? colors.primary : colors.onSurfaceVariant}
+        <View
+          style={{
+            backgroundColor: colors.background,
+            paddingTop: tokens.spacing.lg,
+            paddingHorizontal: tokens.spacing.lg,
+            paddingBottom: tokens.spacing.sm,
+          }}
+        >
+          <Header
+            title="Wishlist"
+            subtitle={
+              useMock
+                ? "Showing sample wishlist items"
+                : "Your current wishlist"
+            }
+            rightSlot={
+              <Button
+                onPress={toggleMock}
+                variant="outline"
+                size="sm"
+                rounded="pill"
+                style={{
+                  paddingHorizontal: tokens.spacing.sm,
+                  paddingVertical: tokens.spacing.xs,
+                  backgroundColor: useMock
+                    ? colors.primaryContainer
+                    : colors.surface,
+                  borderColor: useMock ? colors.primary : colors.outlineVariant,
+                }}
               >
-                {useMock ? "Mock on" : "Mock off"}
-              </BodySmall>
-            </Pressable>
-          }
-          style={{ paddingHorizontal: 0, paddingBottom: tokens.spacing.sm }}
-        />
+                <BodySmall
+                  weight="semibold"
+                  color={useMock ? colors.primary : colors.onSurfaceVariant}
+                >
+                  {useMock ? "Mock on" : "Mock off"}
+                </BodySmall>
+              </Button>
+            }
+            style={{ paddingHorizontal: 0 }}
+          />
+        </View>
 
         <View
           style={{
+            paddingHorizontal: tokens.spacing.lg,
             flexDirection: "row",
             gap: tokens.spacing.sm,
           }}
@@ -153,7 +166,12 @@ export default function Wishlist() {
           </View>
         </View>
 
-        <View style={{ gap: tokens.spacing.sm }}>
+        <View
+          style={{
+            paddingHorizontal: tokens.spacing.lg,
+            gap: tokens.spacing.sm,
+          }}
+        >
           <View
             style={{
               flexDirection: "row",
@@ -166,19 +184,21 @@ export default function Wishlist() {
               color={colors.onSurface}
               style={{ fontSize: tokens.typography.sizes.md }}
             >
-              Things you are saving for
+              Things
             </Body>
             <View style={{ flexDirection: "row", gap: tokens.spacing.xs }}>
               {filters.map((f) => {
                 const active = activeFilter === f.key;
                 return (
-                  <Pressable
+                  <Button
                     key={f.key}
                     onPress={() => setActiveFilter(f.key)}
+                    variant="ghost"
+                    size="sm"
+                    rounded="pill"
                     style={{
                       paddingHorizontal: tokens.spacing.sm,
-                      paddingVertical: tokens.spacing["xs"],
-                      borderRadius: tokens.radii.pill,
+                      paddingVertical: tokens.spacing["xxs"],
                       backgroundColor: active
                         ? colors.primaryContainer
                         : colors.surface,
@@ -194,7 +214,7 @@ export default function Wishlist() {
                     >
                       {f.label}
                     </BodySmall>
-                  </Pressable>
+                  </Button>
                 );
               })}
             </View>
@@ -302,23 +322,18 @@ export default function Wishlist() {
             borderTopColor: colors.outlineVariant,
           }}
         >
-          <Pressable
+          <Button
+            onPress={() => router.push("/(modals)/addWishlist")}
+            variant="default"
+            rounded="pill"
             style={{
               flex: 1,
-              paddingVertical: tokens.spacing.sm,
-              borderRadius: tokens.radii.lg,
-              backgroundColor: colors.surface,
-              borderWidth: 1,
-              borderColor: colors.outlineVariant,
-              alignItems: "center",
-              justifyContent: "center",
             }}
-            onPress={() => router.push("/(modals)/addWishlist")}
           >
-            <BodySmall weight="semibold" color={colors.onSurface}>
+            <BodySmall weight="semibold" color={colors.onPrimary}>
               Add to wishlist
             </BodySmall>
-          </Pressable>
+          </Button>
         </View>
       </View>
     </View>

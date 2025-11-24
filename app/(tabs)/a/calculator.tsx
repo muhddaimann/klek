@@ -48,14 +48,14 @@ const TOOLS: ToolItem[] = [
     label: "Saving estimator",
     subtitle: "Plan monthly saving vs target amount or date.",
     Icon: PiggyBank,
-    route: "/(modals)/savingEstimator",
+    route: "/(modals)/saveEstimator",
   },
   {
     key: "compounding",
     label: "Compounding estimator",
     subtitle: "Estimate future value with compounding returns.",
     Icon: TrendingUp,
-    route: "/(modals)/compoundingEstimator",
+    route: "/(modals)/compoundEstimator",
   },
 ];
 
@@ -82,22 +82,32 @@ export default function Calculator() {
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingHorizontal: tokens.spacing.lg,
-          paddingTop: tokens.spacing.lg,
-          paddingBottom: insets.bottom + tokens.spacing["3xl"] * 2,
-          gap: tokens.spacing.lg,
+          paddingBottom: insets.bottom + tokens.spacing["3xl"] * 9,
+          gap: tokens.spacing.md,
         }}
         showsVerticalScrollIndicator={false}
         overScrollMode="never"
         bounces={false}
+        stickyHeaderIndices={[0]}
       >
-        <Header
-          title="Calculator tools"
-          subtitle="Quick helpers for loans, savings, and planning"
-        />
+        <View
+          style={{
+            backgroundColor: colors.background,
+            paddingTop: tokens.spacing.lg,
+            paddingHorizontal: tokens.spacing.lg,
+            paddingBottom: tokens.spacing.sm,
+          }}
+        >
+          <Header
+            title="Calculator tools"
+            subtitle="Quick helpers for loans, savings, and planning"
+            style={{ paddingHorizontal: 0 }}
+          />
+        </View>
 
         <View
           style={{
+            paddingHorizontal: tokens.spacing.lg,
             flexDirection: "row",
             gap: tokens.spacing.sm,
           }}
@@ -125,7 +135,7 @@ export default function Calculator() {
 
           <View
             style={{
-              width: 120,
+              width: 140,
               backgroundColor: colors.surface,
               padding: tokens.spacing.md,
               ...card,
@@ -134,17 +144,24 @@ export default function Calculator() {
               justifyContent: "space-between",
             }}
           >
-            <CalculatorIcon
-              size={tokens.sizes.icon.lg}
-              color={colors.onSurface}
-            />
+            <View style={{ gap: tokens.spacing["xxs"] }}>
+              <Caption muted>Tip</Caption>
+              <BodySmall weight="med" color={colors.onSurface}>
+                Start with safe commit to see how much you can handle.
+              </BodySmall>
+            </View>
             <Caption muted>
-              Use these tools to feed into Budget, Settlement, and Wishlist.
+              Then use loan, saving, and compounding to test your plans.
             </Caption>
           </View>
         </View>
 
-        <View style={{ gap: tokens.spacing.sm }}>
+        <View
+          style={{
+            paddingHorizontal: tokens.spacing.lg,
+            gap: tokens.spacing.sm,
+          }}
+        >
           {TOOLS.map((tool, idx) => (
             <Pressable
               key={tool.key}
@@ -168,13 +185,10 @@ export default function Calculator() {
                   borderRadius: tokens.radii.lg,
                   alignItems: "center",
                   justifyContent: "center",
-                  backgroundColor: colors.primaryContainer,
+                  backgroundColor: colors.background,
                 }}
               >
-                <tool.Icon
-                  size={tokens.sizes.icon.md}
-                  color={colors.onPrimaryContainer}
-                />
+                <tool.Icon size={tokens.sizes.icon.md} color={colors.primary} />
               </View>
               <View style={{ flex: 1, gap: tokens.spacing["xs"] }}>
                 <BodySmall

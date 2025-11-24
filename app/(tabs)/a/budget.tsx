@@ -222,7 +222,7 @@ export default function Budget() {
                     rounded="pill"
                     style={{
                       paddingHorizontal: tokens.spacing.sm,
-                      paddingVertical: tokens.spacing["xs"],
+                      paddingVertical: tokens.spacing["xxs"],
                       backgroundColor: active
                         ? colors.primaryContainer
                         : colors.surface,
@@ -387,13 +387,13 @@ export default function Budget() {
               flex: 1,
             }}
           >
-            <Body
+            <BodySmall
               weight="semibold"
               color={colors.onPrimary}
               style={{ fontSize: tokens.typography.sizes.sm }}
             >
               {budgetCtaLabel}
-            </Body>
+            </BodySmall>
           </Button>
         </View>
       </View>

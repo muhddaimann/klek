@@ -1,10 +1,20 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, ComponentType } from "react";
 import { View, ScrollView, StyleSheet } from "react-native";
-import { useTheme, Text, TextInput } from "react-native-paper";
+import { useTheme, TextInput } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  ReceiptText,
+  Landmark,
+  BadgeCheck,
+  Users2,
+  Shapes,
+  Clock3,
+} from "lucide-react-native";
 import { useDesign } from "../../contexts/designContext";
 import { Button } from "../../components/atom/button";
 import { Header } from "../../components/shared/header";
+import { OptionTile } from "../../components/atom/optionTile";
+import { BodySmall } from "../../components/atom/text";
 
 const DUE_OPTIONS = [
   { key: "none", label: "None" },
@@ -31,6 +41,16 @@ const RECURRENCE_OPTIONS = [
 type DueKey = (typeof DUE_OPTIONS)[number]["key"];
 type CategoryKey = (typeof CATEGORY_OPTIONS)[number]["key"];
 type RecurrenceKey = (typeof RECURRENCE_OPTIONS)[number]["key"];
+
+type CategoryIconComp = ComponentType<{ size?: number; color?: string }>;
+
+const CATEGORY_ICON_MAP: Record<CategoryKey, CategoryIconComp> = {
+  bill: ReceiptText,
+  loan: Landmark,
+  subscription: BadgeCheck,
+  friend: Users2,
+  other: Shapes,
+};
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -134,126 +154,221 @@ export default function AddCommitment() {
     console.log("commitment-add", payload);
   };
 
+  const renderCategoryIcon = (key: CategoryKey) => {
+    const Icon = CATEGORY_ICON_MAP[key];
+    return <Icon size={tokens.sizes.icon.md} color={colors.primary} />;
+  };
+
+  const IconLeftClock = ({ size }: { size?: number }) => (
+    <Clock3
+      size={size ?? tokens.sizes.icon.sm}
+      color={colors.onSurfaceVariant}
+    />
+  );
+
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingHorizontal: tokens.spacing.lg,
-          paddingTop: tokens.spacing.lg,
           paddingBottom: insets.bottom + tokens.spacing["3xl"] * 2,
-          gap: tokens.spacing.lg,
+          gap: tokens.spacing.md,
         }}
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
         bounces={false}
+        stickyHeaderIndices={[0]}
+        showsVerticalScrollIndicator={false}
       >
-        <Header
-          title="Add commitment"
-          subtitle="Keep track of what you need to pay"
-        />
-
-        <View style={{ gap: tokens.spacing.sm }}>
-          <Text
-            style={{
-              fontSize: tokens.typography.sizes.sm,
-              fontWeight: tokens.typography.weights.semibold,
-              color: colors.onSurface,
-            }}
-          >
-            Category
-          </Text>
-          <View
-            style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              gap: tokens.spacing.xs,
-            }}
-          >
-            {CATEGORY_OPTIONS.map((opt) => {
-              const active = category === opt.key;
-              return (
-                <View
-                  key={opt.key}
-                  style={{
-                    borderRadius: tokens.radii.pill,
-                    borderWidth: 1,
-                    borderColor: active
-                      ? colors.primary
-                      : colors.outlineVariant,
-                    backgroundColor: active
-                      ? colors.primaryContainer
-                      : colors.surface,
-                  }}
-                >
-                  <Button
-                    onPress={() => setCategory(opt.key)}
-                    variant="ghost"
-                    size="sm"
-                    rounded="pill"
-                    style={{
-                      paddingHorizontal: tokens.spacing.sm,
-                      paddingVertical: tokens.spacing["xs"],
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: tokens.typography.sizes.xs,
-                        color: active
-                          ? colors.primary
-                          : colors.onSurfaceVariant,
-                        fontWeight: tokens.typography.weights.semibold,
-                      }}
-                    >
-                      {opt.label}
-                    </Text>
-                  </Button>
-                </View>
-              );
-            })}
-          </View>
+        <View
+          style={{
+            backgroundColor: colors.background,
+            paddingTop: tokens.spacing.lg,
+            paddingHorizontal: tokens.spacing.lg,
+            paddingBottom: tokens.spacing.sm,
+          }}
+        >
+          <Header
+            title="Add commitment"
+            subtitle="Keep track of what you need to pay"
+            style={{ paddingHorizontal: 0 }}
+          />
         </View>
 
-        <View style={{ gap: tokens.spacing.md }}>
-          <TextInput
-            mode="outlined"
-            label="Reference (friend, loan, bill, etc.)"
-            value={reference}
-            onChangeText={setReference}
-            autoCapitalize="sentences"
-          />
-          <TextInput
-            mode="outlined"
-            label="Amount"
-            value={formatCents(amountCents)}
-            onChangeText={handleAmountChange}
-            keyboardType="number-pad"
-            error={hasAmountInput && !isAmountValid}
-          />
-          {hasAmountInput && !isAmountValid && (
-            <Text
+        <View
+          style={{
+            paddingHorizontal: tokens.spacing.lg,
+            gap: tokens.spacing.lg,
+          }}
+        >
+          <View style={{ gap: tokens.spacing.sm }}>
+            <BodySmall
+              weight="semibold"
+              color={colors.onSurface}
+              style={{ fontSize: tokens.typography.sizes.sm }}
+            >
+              Category
+            </BodySmall>
+            <View
               style={{
-                marginTop: -tokens.spacing["xs"],
-                color: colors.error,
-                fontSize: tokens.typography.sizes.xs,
+                flexDirection: "row",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                gap: tokens.spacing.xs,
               }}
             >
-              Enter a valid amount above 0
-            </Text>
-          )}
-        </View>
+              {CATEGORY_OPTIONS.map((opt) => {
+                const active = category === opt.key;
+                return (
+                  <OptionTile
+                    key={opt.key}
+                    label={opt.label}
+                    active={active}
+                    onPress={() => setCategory(opt.key)}
+                    icon={renderCategoryIcon(opt.key)}
+                  />
+                );
+              })}
+            </View>
+          </View>
 
-        <View style={{ gap: tokens.spacing.sm }}>
-          <Text
-            style={{
-              fontSize: tokens.typography.sizes.sm,
-              fontWeight: tokens.typography.weights.semibold,
-              color: colors.onSurface,
-            }}
-          >
-            Due
-          </Text>
-          <View style={{ gap: tokens.spacing["xs"] }}>
+          <View style={{ gap: tokens.spacing.md }}>
+            <TextInput
+              mode="outlined"
+              label="Reference (friend, loan, bill, etc.)"
+              value={reference}
+              onChangeText={setReference}
+              autoCapitalize="sentences"
+            />
+            <TextInput
+              mode="outlined"
+              label="Amount"
+              value={formatCents(amountCents)}
+              onChangeText={handleAmountChange}
+              keyboardType="number-pad"
+              error={hasAmountInput && !isAmountValid}
+            />
+            {hasAmountInput && !isAmountValid && (
+              <BodySmall
+                color={colors.error}
+                style={{
+                  marginTop: -tokens.spacing["xs"],
+                  fontSize: tokens.typography.sizes.xs,
+                }}
+              >
+                Enter a valid amount above 0
+              </BodySmall>
+            )}
+          </View>
+
+          <View style={{ gap: tokens.spacing.sm }}>
+            <BodySmall
+              weight="semibold"
+              color={colors.onSurface}
+              style={{ fontSize: tokens.typography.sizes.sm }}
+            >
+              Due
+            </BodySmall>
+            <View style={{ gap: tokens.spacing["xs"] }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  gap: tokens.spacing.xs,
+                }}
+              >
+                {DUE_OPTIONS.map((opt) => {
+                  const active = dueKey === opt.key;
+                  return (
+                    <Button
+                      key={opt.key}
+                      onPress={() => setDueKey(opt.key)}
+                      variant="outline"
+                      size="sm"
+                      rounded="pill"
+                      IconLeft={IconLeftClock}
+                      style={{
+                        paddingHorizontal: tokens.spacing.sm,
+                        paddingVertical: tokens.spacing["xs"],
+                        borderRadius: tokens.radii.pill,
+                        borderWidth: 1,
+                        borderColor: active
+                          ? colors.primary
+                          : colors.outlineVariant,
+                        backgroundColor: active
+                          ? colors.primaryContainer
+                          : colors.surface,
+                      }}
+                    >
+                      <BodySmall
+                        weight="semibold"
+                        style={{
+                          fontSize: tokens.typography.sizes.xs,
+                          color: active
+                            ? colors.primary
+                            : colors.onSurfaceVariant,
+                        }}
+                      >
+                        {opt.label}
+                      </BodySmall>
+                    </Button>
+                  );
+                })}
+              </View>
+
+              <View
+                style={{
+                  marginTop: tokens.spacing.sm,
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  <View
+                    style={{
+                      flex: 1,
+                      height: StyleSheet.hairlineWidth,
+                      backgroundColor: colors.outlineVariant,
+                    }}
+                  />
+                  <View
+                    style={{
+                      paddingHorizontal: tokens.spacing.sm,
+                    }}
+                  >
+                    <BodySmall
+                      style={{
+                        fontSize: tokens.typography.sizes.xs,
+                        color: colors.onSurfaceVariant,
+                        textAlign: "center",
+                      }}
+                    >
+                      {dueLabel} · {dueDateText}
+                    </BodySmall>
+                  </View>
+                  <View
+                    style={{
+                      flex: 1,
+                      height: StyleSheet.hairlineWidth,
+                      backgroundColor: colors.outlineVariant,
+                    }}
+                  />
+                </View>
+              </View>
+            </View>
+          </View>
+
+          <View style={{ gap: tokens.spacing.sm }}>
+            <BodySmall
+              weight="semibold"
+              color={colors.onSurface}
+              style={{ fontSize: tokens.typography.sizes.sm }}
+            >
+              Recurrence
+            </BodySmall>
             <View
               style={{
                 flexDirection: "row",
@@ -261,12 +376,18 @@ export default function AddCommitment() {
                 gap: tokens.spacing.xs,
               }}
             >
-              {DUE_OPTIONS.map((opt) => {
-                const active = dueKey === opt.key;
+              {RECURRENCE_OPTIONS.map((opt) => {
+                const active = recurrence === opt.key;
                 return (
-                  <View
+                  <Button
                     key={opt.key}
+                    onPress={() => setRecurrence(opt.key)}
+                    variant="outline"
+                    size="sm"
+                    rounded="pill"
                     style={{
+                      paddingHorizontal: tokens.spacing.sm,
+                      paddingVertical: tokens.spacing["xs"],
                       borderRadius: tokens.radii.pill,
                       borderWidth: 1,
                       borderColor: active
@@ -277,136 +398,21 @@ export default function AddCommitment() {
                         : colors.surface,
                     }}
                   >
-                    <Button
-                      onPress={() => setDueKey(opt.key)}
-                      variant="ghost"
-                      size="sm"
-                      rounded="pill"
-                      style={{
-                        paddingHorizontal: tokens.spacing.sm,
-                        paddingVertical: tokens.spacing["xs"],
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: tokens.typography.sizes.xs,
-                          color: active
-                            ? colors.primary
-                            : colors.onSurfaceVariant,
-                          fontWeight: tokens.typography.weights.semibold,
-                        }}
-                      >
-                        {opt.label}
-                      </Text>
-                    </Button>
-                  </View>
-                );
-              })}
-            </View>
-
-            <View
-              style={{
-                marginTop: tokens.spacing.sm,
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                }}
-              >
-                <View
-                  style={{
-                    flex: 1,
-                    height: StyleSheet.hairlineWidth,
-                    backgroundColor: colors.outlineVariant,
-                  }}
-                />
-                <View
-                  style={{
-                    paddingHorizontal: tokens.spacing.sm,
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: tokens.typography.sizes.xs,
-                      color: colors.onSurfaceVariant,
-                      textAlign: "center",
-                    }}
-                  >
-                    {dueLabel} · {dueDateText}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flex: 1,
-                    height: StyleSheet.hairlineWidth,
-                    backgroundColor: colors.outlineVariant,
-                  }}
-                />
-              </View>
-            </View>
-          </View>
-        </View>
-
-        <View style={{ gap: tokens.spacing.sm }}>
-          <Text
-            style={{
-              fontSize: tokens.typography.sizes.sm,
-              fontWeight: tokens.typography.weights.semibold,
-              color: colors.onSurface,
-            }}
-          >
-            Recurrence
-          </Text>
-          <View
-            style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              gap: tokens.spacing.xs,
-            }}
-          >
-            {RECURRENCE_OPTIONS.map((opt) => {
-              const active = recurrence === opt.key;
-              return (
-                <View
-                  key={opt.key}
-                  style={{
-                    borderRadius: tokens.radii.pill,
-                    borderWidth: 1,
-                    borderColor: active
-                      ? colors.primary
-                      : colors.outlineVariant,
-                    backgroundColor: active
-                      ? colors.primaryContainer
-                      : colors.surface,
-                  }}
-                >
-                  <Button
-                    onPress={() => setRecurrence(opt.key)}
-                    variant="ghost"
-                    size="sm"
-                    rounded="pill"
-                    style={{
-                      paddingHorizontal: tokens.spacing.sm,
-                      paddingVertical: tokens.spacing["xs"],
-                    }}
-                  >
-                    <Text
+                    <BodySmall
+                      weight="semibold"
                       style={{
                         fontSize: tokens.typography.sizes.xs,
                         color: active
                           ? colors.primary
                           : colors.onSurfaceVariant,
-                        fontWeight: tokens.typography.weights.semibold,
                       }}
                     >
                       {opt.label}
-                    </Text>
+                    </BodySmall>
                   </Button>
-                </View>
-              );
-            })}
+                );
+              })}
+            </View>
           </View>
         </View>
       </ScrollView>

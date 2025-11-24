@@ -73,44 +73,57 @@ export default function Activity() {
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingHorizontal: tokens.spacing.lg,
-          paddingTop: tokens.spacing.lg,
-          paddingBottom: insets.bottom + tokens.spacing["3xl"] * 2,
-          gap: tokens.spacing.lg,
+          paddingBottom: insets.bottom + tokens.spacing["3xl"] * 9,
+          gap: tokens.spacing.md,
         }}
         bounces={false}
         onScroll={onScroll}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
         overScrollMode="never"
+        stickyHeaderIndices={[0]}
       >
-        <Header
-          title="Activity"
-          subtitle={
-            hasData
-              ? `${summary.totalCount} items · ${summary.totalOut} out · ${summary.totalIn} in`
-              : "No activity for this month yet"
-          }
-          rightSlot={
-            <Pressable
-              onPress={toggleMonth}
-              style={{
-                borderRadius: tokens.radii.lg,
-                paddingHorizontal: tokens.spacing.sm,
-                paddingVertical: tokens.spacing.xs,
-                backgroundColor: colors.surface,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: tokens.spacing["xs"],
-              }}
-            >
-              <BodySmall muted>{monthLabel}</BodySmall>
-            </Pressable>
-          }
-          style={{ paddingHorizontal: 0 }}
-        />
+        <View
+          style={{
+            backgroundColor: colors.background,
+            paddingTop: tokens.spacing.lg,
+            paddingHorizontal: tokens.spacing.lg,
+            paddingBottom: tokens.spacing.sm,
+          }}
+        >
+          <Header
+            title="Activity"
+            subtitle={
+              hasData
+                ? `${summary.totalCount} items · ${summary.totalOut} out · ${summary.totalIn} in`
+                : "No activity for this month yet"
+            }
+            rightSlot={
+              <Pressable
+                onPress={toggleMonth}
+                style={{
+                  borderRadius: tokens.radii.lg,
+                  paddingHorizontal: tokens.spacing.sm,
+                  paddingVertical: tokens.spacing.xs,
+                  backgroundColor: colors.surface,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: tokens.spacing["xs"],
+                }}
+              >
+                <BodySmall muted>{monthLabel}</BodySmall>
+              </Pressable>
+            }
+            style={{ paddingHorizontal: 0 }}
+          />
+        </View>
 
-        <View style={{ gap: tokens.spacing.sm }}>
+        <View
+          style={{
+            paddingHorizontal: tokens.spacing.lg,
+            gap: tokens.spacing.sm,
+          }}
+        >
           <View
             style={{
               flexDirection: "row",
@@ -160,7 +173,12 @@ export default function Activity() {
           </View>
         </View>
 
-        <View style={{ gap: tokens.spacing.sm }}>
+        <View
+          style={{
+            paddingHorizontal: tokens.spacing.lg,
+            gap: tokens.spacing.sm,
+          }}
+        >
           <View
             style={{
               flexDirection: "row",

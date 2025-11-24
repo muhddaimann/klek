@@ -110,32 +110,46 @@ export default function Notifications() {
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingHorizontal: tokens.spacing.lg,
-          paddingTop: tokens.spacing.lg,
           paddingBottom: insets.bottom + tokens.spacing["3xl"],
-          gap: tokens.spacing.lg,
+          gap: tokens.spacing.md,
         }}
         showsVerticalScrollIndicator={false}
         overScrollMode="never"
+        stickyHeaderIndices={[0]}
+        bounces={false}
       >
-        <Header
-          title="Notifications"
-          subtitle="Updates about your money, claims, and plans"
-          style={{ paddingHorizontal: 0 }}
-          rightSlot={
-            <Button
-              variant="secondary"
-              size="sm"
-              onPress={handleMarkAllRead}
-              disabled={!hasUnread}
-              accessibilityLabel="Mark all notifications as read"
-            >
-              Mark all as read
-            </Button>
-          }
-        />
+        <View
+          style={{
+            backgroundColor: colors.background,
+            paddingTop: tokens.spacing.lg,
+            paddingHorizontal: tokens.spacing.lg,
+            paddingBottom: tokens.spacing.sm,
+          }}
+        >
+          <Header
+            title="Notifications"
+            subtitle="Updates about your money, claims, and plans"
+            style={{ paddingHorizontal: 0 }}
+            rightSlot={
+              <Button
+                variant="secondary"
+                size="sm"
+                onPress={handleMarkAllRead}
+                disabled={!hasUnread}
+                accessibilityLabel="Mark all notifications as read"
+              >
+                Mark all as read
+              </Button>
+            }
+          />
+        </View>
 
-        <View style={{ gap: tokens.spacing.sm }}>
+        <View
+          style={{
+            paddingHorizontal: tokens.spacing.lg,
+            gap: tokens.spacing.sm,
+          }}
+        >
           <View
             style={{
               flexDirection: "row",
