@@ -20,9 +20,11 @@ import {
   saveExpiry,
   getExpiry,
   deleteExpiry,
+  StoredUser,
 } from "./tokenStorage";
+import { apiLogin, apiLogout, apiRegister } from "./api/auth";
 
-type User = { username: string } | null;
+type User = StoredUser | null;
 
 type AuthCtx = {
   user: User;
@@ -30,6 +32,11 @@ type AuthCtx = {
   loading: boolean;
   error: string | null;
   signIn: (username: string, password: string) => Promise<boolean>;
+  register: (
+    username: string,
+    email: string,
+    password: string
+  ) => Promise<boolean>;
   signOut: () => Promise<void>;
   bootstrapped: boolean;
   clearError: () => void;
@@ -43,6 +50,7 @@ const Ctx = createContext<AuthCtx>({
   loading: false,
   error: null,
   signIn: async () => false,
+  register: async () => false,
   signOut: async () => {},
   bootstrapped: false,
   clearError: () => {},
@@ -60,7 +68,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { toast, confirm, alert } = useOverlay();
   const tickRef = useRef<NodeJS.Timeout | null>(null);
   const autoRef = useRef<NodeJS.Timeout | null>(null);
-  const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
   const scheduleTimers = useCallback(
     (exp: number) => {
@@ -127,33 +134,78 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async (username: string, password: string) => {
       setLoading(true);
       setError(null);
-      await new Promise((r) => setTimeout(r, 250));
 
-      const ok = username === "user" && password === "123";
-      if (ok) {
-        const exp = Date.now() + WEEK_MS;
+      try {
+        const data = await apiLogin(username, password);
+
+        const token = data.token;
+        const exp = data.expiresAt;
+        const apiUser: StoredUser = {
+          id: data.user.id,
+          username: data.user.username,
+          email: data.user.email ?? null,
+        };
+
         await Promise.all([
-          saveToken("demo-token"),
-          saveUser({ username }),
+          saveToken(token),
+          saveUser(apiUser),
           saveExpiry(exp),
         ]);
-        setUser({ username });
+
+        setUser(apiUser);
         setExpiresAt(exp);
         setRemainingSec(Math.ceil((exp - Date.now()) / 1000));
         scheduleTimers(exp);
-        toast({ message: `Signed in as ${username}`, variant: "success" });
+
+        toast({
+          message: `Signed in as ${apiUser.username}`,
+          variant: "success",
+        });
         router.replace("/welcome");
-      } else {
-        const msg = "Invalid credentials";
+        setLoading(false);
+        return true;
+      } catch (e: any) {
+        const msg = e?.message || "Sign in failed";
         setError(msg);
         toast({ message: msg, variant: "error" });
+        setLoading(false);
+        return false;
       }
-      setLoading(false);
-      return ok;
     },
     [scheduleTimers, toast]
   );
 
+  const register = useCallback(
+    async (username: string, email: string, password: string) => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        await apiRegister(username, email, password);
+
+        toast({
+          message: "Account created. You can now sign in.",
+          variant: "success",
+        });
+
+        setLoading(false);
+
+        router.back();
+        setTimeout(() => {
+          router.push("/(modals)/signIn");
+        }, 1800);
+
+        return true;
+      } catch (e: any) {
+        const msg = e?.message || "Registration failed";
+        setError(msg);
+        toast({ message: msg, variant: "error" });
+        setLoading(false);
+        return false;
+      }
+    },
+    [router, toast]
+  );
   const signOut = useCallback(async () => {
     const ok = await confirm({
       title: "Sign out?",
@@ -163,6 +215,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       variant: "error",
     });
     if (!ok) return;
+
+    try {
+      await apiLogout();
+    } catch {}
 
     await Promise.all([deleteToken(), deleteUser(), deleteExpiry()]);
     setUser(null);
@@ -182,6 +238,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       loading,
       error,
       signIn,
+      register,
       signOut,
       bootstrapped,
       clearError,
@@ -193,6 +250,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       loading,
       error,
       signIn,
+      register,
       signOut,
       bootstrapped,
       clearError,

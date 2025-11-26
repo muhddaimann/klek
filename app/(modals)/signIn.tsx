@@ -1,23 +1,20 @@
 import React, { useRef, useState, useEffect } from "react";
-import {
-  ScrollView,
-  View,
-  TextInput as RNInput,
-  Animated,
-  InteractionManager,
-} from "react-native";
-import { useTheme, Text, TextInput, Divider } from "react-native-paper";
+import { ScrollView, View, TextInput as RNInput, Animated } from "react-native";
+import { useTheme, TextInput } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDesign } from "../../contexts/designContext";
 import { Button } from "../../components/atom/button";
 import { useAuth } from "../../contexts/authContext";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
+import { Header } from "../../components/shared/header";
 import Logo from "../../components/shared/logo";
+import { Body, BodySmall } from "../../components/atom/text";
 
 export default function SignInModal() {
   const { colors } = useTheme();
   const { tokens } = useDesign();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const { signIn, loading, error, clearError } = useAuth();
 
   const [username, setUsername] = useState("");
@@ -33,10 +30,10 @@ export default function SignInModal() {
   const isValid = username.trim().length > 0 && password.trim().length > 0;
 
   useEffect(() => {
-    const task = InteractionManager.runAfterInteractions(() => {
-      requestAnimationFrame(() => userRef.current?.focus());
+    const frameId = requestAnimationFrame(() => {
+      userRef.current?.focus();
     });
-    return () => task.cancel();
+    return () => cancelAnimationFrame(frameId);
   }, []);
 
   useEffect(() => {
@@ -104,63 +101,102 @@ export default function SignInModal() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.surface }}>
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{
-          flexGrow: 1,
-          paddingHorizontal: tokens.spacing.lg,
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <View
+        style={{
           paddingTop: tokens.spacing.lg,
-          paddingBottom: insets.bottom + tokens.spacing.xl * 7,
-          justifyContent: "center",
-          gap: tokens.spacing.lg,
+          paddingHorizontal: tokens.spacing.lg,
+          paddingBottom: tokens.spacing.lg,
+          backgroundColor: colors.primaryContainer,
+          borderBottomLeftRadius: tokens.radii["2xl"],
+          borderBottomRightRadius: tokens.radii["2xl"],
+        }}
+      >
+        <Header
+          title="Sign in"
+          subtitle="Welcome back to Klek"
+          showBack
+          rightSlot={<Logo size={tokens.typography.sizes["3xl"] * 2} />}
+        />
+      </View>
+
+      <ScrollView
+        style={{ flex: 1, marginTop: -tokens.spacing["lg"] }}
+        contentContainerStyle={{
+          paddingHorizontal: tokens.spacing.lg,
+          paddingBottom: insets.bottom + tokens.spacing["xl"],
         }}
         bounces={false}
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
       >
-        <View
+        <Animated.View
           style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: tokens.spacing.md,
-            paddingHorizontal: 0,
+            transform: [{ translateX: shake }],
           }}
         >
-          <Logo size={tokens.typography.sizes["3xl"] * 2} />
-          <View style={{ flex: 1 }}>
-            <Text
-              style={{
-                color: colors.onBackground,
-                fontSize: tokens.typography.sizes["2xl"],
-                fontWeight: "700",
-              }}
-            >
-              Sign in
-            </Text>
-            <Text style={{ color: colors.onSurfaceVariant }}>Welcome back</Text>
-          </View>
-        </View>
-
-        {!!error && (
           <View
             style={{
-              backgroundColor: colors.errorContainer,
-              borderColor: colors.error,
+              borderRadius: tokens.radii["2xl"],
+              paddingHorizontal: tokens.spacing.lg,
+              paddingVertical: tokens.spacing.lg,
+              backgroundColor: colors.surface,
               borderWidth: 1,
-              borderRadius: tokens.radii.lg,
-              paddingVertical: tokens.spacing.sm,
-              paddingHorizontal: tokens.spacing.md,
+              borderColor: colors.outlineVariant,
+              gap: tokens.spacing.md,
+              shadowColor: colors.shadow,
+              shadowOpacity: 0.1,
+              shadowOffset: { width: 0, height: 4 },
+              shadowRadius: 12,
+              elevation: 3,
             }}
           >
-            <Text style={{ color: colors.onErrorContainer, fontWeight: "600" }}>
-              {error}
-            </Text>
-          </View>
-        )}
+            <View
+              style={{
+                marginBottom: tokens.spacing.sm,
+              }}
+            >
+              <Body
+                weight="semibold"
+                color={colors.onSurface}
+                style={{ fontSize: tokens.typography.sizes.lg }}
+              >
+                Welcome back
+              </Body>
+              <BodySmall
+                muted
+                style={{
+                  marginTop: tokens.spacing["xxs"],
+                  fontSize: tokens.typography.sizes.sm,
+                }}
+              >
+                Sign in to see your budgets and fronts.
+              </BodySmall>
+            </View>
 
-        <Animated.View style={{ transform: [{ translateX: shake }] }}>
-          <View style={{ gap: tokens.spacing.md }}>
+            {!!error && (
+              <View
+                style={{
+                  backgroundColor: colors.errorContainer,
+                  borderColor: colors.error,
+                  borderWidth: 1,
+                  borderRadius: tokens.radii.lg,
+                  paddingVertical: tokens.spacing.sm,
+                  paddingHorizontal: tokens.spacing.md,
+                }}
+              >
+                <BodySmall
+                  style={{
+                    color: colors.onErrorContainer,
+                    fontWeight: "600",
+                    fontSize: tokens.typography.sizes.sm,
+                  }}
+                >
+                  {error}
+                </BodySmall>
+              </View>
+            )}
+
             <TextInput
               mode="outlined"
               label="Username"
@@ -177,9 +213,15 @@ export default function SignInModal() {
               ref={userRef}
             />
             {fieldErr.user ? (
-              <Text style={{ color: colors.error, marginTop: -8 }}>
+              <BodySmall
+                style={{
+                  color: colors.error,
+                  marginTop: -8,
+                  fontSize: tokens.typography.sizes.xs,
+                }}
+              >
                 {fieldErr.user}
-              </Text>
+              </BodySmall>
             ) : null}
 
             <TextInput
@@ -205,17 +247,43 @@ export default function SignInModal() {
               }
             />
             {fieldErr.pass ? (
-              <Text style={{ color: colors.error, marginTop: -8 }}>
+              <BodySmall
+                style={{
+                  color: colors.error,
+                  marginTop: -8,
+                  fontSize: tokens.typography.sizes.xs,
+                }}
+              >
                 {fieldErr.pass}
-              </Text>
+              </BodySmall>
             ) : null}
+
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: tokens.spacing.sm,
+              }}
+            >
+              <BodySmall muted>New to Klek?</BodySmall>
+              <Button
+                variant="link"
+                size="md"
+                onPress={() => {
+                  router.back();
+                  setTimeout(() => {
+                    router.push("/(modals)/signUp");
+                  }, 150);
+                }}
+                style={{ paddingHorizontal: tokens.spacing["xxs"] }}
+              >
+                Create an account instead
+              </Button>
+            </View>
           </View>
         </Animated.View>
-
-        <Divider style={{ marginTop: tokens.spacing.sm }} />
       </ScrollView>
 
-      {/* Fixed CTA */}
       <View
         pointerEvents="box-none"
         style={{ position: "absolute", left: 0, right: 0, bottom: 0 }}

@@ -2,12 +2,12 @@ import React, { useMemo } from "react";
 import { View, Pressable } from "react-native";
 import { useTheme, Avatar } from "react-native-paper";
 import { useRouter } from "expo-router";
-import { Bell } from "lucide-react-native";
+import { Bell, UserCircle2, QrCode } from "lucide-react-native";
 import { useDesign } from "../../contexts/designContext";
 import { useOverlay } from "../../hooks/useOverlay";
 import { useGreeting } from "../../hooks/useGreeting";
+import { useAuth } from "../../contexts/authContext";
 import { H2, Caption, BodySmall } from "../atom/text";
-import { UserCircle2, QrCode } from "lucide-react-native";
 
 type Props = {
   username: string;
@@ -42,6 +42,7 @@ export function MainHeader({
   const router = useRouter();
   const { options: showOptions } = useOverlay();
   const { greeting } = useGreeting();
+  const { remainingSec, expiresAt } = useAuth();
 
   const CIRCLE = tokens.spacing["2xl"];
 
@@ -53,6 +54,25 @@ export function MainHeader({
     const day = now.getDate();
     return `${weekday} ${day}`;
   }, []);
+
+  const sessionLabel = useMemo(() => {
+    if (!expiresAt || remainingSec <= 0) return "Session expired";
+
+    let secs = remainingSec;
+    const days = Math.floor(secs / 86400);
+    secs = secs % 86400;
+    const hours = Math.floor(secs / 3600);
+    secs = secs % 3600;
+    const minutes = Math.floor(secs / 60);
+
+    const parts: string[] = [];
+    if (days > 0) parts.push(`${days}d`);
+    if (hours > 0) parts.push(`${hours}h`);
+    if (minutes > 0) parts.push(`${minutes}m`);
+    if (parts.length === 0) parts.push("less than 1m");
+
+    return `Session ends in ${parts.join(" ")}`;
+  }, [expiresAt, remainingSec]);
 
   const handleAvatarPress = () => {
     showOptions({
@@ -108,7 +128,7 @@ export function MainHeader({
         <Caption muted weight="bold">
           {`${greeting}, ${username}.`}
         </Caption>
-        <H2>Your money at a glance</H2>
+        <H2>{sessionLabel}</H2>
       </View>
 
       <View

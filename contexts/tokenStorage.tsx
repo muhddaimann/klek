@@ -4,7 +4,11 @@ const TOKEN_KEY = "klek.token";
 const USER_KEY = "klek.user";
 const EXP_KEY = "klek.exp";
 
-export type StoredUser = { username: string };
+export type StoredUser = {
+  id: number;
+  username: string;
+  email: string | null;
+};
 
 export async function saveToken(token: string) {
   await SecureStore.setItemAsync(TOKEN_KEY, token);
