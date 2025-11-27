@@ -42,7 +42,9 @@ export function MainHeader({
   const router = useRouter();
   const { options: showOptions } = useOverlay();
   const { greeting } = useGreeting();
-  const { remainingSec, expiresAt } = useAuth();
+  const { user } = useAuth();
+
+  const displayName = user?.nickname || user?.username || username;
 
   const CIRCLE = tokens.spacing["2xl"];
 
@@ -54,25 +56,6 @@ export function MainHeader({
     const day = now.getDate();
     return `${weekday} ${day}`;
   }, []);
-
-  const sessionLabel = useMemo(() => {
-    if (!expiresAt || remainingSec <= 0) return "Session expired";
-
-    let secs = remainingSec;
-    const days = Math.floor(secs / 86400);
-    secs = secs % 86400;
-    const hours = Math.floor(secs / 3600);
-    secs = secs % 3600;
-    const minutes = Math.floor(secs / 60);
-
-    const parts: string[] = [];
-    if (days > 0) parts.push(`${days}d`);
-    if (hours > 0) parts.push(`${hours}h`);
-    if (minutes > 0) parts.push(`${minutes}m`);
-    if (parts.length === 0) parts.push("less than 1m");
-
-    return `Session ends in ${parts.join(" ")}`;
-  }, [expiresAt, remainingSec]);
 
   const handleAvatarPress = () => {
     showOptions({
@@ -126,9 +109,9 @@ export function MainHeader({
     >
       <View style={{ flex: 1, gap: tokens.spacing["xxs"] }}>
         <Caption muted weight="bold">
-          {`${greeting}, ${username}.`}
+          {displayName ? `${greeting}, ${displayName}.` : `${greeting}, there.`}
         </Caption>
-        <H2>{sessionLabel}</H2>
+        <H2>Your money at a glance</H2>
       </View>
 
       <View
@@ -175,7 +158,11 @@ export function MainHeader({
           >
             <Avatar.Text
               size={CIRCLE}
-              label={username?.charAt(0).toUpperCase() || "K"}
+              label={
+                displayName?.charAt(0).toUpperCase() ||
+                username?.charAt(0).toUpperCase() ||
+                "K"
+              }
               style={{ backgroundColor: colors.primary }}
               color={colors.onPrimary}
             />

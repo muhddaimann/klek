@@ -25,6 +25,7 @@ export default function ModalLayout() {
       <Stack.Screen name="loanEstimator" />
       <Stack.Screen name="saveEstimator" />
       <Stack.Screen name="compoundEstimator" />
+      <Stack.Screen name="editProfile" />
     </Stack>
   );
 }

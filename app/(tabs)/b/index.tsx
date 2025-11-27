@@ -5,6 +5,7 @@ import { useDesign } from "../../../contexts/designContext";
 import { useAlert, useModal } from "../../../hooks/useOverlay";
 import { UserRound, Globe2, Wallet, Moon } from "lucide-react-native";
 import { H2, Body, BodySmall, Caption } from "../../../components/atom/text";
+import { router } from "expo-router";
 
 export default function Settings() {
   const { colors } = useTheme();
@@ -124,7 +125,7 @@ export default function Settings() {
           }
           label="Profile"
           value="Set your name"
-          onPress={() => {}}
+          onPress={() => router.push("/(modals)/editProfile")}
           colors={colors}
           tokens={tokens}
         />

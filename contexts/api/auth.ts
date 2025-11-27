@@ -4,6 +4,7 @@ export type ApiUser = {
   id: number;
   username: string;
   email: string | null;
+  nickname: string | null;
 };
 
 export type LoginResponse = {
@@ -40,5 +41,13 @@ export async function apiRegister(
   return apiRequest<RegisterResponse>("/api/users", {
     method: "POST",
     body: { username, email, password },
+  });
+}
+
+export async function apiUpdateNickname(nickname: string) {
+  return apiRequest<{ message: string; user: ApiUser }>("/api/user/nickname", {
+    method: "PUT",
+    body: { nickname },
+    auth: true,
   });
 }

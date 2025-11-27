@@ -22,7 +22,12 @@ import {
   deleteExpiry,
   StoredUser,
 } from "./tokenStorage";
-import { apiLogin, apiLogout, apiRegister } from "./api/auth";
+import {
+  apiLogin,
+  apiLogout,
+  apiRegister,
+  apiUpdateNickname,
+} from "./api/auth";
 
 type User = StoredUser | null;
 
@@ -42,6 +47,7 @@ type AuthCtx = {
   clearError: () => void;
   expiresAt: number | null;
   remainingSec: number;
+  updateNickname: (nickname: string | null) => Promise<void>;
 };
 
 const Ctx = createContext<AuthCtx>({
@@ -56,6 +62,7 @@ const Ctx = createContext<AuthCtx>({
   clearError: () => {},
   expiresAt: null,
   remainingSec: 0,
+  updateNickname: async () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -144,6 +151,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           id: data.user.id,
           username: data.user.username,
           email: data.user.email ?? null,
+          nickname: data.user.nickname ?? null,
         };
 
         await Promise.all([
@@ -206,6 +214,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     },
     [router, toast]
   );
+
   const signOut = useCallback(async () => {
     const ok = await confirm({
       title: "Sign out?",
@@ -231,6 +240,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.replace("/goodbye");
   }, [confirm, toast]);
 
+  const updateNickname = useCallback(
+    async (nickname: string | null) => {
+      if (!user) return;
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        const data = await apiUpdateNickname(nickname ?? "");
+
+        const updated: StoredUser = {
+          id: data.user.id,
+          username: data.user.username,
+          email: data.user.email ?? null,
+          nickname: data.user.nickname ?? null,
+        };
+
+        setUser(updated);
+        await saveUser(updated);
+
+        router.back();
+
+        setTimeout(() => {
+          const message = updated.nickname
+            ? `Saved. Klek will call you “${updated.nickname}”.`
+            : "Saved. Klek will call you by your username.";
+
+          toast({
+            message,
+            variant: "success",
+          });
+        }, 250);
+      } catch (e: any) {
+        const msg = e?.message || "Failed to update profile";
+        setError(msg);
+        toast({ message: msg, variant: "error" });
+      } finally {
+        setLoading(false);
+      }
+    },
+    [user, toast, router]
+  );
+
   const value = useMemo(
     () => ({
       user,
@@ -244,6 +296,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       clearError,
       expiresAt,
       remainingSec,
+      updateNickname,
     }),
     [
       user,
@@ -256,6 +309,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       clearError,
       expiresAt,
       remainingSec,
+      updateNickname,
     ]
   );
 

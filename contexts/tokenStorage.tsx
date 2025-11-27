@@ -8,6 +8,7 @@ export type StoredUser = {
   id: number;
   username: string;
   email: string | null;
+  nickname: string | null;
 };
 
 export async function saveToken(token: string) {
