@@ -1,4 +1,8 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  apiGetBudgets,
+  type Budget as ApiBudget,
+} from "../contexts/api/budgets";
 
 export type BudgetStatus = "onTrack" | "high" | "over";
 
@@ -28,63 +32,6 @@ export type BudgetFilter = {
   label: string;
 };
 
-const MOCK_BUDGET_SUMMARY: BudgetSummary = {
-  monthLabel: "November budget",
-  totalBudget: "RM 2,500",
-  totalSpent: "RM 1,480",
-  remaining: "RM 1,020",
-  percentUsed: 59,
-  isOverBudget: false,
-};
-
-const MOCK_BUDGET_CATEGORIES: BudgetCategory[] = [
-  {
-    id: "b1",
-    key: "food",
-    label: "Food",
-    budget: "RM 800",
-    spent: "RM 520",
-    percentUsed: 65,
-    status: "high",
-  },
-  {
-    id: "b2",
-    key: "transport",
-    label: "Transport",
-    budget: "RM 400",
-    spent: "RM 210",
-    percentUsed: 52,
-    status: "onTrack",
-  },
-  {
-    id: "b3",
-    key: "bills",
-    label: "Bills",
-    budget: "RM 700",
-    spent: "RM 580",
-    percentUsed: 83,
-    status: "over",
-  },
-  {
-    id: "b4",
-    key: "leisure",
-    label: "Leisure",
-    budget: "RM 300",
-    spent: "RM 120",
-    percentUsed: 40,
-    status: "onTrack",
-  },
-  {
-    id: "b5",
-    key: "other",
-    label: "Other",
-    budget: "RM 300",
-    spent: "RM 50",
-    percentUsed: 17,
-    status: "onTrack",
-  },
-];
-
 const BUDGET_FILTERS: BudgetFilter[] = [
   { key: "all", label: "All" },
   { key: "onTrack", label: "On track" },
@@ -92,41 +39,135 @@ const BUDGET_FILTERS: BudgetFilter[] = [
   { key: "over", label: "Over" },
 ];
 
+const MONTH_NAMES = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+function getInitialMonthKey() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth() + 1;
+  return `${y}-${String(m).padStart(2, "0")}`;
+}
+
+function formatMonthLabelFromKey(key: string) {
+  const [yearStr, monthStr] = key.split("-");
+  const monthIndex = Number(monthStr) - 1;
+  const monthName =
+    monthIndex >= 0 && monthIndex < 12 ? MONTH_NAMES[monthIndex] : "This month";
+  return `${monthName} budget`;
+}
+
+function formatCurrency(amount: number) {
+  if (!Number.isFinite(amount)) return "RM 0.00";
+  return `RM ${amount.toLocaleString("en-MY", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
+function getMonthKeyFromDate(dateStr: string) {
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return null;
+  const y = d.getFullYear();
+  const m = d.getMonth() + 1;
+  return `${y}-${String(m).padStart(2, "0")}`;
+}
+
 export function useBudget() {
-  const [useMock, setUseMock] = useState(true);
+  const [summary, setSummary] = useState<BudgetSummary>({
+    monthLabel: formatMonthLabelFromKey(getInitialMonthKey()),
+    totalBudget: "RM 0.00",
+    totalSpent: "RM 0.00",
+    remaining: "RM 0.00",
+    percentUsed: 0,
+    isOverBudget: false,
+  });
+  const [categories, setCategories] = useState<BudgetCategory[]>([]);
+  const [monthKey, setMonthKey] = useState<string>(getInitialMonthKey);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const summary = useMemo<BudgetSummary>(
-    () =>
-      useMock
-        ? MOCK_BUDGET_SUMMARY
-        : {
-            monthLabel: "This month",
-            totalBudget: "RM 0",
-            totalSpent: "RM 0",
-            remaining: "RM 0",
-            percentUsed: 0,
-            isOverBudget: false,
-          },
-    [useMock]
-  );
+  const filters = useMemo(() => BUDGET_FILTERS, []);
 
-  const categories = useMemo<BudgetCategory[]>(
-    () => (useMock ? MOCK_BUDGET_CATEGORIES : []),
-    [useMock]
-  );
+  const loadBudgets = useCallback(async () => {
+    setLoading(true);
+    setError(null);
 
-  const filters = BUDGET_FILTERS;
+    try {
+      const data: ApiBudget[] = await apiGetBudgets();
 
-  const isSetup = summary.totalBudget !== "RM 0";
+      const current =
+        data.find((b) => getMonthKeyFromDate(b.budget_date) === monthKey) ??
+        null;
 
-  const toggleMock = () => setUseMock((v) => !v);
+      if (!current) {
+        setSummary({
+          monthLabel: formatMonthLabelFromKey(monthKey),
+          totalBudget: "RM 0.00",
+          totalSpent: "RM 0.00",
+          remaining: "RM 0.00",
+          percentUsed: 0,
+          isOverBudget: false,
+        });
+        setCategories([]);
+        setLoading(false);
+        return;
+      }
+
+      const total = Number(current.total_amount ?? 0) || 0;
+      const totalBudgetStr = formatCurrency(total);
+
+      setSummary({
+        monthLabel: current.label || formatMonthLabelFromKey(monthKey),
+        totalBudget: totalBudgetStr,
+        totalSpent: formatCurrency(0),
+        remaining: totalBudgetStr,
+        percentUsed: 0,
+        isOverBudget: false,
+      });
+
+      setCategories([]);
+    } catch (e: any) {
+      setError(e?.message || "Failed to load budget");
+    } finally {
+      setLoading(false);
+    }
+  }, [monthKey]);
+
+  useEffect(() => {
+    void loadBudgets();
+  }, [loadBudgets]);
+
+  const isSetup = useMemo(() => {
+    const numeric = Number(summary.totalBudget.replace(/[^\d.-]/g, ""));
+    return numeric > 0;
+  }, [summary.totalBudget]);
+
+  const refresh = useCallback(() => {
+    void loadBudgets();
+  }, [loadBudgets]);
 
   return {
     summary,
     categories,
     filters,
     isSetup,
-    useMock,
-    toggleMock,
+    loading,
+    error,
+    monthKey,
+    setMonthKey,
+    refresh,
   };
 }

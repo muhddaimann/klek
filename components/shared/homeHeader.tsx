@@ -65,7 +65,7 @@ export function MainHeader({
           label: "Update profile",
           icon: <UserCircle2 color={colors.primary} />,
           onPress: () => {
-            router.push("/(tabs)/b");
+            router.push("/(modals)/editProfile");
           },
         },
         {

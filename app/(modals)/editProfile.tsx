@@ -15,10 +15,11 @@ export default function EditProfileModal() {
   const { tokens } = useDesign();
   const insets = useSafeAreaInsets();
   const { user, loading, error, clearError, updateNickname } = useAuth();
+
   const [nickname, setNickname] = useState<string | null>(null);
+
   const nickRef = useRef<RNInput>(null);
   const shake = useRef(new Animated.Value(0)).current;
-  const isValid = true;
 
   useEffect(() => {
     setNickname(user?.nickname ?? null);
@@ -76,11 +77,13 @@ export default function EditProfileModal() {
     ]).start();
   }, [error, shake]);
 
-  const onSubmit = async () => {
-    const raw = nickname ?? "";
-    const trimmed = raw.trim();
-    const valueOrNull = trimmed === "" ? null : trimmed;
+  const normalizedNickname = (nickname ?? "").trim();
+  const normalizedOriginal = (user?.nickname ?? "").trim();
+  const hasChanges = normalizedNickname !== normalizedOriginal;
 
+  const onSubmit = async () => {
+    const trimmed = normalizedNickname;
+    const valueOrNull = trimmed === "" ? null : trimmed;
     await updateNickname(valueOrNull);
   };
 
@@ -98,7 +101,7 @@ export default function EditProfileModal() {
       >
         <Header
           title="Edit profile"
-          subtitle="Tell Klek what to call you"
+          subtitle="Make Klek feel more like you"
           showBack
           rightSlot={<Logo size={tokens.typography.sizes["3xl"] * 2} />}
         />
@@ -109,6 +112,7 @@ export default function EditProfileModal() {
         contentContainerStyle={{
           paddingHorizontal: tokens.spacing.lg,
           paddingBottom: insets.bottom + tokens.spacing["xl"],
+          gap: tokens.spacing.lg,
         }}
         bounces={false}
         keyboardDismissMode="on-drag"
@@ -127,7 +131,7 @@ export default function EditProfileModal() {
               backgroundColor: colors.surface,
               borderWidth: 1,
               borderColor: colors.outlineVariant,
-              gap: tokens.spacing.md,
+              gap: tokens.spacing.lg,
               shadowColor: colors.shadow,
               shadowOpacity: 0.1,
               shadowOffset: { width: 0, height: 4 },
@@ -183,14 +187,31 @@ export default function EditProfileModal() {
               mode="outlined"
               label="Nickname"
               value={nickname ?? ""}
-              onChangeText={(t) => {
-                setNickname(t);
-              }}
+              onChangeText={setNickname}
               placeholder={user?.username || "What do we call you?"}
               autoCapitalize="words"
               returnKeyType="done"
               ref={nickRef}
             />
+
+            <View
+              style={{
+                gap: tokens.spacing["xxs"],
+              }}
+            >
+              <BodySmall muted>Username</BodySmall>
+              <Body>{user?.username}</Body>
+
+              <BodySmall muted style={{ marginTop: tokens.spacing.sm }}>
+                Email
+              </BodySmall>
+              <Body>{user?.email ?? "Not set"}</Body>
+
+              <BodySmall muted style={{ marginTop: tokens.spacing.sm }}>
+                User ID
+              </BodySmall>
+              <BodySmall>{user?.id}</BodySmall>
+            </View>
           </View>
         </Animated.View>
       </ScrollView>
@@ -212,7 +233,7 @@ export default function EditProfileModal() {
           <Button
             onPress={onSubmit}
             variant="default"
-            disabled={loading || !isValid}
+            disabled={loading || !hasChanges}
             fullWidth
             rounded="sm"
           >

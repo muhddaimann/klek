@@ -1,8 +1,14 @@
-import React, { useState, useRef, useMemo, useEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useMemo,
+  useEffect,
+  useCallback,
+} from "react";
 import { View, ScrollView } from "react-native";
 import { useTheme, TextInput } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useDesign } from "../../contexts/designContext";
 import { Button } from "../../components/atom/button";
 import { Header } from "../../components/shared/header";
@@ -16,6 +22,13 @@ import {
   Shapes,
 } from "lucide-react-native";
 import type { ComponentType } from "react";
+import {
+  apiGetBudgets,
+  apiCreateBudget,
+  apiUpdateBudget,
+  type Budget as ApiBudget,
+} from "../../contexts/api/budgets";
+import { useOverlay } from "../../hooks/useOverlay";
 
 type CategoryKey = string;
 type IconComp = ComponentType<{ color?: string; size?: number }>;
@@ -52,6 +65,18 @@ function getCurrentMonthEnd(base: Date): string {
   const endOfMonth = new Date(year, month + 1, 0);
   endOfMonth.setHours(23, 59, 59, 999);
   return endOfMonth.toISOString();
+}
+
+function getMonthKeyFromDate(date: Date): string {
+  const y = date.getFullYear();
+  const m = date.getMonth() + 1;
+  return `${y}-${String(m).padStart(2, "0")}`;
+}
+
+function getMonthKeyFromISO(dateStr: string): string {
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return "";
+  return getMonthKeyFromDate(d);
 }
 
 function formatDateWithDay(date: Date): string {
@@ -97,11 +122,13 @@ export default function AddBudget() {
   const { colors } = useTheme();
   const { tokens } = useDesign();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const { toast } = useOverlay();
 
   const params = useLocalSearchParams<{ mode?: string | string[] }>();
   const rawMode = params.mode;
   const mode = Array.isArray(rawMode) ? rawMode[0] : rawMode;
-  const isUpdateMode = mode === "update";
+  const isUpdateModeParam = mode === "update";
 
   const createdAtRef = useRef(new Date());
   const createdAt = createdAtRef.current;
@@ -111,23 +138,19 @@ export default function AddBudget() {
   const [newCategoryName, setNewCategoryName] = useState("");
   const [customMode, setCustomMode] = useState(false);
   const [hasSeededRandom, setHasSeededRandom] = useState(false);
+  const [budgetId, setBudgetId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const totalRef = useRef<any>(null);
 
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      totalRef.current?.focus();
-    });
-
-    if (isUpdateMode && !hasSeededRandom) {
-      const seeded = buildRandomBudget();
-      setTotalAmount(seeded.totalAmount);
-      setCategoryBudgets(seeded.categories);
-      setHasSeededRandom(true);
-    }
-
-    return () => cancelAnimationFrame(frame);
-  }, [isUpdateMode, hasSeededRandom]);
+  const periodEnd = useMemo(() => getCurrentMonthEnd(createdAt), [createdAt]);
+  const periodLabel = "This month";
+  const periodDateText = formatDateWithDay(new Date(periodEnd));
+  const currentMonthKey = useMemo(
+    () => getMonthKeyFromDate(createdAt),
+    [createdAt]
+  );
 
   const handleTotalChange = (value: string) => {
     const digits = value.replace(/[^\d]/g, "");
@@ -192,34 +215,78 @@ export default function AddBudget() {
     [categoryBudgets]
   );
 
-  const periodEnd = useMemo(() => getCurrentMonthEnd(createdAt), [createdAt]);
-
-  const periodLabel = "This month";
-  const periodDateText = formatDateWithDay(new Date(periodEnd));
-
-  const isValid = isTotalValid;
-
   const diff = numericTotal - numericCategoryTotal;
   const hasDiff = isTotalValid && diff !== 0;
 
-  const handleSave = () => {
+  const isValid = isTotalValid && !saving;
+
+  const loadExistingBudget = useCallback(async () => {
+    if (!isUpdateModeParam) return;
+    setLoading(true);
+    try {
+      const data: ApiBudget[] = await apiGetBudgets();
+      const existing =
+        data.find(
+          (b) => getMonthKeyFromISO(b.budget_date) === currentMonthKey
+        ) ?? null;
+
+      if (existing) {
+        setBudgetId(existing.id);
+        const total = Number(existing.total_amount ?? 0) || 0;
+        setTotalAmount(formatMoney(total));
+
+        if (!hasSeededRandom) {
+          const seeded = buildRandomBudget();
+          setCategoryBudgets(seeded.categories);
+          setHasSeededRandom(true);
+        }
+      }
+    } catch (e: any) {
+      toast({
+        message: e?.message || "Failed to load budget",
+        variant: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [currentMonthKey, hasSeededRandom, isUpdateModeParam, toast]);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      totalRef.current?.focus();
+    });
+
+    void loadExistingBudget();
+
+    return () => cancelAnimationFrame(frame);
+  }, [loadExistingBudget]);
+
+  const handleSave = async () => {
     if (!isValid) return;
 
-    const payload = {
-      totalBudget: numericTotal,
-      periodKey: "thisMonth" as const,
-      periodEnd,
-      categories: categoryBudgets.map((c) => ({
-        key: c.key,
-        label: c.label,
-        budget: Number(c.amount.replace(/,/g, "")) || 0,
-      })),
-      createdAt: createdAt.toISOString(),
-      updatedAt: new Date().toISOString(),
-      mode: isUpdateMode ? "update" : "create",
-    };
+    setSaving(true);
+    try {
+      const budget_date = periodEnd;
+      const label = "Monthly budget";
+      const total_amount = numericTotal.toString();
 
-    console.log("budget-setup", payload);
+      if (isUpdateModeParam && budgetId != null) {
+        await apiUpdateBudget(budgetId, { label, total_amount });
+        toast({ message: "Budget updated", variant: "success" });
+      } else {
+        await apiCreateBudget({ budget_date, label, total_amount });
+        toast({ message: "Budget saved", variant: "success" });
+      }
+
+      router.back();
+    } catch (e: any) {
+      toast({
+        message: e?.message || "Failed to save budget",
+        variant: "error",
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -246,7 +313,11 @@ export default function AddBudget() {
           }}
         >
           <Header
-            title={isUpdateMode ? "Update budget" : "Set budget"}
+            title={
+              isUpdateModeParam && budgetId != null
+                ? "Update budget"
+                : "Set budget"
+            }
             subtitle={periodLabel}
             rightSlot={
               <BodySmall
@@ -276,6 +347,7 @@ export default function AddBudget() {
               keyboardType="decimal-pad"
               error={totalAmount.length > 0 && !isTotalValid}
               ref={totalRef}
+              disabled={loading || saving}
             />
 
             {totalAmount.length > 0 && !isTotalValid && (
@@ -366,6 +438,7 @@ export default function AddBudget() {
                         paddingHorizontal: tokens.spacing.sm,
                         paddingVertical: tokens.spacing["xs"],
                       }}
+                      disabled={loading || saving}
                     >
                       <BodySmall
                         weight="semibold"
@@ -400,13 +473,14 @@ export default function AddBudget() {
                     value={newCategoryName}
                     onChangeText={setNewCategoryName}
                     autoCapitalize="words"
+                    disabled={loading || saving}
                   />
                 </View>
                 <Button
                   onPress={handleAddCustomCategory}
                   variant="outline"
                   rounded="pill"
-                  disabled={!newCategoryName.trim()}
+                  disabled={!newCategoryName.trim() || loading || saving}
                 >
                   <Body weight="semibold">Add</Body>
                 </Button>
@@ -461,6 +535,7 @@ export default function AddBudget() {
                       value={c.amount}
                       onChangeText={(v) => handleCategoryAmountChange(c.key, v)}
                       keyboardType="decimal-pad"
+                      disabled={loading || saving}
                     />
                   </View>
                 </View>
@@ -487,12 +562,14 @@ export default function AddBudget() {
           <Button
             onPress={handleSave}
             variant="default"
-            disabled={!isValid}
+            disabled={!isValid || loading}
             fullWidth
             rounded="pill"
           >
             <Body weight="semibold" color={colors.onPrimary}>
-              {isUpdateMode ? "Update budget" : "Save budget"}
+              {isUpdateModeParam && budgetId != null
+                ? "Update budget"
+                : "Save budget"}
             </Body>
           </Button>
         </View>
